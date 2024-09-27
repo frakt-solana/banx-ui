@@ -20,17 +20,13 @@ export const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) =
   return (
     <div className={styles.mainInfoContainer}>
       <img src={market.collectionImage} className={styles.collectionImage} />
-      <div className={styles.mainInfoContent}>
-        <div className={styles.collectionInfo}>
-          <h4 className={styles.collectionName}>{collectionName}</h4>
-          {isHot && (
-            <Tooltip title="Collection is in huge demand waiting for lenders!">
-              <Fire />
-            </Tooltip>
-          )}
-          {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
-        </div>
-      </div>
+      <h4 className={styles.collectionName}>{collectionName}</h4>
+      {isHot && (
+        <Tooltip title="Collection is in huge demand waiting for lenders!">
+          <Fire />
+        </Tooltip>
+      )}
+      {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
     </div>
   )
 }
