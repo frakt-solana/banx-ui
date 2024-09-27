@@ -7,7 +7,13 @@ import { orderBy } from 'lodash'
 import { CloseModal } from '@banx/icons'
 
 import { OptionClassNameProps, renderOption } from './SelectOption'
-import { CollapsedContent, PrefixInput, SelectLabels, SuffixIcon } from './components'
+import {
+  CollapsedContent,
+  NotFoundContent,
+  PrefixInput,
+  SelectLabels,
+  SuffixIcon,
+} from './components'
 import { getPopupContainer } from './helpers'
 import { useFavoriteOptions, useSearchSelect } from './hooks'
 import { OptionKeys } from './types'
@@ -98,10 +104,11 @@ export const SearchSelect = <P extends object>({
         searchValue={inputValue}
         value={selectedOptions}
         onChange={onChange}
+        open={isPopupOpen}
         allowClear
         showSearch
         placeholder={placeholder}
-        notFoundContent={null}
+        notFoundContent={<NotFoundContent />}
         rootClassName="rootSelectClassName"
         popupClassName="rootSelectPopupClassName"
         getPopupContainer={getPopupContainer}
@@ -111,6 +118,7 @@ export const SearchSelect = <P extends object>({
         onDropdownVisibleChange={togglePopupVisible}
         maxTagCount="responsive"
         transitionName="" //? Remove all animations
+        autoFocus={isPopupOpen}
         dropdownRender={(menu) => (
           <>
             <SelectLabels labels={labels} />

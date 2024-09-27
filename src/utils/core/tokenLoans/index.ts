@@ -1,4 +1,4 @@
-import { BN } from 'fbonds-core'
+import { BN, web3 } from 'fbonds-core'
 import { BASE_POINTS, PROTOCOL_FEE_TOKEN_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
@@ -93,7 +93,10 @@ export const calculateTokenRepaymentCallLenderReceivesAmount = (loan: core.Token
 
   return calculateLenderPartialPartFromBorrower({
     borrowerPart: repaymentCallAmount,
-    protocolRepayFeeApr: calcBorrowerTokenAPR(amountOfBonds),
+    protocolRepayFeeApr: calcBorrowerTokenAPR(
+      amountOfBonds,
+      new web3.PublicKey(loan.fraktBond.hadoMarket),
+    ),
     soldAt,
     //? Lender APR (without ProtocolFee)
     lenderApr: calculateApr({
@@ -135,7 +138,10 @@ export const calculateTokenLoanRepayValueOnCertainDate: CalculateTokenLoanRepayV
       loanValue,
       startTime: soldAt,
       currentTime: date,
-      rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
+      rateBasePoints: calcBorrowerTokenAPR(
+        amountOfBonds,
+        new web3.PublicKey(loan.fraktBond.hadoMarket),
+      ),
     })
 
     return new BN(loanValue).add(new BN(calculatedInterest))
@@ -175,7 +181,10 @@ export const calcTokenWeeklyFeeWithRepayFee = (loan: core.TokenLoan) => {
     loanValue: calculateTokenLoanValueWithUpfrontFee(loan).toNumber(),
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
-    rateBasePoints: calcBorrowerTokenAPR(amountOfBonds),
+    rateBasePoints: calcBorrowerTokenAPR(
+      amountOfBonds,
+      new web3.PublicKey(loan.fraktBond.hadoMarket),
+    ),
   })
 }
 

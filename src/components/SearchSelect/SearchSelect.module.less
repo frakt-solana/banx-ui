@@ -94,3 +94,30 @@
   width: 20px;
   height: 20px;
 }
+
+.notFoundContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 8px;
+
+  span {
+    font: var(--title-sm);
+    text-transform: uppercase;
+
+    @media (max-width: 640px) {
+      font: var(--title-xs);
+    }
+  }
+
+  svg {
+    path:first-child {
+      fill: var(--bg-primary);
+    }
+
+    path:not(:first-child) {
+      fill: var(--bg-border);
+    }
+  }
+}

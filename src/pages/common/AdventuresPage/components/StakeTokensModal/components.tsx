@@ -9,7 +9,7 @@ import { InputErrorMessage } from '@banx/components/inputs'
 import NumericInput, { NumericInputProps } from '@banx/components/inputs/NumericInput'
 
 import { BanxToken } from '@banx/icons'
-import { formatNumbersWithCommas, limitDecimalPlaces } from '@banx/utils'
+import { formatNumbersWithCommas, formatTrailingZeros, limitDecimalPlaces } from '@banx/utils'
 
 import styles from './StakeTokensModal.module.less'
 
@@ -19,8 +19,8 @@ interface BanxPointsStatsProps {
 }
 
 export const BanxPointsStats: FC<BanxPointsStatsProps> = ({ partnerPoints, playerPoints }) => {
-  const formattedPlayerPoints = playerPoints?.toFixed(2)
-  const formattedPartnerPoints = partnerPoints?.toFixed(2)
+  const formattedPlayerPoints = formatTrailingZeros(playerPoints.toFixed(2))
+  const formattedPartnerPoints = formatTrailingZeros(partnerPoints.toFixed(2))
 
   const statClassNames = {
     container: styles.banxPointsStat,
@@ -92,7 +92,7 @@ export const TokenInputField: FC<TokenInputFieldProps> = ({
     <div className={styles.field}>
       <div className={styles.input}>
         <NumericInput value={value} onChange={onChange} placeholder="0" positiveOnly />
-        <Button onClick={onMax} size="medium" variant="secondary">
+        <Button className={styles.maxButton} onClick={onMax} size="medium" variant="tertiary">
           Use max
         </Button>
       </div>

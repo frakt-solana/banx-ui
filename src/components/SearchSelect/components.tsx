@@ -3,7 +3,7 @@ import { FC } from 'react'
 import { SearchOutlined } from '@ant-design/icons'
 import classNames from 'classnames'
 
-import { ChevronDown } from '@banx/icons'
+import { ChevronDown, EmptyContent } from '@banx/icons'
 
 import { Button } from '../Buttons'
 
@@ -47,5 +47,12 @@ export const CollapsedContent: FC<CollapsedContentProps> = ({ onClick, selectedO
       {!!selectedOptions?.length && <div className={styles.tip}>{selectedOptions.length}</div>}
       <SearchOutlined />
     </Button>
+  </div>
+)
+
+export const NotFoundContent = () => (
+  <div className={styles.notFoundContent}>
+    <EmptyContent />
+    <span>No matching results</span>
   </div>
 )
