@@ -1,4 +1,5 @@
 import { BN } from 'fbonds-core'
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import Checkbox from '@banx/components/Checkbox'
@@ -69,7 +70,9 @@ export const getTableColumns: GetTableColumns = ({
           <HeaderCell label="APR" />
         </div>
       ),
-      render: (offer) => <AprCell offer={offer} />,
+      render: (offer) => (
+        <AprCell offer={offer} marketPubkey={collateral?.marketPubkey ?? PUBKEY_PLACEHOLDER} />
+      ),
     },
     {
       key: 'offerSize',

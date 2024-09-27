@@ -1,5 +1,6 @@
 import { FC } from 'react'
 
+import { web3 } from 'fbonds-core'
 import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
@@ -109,7 +110,11 @@ export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
 }
 
 export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const apr = calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds) / 100
+  const apr =
+    calcBorrowerTokenAPR(
+      loan.bondTradeTransaction.amountOfBonds,
+      new web3.PublicKey(loan.fraktBond.hadoMarket),
+    ) / 100
 
   return <HorizontalCell value={createPercentValueJSX(apr)} isHighlighted />
 }

@@ -1,6 +1,8 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
+import { web3 } from 'fbonds-core'
+import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import moment from 'moment'
@@ -41,7 +43,9 @@ export const AdditionalSummary: FC<OfferSummaryProps> = ({
     marketTokenDecimals,
   })
 
-  const borrowApr = apr ? calcBorrowerTokenAPR(apr) : 0
+  const marketPubkey = market?.marketPubkey ?? PUBKEY_PLACEHOLDER
+
+  const borrowApr = apr ? calcBorrowerTokenAPR(apr, new web3.PublicKey(marketPubkey)) : 0
 
   const currentTimeUnix = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({
