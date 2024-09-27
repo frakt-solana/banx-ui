@@ -104,7 +104,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         classNamesProps={classNamesProps}
       />
       <StatInfo
-        label="Average APR"
+        label="Avg APR"
         value={marketApr}
         valueType={VALUES_TYPES.PERCENT}
         tooltipText="Average interest rate across offers"
