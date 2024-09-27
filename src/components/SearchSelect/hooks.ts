@@ -49,7 +49,7 @@ export const useSearchSelect = ({
 
   const handleCollapseClick = () => {
     onChangeCollapsed?.(!collapsed)
-    togglePopupVisible(!collapsed)
+    setIsPopupOpen(true)
   }
 
   const showSufixIcon = !selectedOptions?.length && !inputValue
