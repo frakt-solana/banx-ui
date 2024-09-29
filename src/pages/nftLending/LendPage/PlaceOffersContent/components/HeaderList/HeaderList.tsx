@@ -7,7 +7,7 @@ import styles from './HeaderList.module.less'
 const HeaderList = () => {
   return (
     <div className={styles.container}>
-      <Stat label="Token" className={styles.mainStat} />
+      <Stat label="Collection" className={styles.mainStat} />
 
       <div className={styles.stats}>
         <Stat

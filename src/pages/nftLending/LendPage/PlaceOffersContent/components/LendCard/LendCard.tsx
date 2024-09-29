@@ -30,6 +30,7 @@ const LendCard: FC<LendCardProps> = ({ isCardOpen, onCardClick, market }) => {
           <MarketAdditionalInfo market={market} isCardOpen={isCardOpen} />
           <Button
             type="circle"
+            size="medium"
             className={classNames(styles.chevronButton, { [styles.opened]: isCardOpen })}
           >
             <ChevronDown />
