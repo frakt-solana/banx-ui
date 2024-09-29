@@ -13,6 +13,8 @@ import { ChevronDown } from '@banx/icons'
 import { convertToSynthetic, useSyntheticOffers } from '@banx/store/nft'
 import { HealthColorIncreasing, calculateApr, getColorByPercent } from '@banx/utils'
 
+import { TOOLTIP_TEXTS } from '../../constants'
+
 import styles from './OfferCard.module.less'
 
 interface OfferCardProps {
@@ -98,22 +100,22 @@ const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, mark
       <StatInfo
         label="Floor"
         value={<DisplayValue value={collectionFloor} />}
-        tooltipText="Lowest listing price on marketplaces, excluding taker royalties and fees"
+        tooltipText={TOOLTIP_TEXTS.FLOOR}
         classNamesProps={classNamesProps}
       />
 
       <StatInfo
         label="Top offer"
         value={<DisplayValue value={bestOffer} />}
-        tooltipText="Highest offer among all lenders providing liquidity for this collection"
+        tooltipText={TOOLTIP_TEXTS.TOP_OFFER}
         classNamesProps={classNamesProps}
       />
 
       <StatInfo
         label="In offer"
         value={<DisplayValue value={offerSize} />}
-        tooltipText="Your total liquidity currently available in offer. Repayments from borrowers return here, close offer to stop"
         secondValue={`min ${buyOrdersQuantity} loans`}
+        tooltipText={TOOLTIP_TEXTS.IN_OFFER}
         classNamesProps={classNamesProps}
       />
 
@@ -125,7 +127,7 @@ const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, mark
             {createPercentValueJSX(maxLtv, '0%')} LTV
           </span>
         }
-        tooltipText="Your max offer given sufficient liquidity. Actual offer size taken can be less depending on the amount of SOL users choose to borrow"
+        tooltipText={TOOLTIP_TEXTS.MAX_OFFER}
         classNamesProps={classNamesProps}
       />
 
@@ -133,7 +135,7 @@ const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, mark
         label="Max Apr"
         value={maxApr}
         valueType={VALUES_TYPES.PERCENT}
-        tooltipText="Your maximum annual interest rate. Ranges between 34-104% APR depending on the loan-to-value (LTV) offered, and becomes fixed once offer is taken"
+        tooltipText={TOOLTIP_TEXTS.MAX_APR}
         classNamesProps={classNamesProps}
       />
     </div>
