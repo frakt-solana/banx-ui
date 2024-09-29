@@ -8,11 +8,53 @@
 .marketsList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-bottom: 24px;
   overflow-y: auto;
+  padding-bottom: 8px;
+  gap: 8px;
+}
 
-  @media (max-width: 640px) {
-    gap: 8px;
+// * HeaderList * //
+.headerList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: none;
   }
 }
+
+.headerMainStat {
+  min-width: 176px;
+}
+
+.headerStatLabel {
+  color: var(--content-tertiary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+}
+
+.headerStats {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 48px;
+  gap: 16px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.headerAdditionalStat {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  max-width: 180px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    max-width: 120px;
+  }
+}
+// * HeaderList * //

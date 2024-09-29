@@ -1,9 +1,6 @@
 // * BorrowCard * //
 .card {
-  background: var(--bg-secondary);
-  border: var(--border-less-primary);
-  border-left: 0;
-  border-right: 0;
+  background: var(--bg-primary);
   cursor: pointer;
   width: 100%;
 }
@@ -13,18 +10,17 @@
   justify-content: space-between;
   align-items: center;
   position: relative;
-  padding: 12px 24px;
+  padding: 6px 24px;
   width: 100%;
 
   @media (max-width: 960px) {
     flex-direction: column;
     align-items: flex-start;
+    padding: 8px 16px;
     gap: 16px;
   }
 
   @media (max-width: 640px) {
-    padding: 8px 16px;
-
     &.opened {
       padding-bottom: 0;
     }
@@ -47,12 +43,7 @@
 
   @media (max-width: 960px) {
     position: absolute;
-    top: 24px;
-    right: 24px;
-  }
-
-  @media (max-width: 640px) {
-    top: 16px;
+    top: 8px;
     right: 16px;
   }
 }
@@ -62,38 +53,18 @@
 .mainInfoContainer {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 12px;
 
-  @media (max-width: 640px) {
+  max-width: 290px;
+  width: 100%;
+
+  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
+    max-width: 176px;
+  }
+
+  @media (max-width: 960px) {
     gap: 8px;
   }
-}
-
-.mainInfoContent {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  @media (max-width: 640px) {
-    gap: 2px;
-  }
-}
-
-.collectionImage {
-  height: 64px;
-  width: 64px;
-
-  @media (max-width: 640px) {
-    height: 48px;
-    width: 48px;
-  }
-}
-
-.collectionInfo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  z-index: 1;
 
   svg {
     width: 16px;
@@ -101,20 +72,17 @@
   }
 }
 
+.collectionImage {
+  border-radius: 100%;
+  height: 22px;
+  width: 22px;
+}
+
 .collectionName {
-  font: var(--title-lg);
-  max-width: 290px;
+  font: var(--title-md);
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-
-  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
-    max-width: 176px;
-  }
-
-  @media (max-width: 640px) {
-    font: var(--title-md);
-  }
 }
 
 .tensorLink {
@@ -139,36 +107,35 @@
   width: 100%;
 
   @media (max-width: 960px) {
-    justify-content: space-between;
-    gap: unset;
-  }
-
-  @media (max-width: 640px) {
-    &.opened {
-      display: none;
-    }
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, auto);
+    align-items: flex-start;
+    gap: 8px;
   }
 }
 
-.additionalStat {
+.additionalInfoStat {
   align-items: flex-end;
-  max-width: 240px;
+  justify-content: center;
+  gap: 2px;
+  max-width: 180px;
   width: 100%;
-
-  @media (max-width: 1380px) {
-    max-width: 200px;
-  }
 
   @media (max-width: 1240px) {
     max-width: 120px;
   }
 
   @media (max-width: 960px) {
-    align-items: flex-start;
-
-    &:last-child {
-      align-items: flex-end;
+    &:not(:last-child) {
+      align-items: flex-start;
     }
+  }
+}
+
+.additionalInfoStatLabelWrapper {
+  @media (min-width: 961px) {
+    display: none;
   }
 }
 
