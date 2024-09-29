@@ -37,7 +37,15 @@ interface MarketAdditionalInfoProps {
 }
 
 export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpen }) => {
-  const { bestOffer, collectionFloor, loansTvl, offerTvl, activeBondsAmount, marketPubkey } = market
+  const {
+    activeBondsAmount,
+    activeOfferAmount,
+    bestOffer,
+    collectionFloor,
+    loansTvl,
+    marketPubkey,
+    offerTvl,
+  } = market
 
   const customApr = NFT_MARKETS_WITH_CUSTOM_APR[marketPubkey]
   const apr = customApr !== undefined ? customApr / 100 : MAX_APR_VALUE
@@ -72,6 +80,7 @@ export const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, is
       <StatInfo
         label="In offers"
         value={<DisplayValue value={offerTvl} />}
+        secondValue={`in ${activeOfferAmount} offers`}
         tooltipText="Total liquidity currently available in pending offers"
         classNamesProps={classNamesProps}
       />

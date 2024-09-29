@@ -1,26 +1,19 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { filter, first, groupBy, includes, map, sumBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
-import { SearchSelectProps } from '@banx/components/SearchSelect'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken } from '@banx/store'
 import { AssetMode, useTokenType } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
-import { isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
+import { getTokenTicker, isOfferStateClosed } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useUserOffers } from './useUserOffers'
-
-type SearchSelectOption = {
-  collectionName: string
-  collectionImage: string
-  lent: number
-}
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
@@ -30,9 +23,18 @@ export const useOffersContent = () => {
 
   const { tokenType } = useTokenType()
 
-  const { offers, updateOrAddOffer, isLoading } = useUserOffers({ refetchInterval: 30 * 1000 })
+  const { offers, isLoading, updateOrAddOffer, marketsPreview } = useUserOffers({
+    refetchInterval: 30 * 1000,
+  })
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
+  const [visibleOfferPubkey, setOfferPubkey] = useState('')
+
+  const onCardClick = (offerPubkey: string) => {
+    const isSameOfferPubkey = visibleOfferPubkey === offerPubkey
+    const nextValue = !isSameOfferPubkey ? offerPubkey : ''
+    return setOfferPubkey(nextValue)
+  }
 
   //? Don't show closed offers in the offers list (UI)
   const filteredClosedOffers = offers.filter((offer) => !isOfferStateClosed(offer.offer.pairState))
@@ -63,7 +65,7 @@ export const useOffersContent = () => {
     })
   }, [filteredClosedOffers])
 
-  const searchSelectParams: SearchSelectProps<SearchSelectOption> = {
+  const searchSelectParams = {
     options: searchSelectOptions,
     selectedOptions: selectedCollections,
     labels: ['Collection', 'Lent'],
@@ -83,11 +85,9 @@ export const useOffersContent = () => {
     navigate(buildUrlWithModeAndToken(PATHS.LEND, AssetMode.NFT, tokenType))
   }
 
-  const tokenName = isBanxSolTokenType(tokenType) ? 'SOL' : 'USDC'
-
   const emptyListParams = {
     message: connected
-      ? `Lend ${tokenName} to view your pending offers`
+      ? `Lend ${getTokenTicker(tokenType)} to view your pending offers`
       : 'Connect wallet to view your offers',
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
@@ -95,14 +95,18 @@ export const useOffersContent = () => {
   const showEmptyList = (!filteredClosedOffers.length && !isLoading) || !connected
 
   return {
-    offersToDisplay: sortedOffers,
     offers,
-
-    isLoading,
-    searchSelectParams,
-    sortParams,
-    showEmptyList,
-    emptyListParams,
+    offersToDisplay: sortedOffers,
     updateOrAddOffer,
+    isLoading,
+
+    marketsPreview,
+    visibleOfferPubkey,
+    onCardClick,
+
+    sortParams,
+    searchSelectParams,
+    emptyListParams,
+    showEmptyList,
   }
 }

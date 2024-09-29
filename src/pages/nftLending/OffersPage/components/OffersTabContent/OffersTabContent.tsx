@@ -14,12 +14,15 @@ const OffersTabContent = () => {
   const {
     offers,
     offersToDisplay,
-    isLoading,
-    showEmptyList,
-    emptyListParams,
     updateOrAddOffer,
-    searchSelectParams,
+    isLoading,
+    marketsPreview,
+    visibleOfferPubkey,
+    onCardClick,
     sortParams,
+    searchSelectParams,
+    emptyListParams,
+    showEmptyList,
   } = useOffersContent()
 
   return (
@@ -33,9 +36,22 @@ const OffersTabContent = () => {
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
           <div className={styles.cardsList}>
-            {offersToDisplay.map((offer) => (
-              <OfferCard key={offer.offer.publicKey} offer={offer} />
-            ))}
+            {offersToDisplay.map(({ offer }) => {
+              const isOfferVisible = visibleOfferPubkey === offer.publicKey
+              const currentMarket = marketsPreview.find(
+                (market) => market.marketPubkey === offer.hadoMarket,
+              )
+
+              return (
+                <OfferCard
+                  key={offer.publicKey}
+                  offer={offer}
+                  market={currentMarket}
+                  onToggleCard={() => onCardClick(offer.publicKey)}
+                  isOpen={isOfferVisible}
+                />
+              )
+            })}
           </div>
         </>
       )}

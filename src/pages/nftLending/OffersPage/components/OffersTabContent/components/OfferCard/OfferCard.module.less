@@ -1,14 +1,13 @@
+// * OfferCard * //
 .card {
   background: var(--bg-primary);
-  border: var(--border-less-primary);
-  border-left: 0;
-  border-right: 0;
   cursor: pointer;
+  width: 100%;
 }
 
 .placeOfferContent {
-  padding: 0 24px 24px;
   cursor: default;
+  padding: 0 24px 24px;
   width: 100%;
 
   @media (max-width: 640px) {
@@ -18,95 +17,66 @@
 
 .cardBody {
   display: flex;
-  align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  padding: 12px 24px;
+  align-items: center;
   position: relative;
+  padding: 6px 24px;
   width: 100%;
 
-  @media (max-width: 1080px) {
-    gap: 16px;
-  }
-
   @media (max-width: 960px) {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 8px 16px;
+    gap: 16px;
   }
 
   @media (max-width: 640px) {
     padding: 8px 16px;
-  }
 
-  &.active {
-    padding-bottom: 0;
-  }
-}
-
-.editButton {
-  @media (max-width: 960px) {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-  }
-
-  @media (max-width: 640px) {
-    top: 16px;
-    right: 16px;
-  }
-
-  &.active {
-    background: var(--accent-secondary);
-  }
-}
-
-/* Main offer overview */
-.mainOfferContainer {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  min-width: 280px;
-
-  @media (max-width: 640px) {
-    align-items: flex-start;
-    gap: 8px;
-  }
-}
-.mainOfferInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-
-  @media (max-width: 640px) {
-    gap: 2px;
-  }
-}
-.mainOfferStats {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  white-space: nowrap;
-
-  @media (max-width: 640px) {
-    & > div {
-      gap: unset;
+    &.opened {
+      padding-bottom: 0;
     }
   }
 }
-.collectionImage {
-  height: 64px;
-  width: 64px;
 
-  @media (max-width: 640px) {
-    height: 48px;
-    width: 48px;
+.additionalContentWrapper {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  width: 100%;
+}
+
+.chevronButton {
+  display: flex;
+
+  &.opened svg {
+    transform: rotate(180deg);
+  }
+
+  @media (max-width: 960px) {
+    position: absolute;
+    top: 8px;
+    right: 16px;
   }
 }
 
-.collectionInfo {
+// * OfferCard * //
+
+// * MarketMainInfo * //
+.mainInfoContainer {
   display: flex;
   align-items: center;
-  gap: 8px;
-  z-index: 1;
+  gap: 12px;
+  max-width: 290px;
+  width: 100%;
+
+  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
+    max-width: 176px;
+  }
+
+  @media (max-width: 960px) {
+    gap: 8px;
+  }
 
   svg {
     width: 16px;
@@ -114,20 +84,17 @@
   }
 }
 
+.collectionImage {
+  border-radius: 100%;
+  height: 22px;
+  width: 22px;
+}
+
 .collectionName {
-  font: var(--title-lg);
-  max-width: 290px;
+  font: var(--title-md);
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
-
-  @media (min-width: 961px) and (max-width: 1240px), (max-width: 640px) {
-    max-width: 176px;
-  }
-
-  @media (max-width: 640px) {
-    font: var(--title-md);
-  }
 }
 
 .tensorLink {
@@ -141,6 +108,62 @@
     }
   }
 }
+// * MarketMainInfo * //
+
+// * MarketAdditionalInfo * //
+.additionalInfoStats {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 16px;
+  white-space: nowrap;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: grid;
+    align-items: flex-start;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(2, auto);
+    gap: 8px;
+  }
+}
+
+.additionalInfoStat {
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 180px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    max-width: 120px;
+  }
+
+  @media (max-width: 960px) {
+    .opened &:nth-child(n + 3) {
+      visibility: hidden;
+      height: 0;
+    }
+
+    &:nth-child(-n + 2) {
+      grid-row: 1;
+    }
+
+    &:nth-child(n + 3) {
+      grid-row: 2;
+    }
+
+    &:not(:last-child) {
+      align-items: flex-start;
+    }
+  }
+}
+
+.additionalInfoStatLabelWrapper {
+  @media (min-width: 961px) {
+    display: none;
+  }
+}
+// * MarketAdditionalInfo * //
 
 .actionsOfferButtons {
   display: flex;
@@ -174,63 +197,5 @@
     rect {
       fill: var(--content-primary);
     }
-  }
-}
-
-/* Aditional offer overview */
-.additionalOfferContainer {
-  @media (max-width: 960px) {
-    justify-content: center;
-    order: 1;
-  }
-
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  width: 100%;
-
-  & > div {
-    align-items: flex-end;
-    white-space: nowrap;
-    max-width: 260px;
-    width: 100%;
-
-    @media (max-width: 1380px) {
-      max-width: 200px;
-    }
-
-    @media (max-width: 1240px) {
-      max-width: 120px;
-    }
-  }
-
-  @media (max-width: 960px) {
-    justify-content: space-between;
-    gap: 0;
-
-    & > div {
-      align-items: flex-start;
-    }
-    & > div:last-child {
-      align-items: flex-end;
-    }
-  }
-}
-.hiddenAdditionalOverview {
-  @media (max-width: 960px) {
-    display: none;
-  }
-}
-
-.additionalStatLabel {
-  color: var(--content-secondary);
-  font: var(--title-md);
-  text-transform: uppercase;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  @media (max-width: 640px) {
-    font: var(--title-sm);
   }
 }
