@@ -12,10 +12,9 @@
 }
 
 .tabsContent {
+  background: var(--bg-tertiary);
   border: var(--border-less-primary);
   border-right: 0;
-  border-bottom: 0;
-  position: relative;
   width: 100%;
 
   @media (max-width: 640px) {
@@ -170,53 +169,3 @@
   }
 }
 // * Summary * //
-
-// * CurrencyInputPlug * //
-.selectCurrencyWrapper {
-  position: relative;
-  min-width: 172px;
-  max-width: unset !important;
-  width: 100%;
-}
-
-.selectCurrencyInfo {
-  position: absolute;
-  top: 45%;
-  left: 4px;
-  z-index: 1;
-
-  border: var(--border-primary);
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 8px;
-  height: 26px;
-
-  @media (max-width: 640px) {
-    top: 43%;
-  }
-
-  span {
-    color: var(--content-secondary);
-    font: var(--title-sm);
-  }
-}
-
-.chevronIcon {
-  height: 16px;
-  width: 16px;
-
-  path {
-    fill: var(--content-secondary);
-  }
-}
-
-.selectCurrencyInput {
-  input {
-    padding-left: 104px;
-    padding-right: 28px;
-    text-align: right;
-  }
-}
-// * CurrencyInputPlug * //
