@@ -6,7 +6,7 @@ import { Loader } from '@banx/components/Loader'
 import { useFakeInfinityScroll } from '@banx/hooks'
 
 import FilterSection from './components/FilterSection'
-import HeaderList from './components/HeaderList'
+import { HeaderList } from './components/HeaderList'
 import LendCard from './components/LendCard'
 import { useLendPageContent } from './hooks'
 

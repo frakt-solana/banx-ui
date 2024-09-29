@@ -4,7 +4,7 @@ import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import FilterSection from '../FilterSection'
-import { HeaderTokensList } from './components/HeaderTokensList'
+import { HeaderList } from './components/HeaderList'
 import OfferCard from './components/OfferCard'
 import Summary from './components/Summary'
 import { useOffersContent } from './hooks'
@@ -36,7 +36,7 @@ const OffersTabContent = () => {
         <>
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
-          <HeaderTokensList />
+          <HeaderList />
 
           <div className={styles.cardsList}>
             {offersToDisplay.map(({ offer }) => {

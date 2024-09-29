@@ -29,8 +29,8 @@
   height: 100vh;
 }
 
-// * HeaderTokensList * //
-.headerTokensList {
+// * HeaderList * //
+.headerList {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -42,7 +42,17 @@
   }
 }
 
-.headerTokenStats {
+.headerMainStat {
+  min-width: 124px;
+}
+
+.headerStatLabel {
+  color: var(--content-tertiary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+}
+
+.headerStats {
   display: flex;
   justify-content: flex-end;
   padding-right: 48px;
@@ -51,11 +61,7 @@
   white-space: nowrap;
 }
 
-.headerTokenMainStat {
-  min-width: 124px;
-}
-
-.headerTokenAdditionalStat {
+.headerAdditionalStat {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -67,10 +73,4 @@
     max-width: 120px;
   }
 }
-
-.headerTokenStatLabel {
-  color: var(--content-tertiary);
-  font: var(--title-sm);
-  text-transform: uppercase;
-}
-// * TokensListHeader * //
+// * HeaderList * //
