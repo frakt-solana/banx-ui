@@ -44,12 +44,13 @@ const FilterSection = <T extends object>({
           selectedOption={selectedCategory}
           onChange={onChangeCategory}
           options={MARKETS_CATEGORIES}
+          className={!searchSelectCollapsed ? styles.dropdownHidden : ''}
         />
       </div>
 
       <SortDropdown
         {...sortParams}
-        className={classNames({ [styles.sortDropdown]: !searchSelectCollapsed })}
+        className={!searchSelectCollapsed ? styles.dropdownHidden : ''}
       />
     </div>
   )
@@ -60,12 +61,14 @@ interface CategoryDropdownProps {
   options: { key: MarketCategory; label: string }[]
   selectedOption: MarketCategory
   onChange: (category: MarketCategory) => void
+  className?: string
 }
 
 export const CategoryDropdown: FC<CategoryDropdownProps> = ({
   selectedOption,
   options,
   onChange,
+  className,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
@@ -77,7 +80,7 @@ export const CategoryDropdown: FC<CategoryDropdownProps> = ({
   }
 
   return (
-    <div className={styles.dropdownContainer} ref={dropdownRef}>
+    <div className={classNames(styles.dropdownContainer, className)} ref={dropdownRef}>
       <Button
         type="circle"
         variant="tertiary"
