@@ -39,7 +39,6 @@ const FilterSection = <T extends object>({
           collapsed={searchSelectCollapsed}
           onChangeCollapsed={setSearchSelectCollapsed}
           disabled={!searchSelectParams.options.length}
-          defaultCollapsed
         />
         <CategoryDropdown
           selectedOption={selectedCategory}
