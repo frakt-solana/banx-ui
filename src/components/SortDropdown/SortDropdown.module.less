@@ -40,16 +40,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  min-width: 170px;
+  min-width: 144px;
   width: 100%;
 
-  @media screen and (max-width: 640px) {
-    min-width: 150px;
-  }
+  position: relative;
 
   &.isOpen {
     border: 1px solid var(--bg-border-active);
   }
+}
+
+.dropdownButtonOverlayLabel {
+  color: var(--content-secondary);
+  font: var(--title-xs);
+  text-transform: uppercase;
+
+  position: absolute;
+  right: 12px;
+  top: -6px;
+  z-index: 1;
 }
 .dropdownButtonTextContainer {
   display: flex;
