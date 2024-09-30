@@ -11,6 +11,7 @@ export const UserOffersStatsSchema = z.object({
   totalReceived: z.number(),
   paidInterest: z.number(),
   pendingInterest: z.number(),
+  claimedLstYield: z.number(),
 })
 
 export const UserLoansStatsSchema = z.object({

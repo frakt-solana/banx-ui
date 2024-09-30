@@ -54,7 +54,7 @@
 }
 
 // * Offer * //
-.listItem {
+.offerListItem {
   position: relative;
   padding: 4px 64px 4px 24px;
   background: var(--bg-tertiary);
@@ -91,7 +91,7 @@
   }
 }
 
-.highlightItem {
+.offerHighlightIndicator {
   position: absolute;
   left: 0;
   display: flex;
@@ -118,13 +118,13 @@
   }
 }
 
-.values {
+.offerDetailsContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 
-  p {
+  & > * {
     width: calc(100% / 3);
 
     &:nth-child(2) {
@@ -137,18 +137,20 @@
   }
 }
 
-.value,
-.displayOfferValue {
+.offerDetails {
+  display: flex;
+  flex-direction: column;
+}
+
+.commonValue {
   color: var(--content-primary);
   font: var(--body-text-sm);
-  line-height: 24px;
   overflow: auto;
   white-space: nowrap;
 }
 
-.displayOfferValue {
-  display: flex;
-  align-items: center;
+.ltvValue {
+  font: var(--body-text-xs);
 }
 
 // * Offer * //
