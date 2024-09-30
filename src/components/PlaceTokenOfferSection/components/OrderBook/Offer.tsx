@@ -4,25 +4,41 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
-import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
+import {
+  DisplayValue,
+  createDisplayValueJSX,
+  createPercentValueJSX,
+} from '@banx/components/TableComponents'
 
 import { TokenMeta } from '@banx/api/tokens'
 import { Pencil } from '@banx/icons'
+import { useTokenType } from '@banx/store/common'
 import { SyntheticTokenOffer } from '@banx/store/token'
-import { calculateTokensPerCollateral, formatTokensPerCollateralToStr } from '@banx/utils'
+import {
+  calculateTokensPerCollateral,
+  formatTokensPerCollateralToStr,
+  getTokenDecimals,
+  getTokenUnit,
+} from '@banx/utils'
+
+import { calculateLtvPercent } from '../../helpers'
 
 import styles from './OrderBook.module.less'
 
 interface OfferProps {
   offer: SyntheticTokenOffer
   collateral: TokenMeta | undefined
+  collateralPrice: number | undefined
 }
 
-const Offer: FC<OfferProps> = ({ offer, collateral }) => {
+const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice = 0 }) => {
   const { publicKey: offerPubkey, collateralsPerToken, offerSize, isEdit, apr } = offer
-  const { decimals: collateralTokenDecimals = 0 } = collateral || {}
+  const { decimals: collateralDecimals = 0 } = collateral || {}
 
   const { connected } = useWallet()
+  const { tokenType } = useTokenType()
+
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
 
   const isNewOffer = connected && offerPubkey.toBase58() === PUBKEY_PLACEHOLDER
 
@@ -34,23 +50,36 @@ const Offer: FC<OfferProps> = ({ offer, collateral }) => {
 
   const tokensPerCollateralBN = calculateTokensPerCollateral(
     collateralsPerToken,
-    collateralTokenDecimals,
+    collateralDecimals,
   )
 
   const offerValue = formatTokensPerCollateralToStr(tokensPerCollateralBN)
 
+  const ltvPercent = calculateLtvPercent({
+    collateralPerToken: offerValue,
+    collateralPrice,
+    marketTokenDecimals,
+  })
+
+  const tokenUnit = getTokenUnit(tokenType)
+
   return (
-    <li className={classNames(styles.listItem, commonHighlightClassNames)}>
-      <div className={classNames(styles.highlightItem, commonHighlightClassNames)}>
+    <li className={classNames(styles.offerListItem, commonHighlightClassNames)}>
+      <div className={classNames(styles.offerHighlightIndicator, commonHighlightClassNames)}>
         <Pencil />
       </div>
 
-      <div className={styles.values}>
-        <p className={styles.displayOfferValue}>{offerValue}</p>
-        <p className={styles.value}>{createPercentValueJSX(apr)}</p>
-        <p className={styles.value}>
+      <div className={styles.offerDetailsContainer}>
+        <div className={styles.offerDetails}>
+          <p className={styles.commonValue}>{createDisplayValueJSX(offerValue, tokenUnit)}</p>
+          <p className={styles.ltvValue}>{createPercentValueJSX(ltvPercent, '0%')} LTV</p>
+        </div>
+
+        <span className={styles.commonValue}>{createPercentValueJSX(apr, '0%')}</span>
+
+        <span className={styles.commonValue}>
           <DisplayValue value={offerSize} />
-        </p>
+        </span>
       </div>
     </li>
   )
