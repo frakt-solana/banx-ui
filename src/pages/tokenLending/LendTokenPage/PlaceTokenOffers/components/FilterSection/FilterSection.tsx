@@ -33,7 +33,6 @@ const FilterSection = <T extends object>({
   return (
     <div className={styles.container}>
       <div className={styles.filterContent}>
-        <CategoryFilter selectedCategory={selectedCategory} onChange={onChangeCategory} />
         <SearchSelect
           {...searchSelectParams}
           className={styles.searchSelect}
@@ -41,6 +40,11 @@ const FilterSection = <T extends object>({
           onChangeCollapsed={setSearchSelectCollapsed}
           disabled={!searchSelectParams.options.length}
           defaultCollapsed
+        />
+        <CategoryDropdown
+          selectedOption={selectedCategory}
+          onChange={onChangeCategory}
+          options={MARKETS_CATEGORIES}
         />
       </div>
 
@@ -52,37 +56,6 @@ const FilterSection = <T extends object>({
   )
 }
 export default FilterSection
-
-interface CategoryFilterProps {
-  selectedCategory: MarketCategory
-  onChange: (category: MarketCategory) => void
-}
-
-const CategoryFilter: FC<CategoryFilterProps> = ({ selectedCategory, onChange }) => {
-  return (
-    <>
-      <div className={styles.categories}>
-        {MARKETS_CATEGORIES.map(({ key, label }) => (
-          <div
-            key={key}
-            onClick={() => onChange(key)}
-            className={classNames(styles.category, {
-              [styles.active]: key === selectedCategory,
-            })}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
-
-      <CategoryDropdown
-        options={MARKETS_CATEGORIES}
-        selectedOption={selectedCategory}
-        onChange={onChange}
-      />
-    </>
-  )
-}
 
 interface CategoryDropdownProps {
   options: { key: MarketCategory; label: string }[]
@@ -105,13 +78,15 @@ export const CategoryDropdown: FC<CategoryDropdownProps> = ({
   }
 
   return (
-    <div ref={dropdownRef}>
+    <div className={styles.dropdownContainer} ref={dropdownRef}>
       <Button
         type="circle"
         variant="tertiary"
         className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
         onClick={toggleDropdown}
       >
+        <div className={styles.dropdownButtonOverlayLabel}>Filter by</div>
+
         <span>{selectedOption}</span>
         <ChevronDown
           className={classNames(styles.chevronIcon, { [styles.rotate]: isDropdownOpen })}
