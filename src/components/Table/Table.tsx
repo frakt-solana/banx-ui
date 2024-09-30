@@ -34,7 +34,7 @@ const Table = <DataType extends object, SearchType extends object, SortType>({
 
   return (
     <>
-      {sortViewParams && (
+      {hasData && sortViewParams && (
         <SortView columns={columns} showCard={showCard} customJSX={customJSX} {...sortViewParams} />
       )}
 
