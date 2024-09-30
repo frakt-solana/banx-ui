@@ -8,7 +8,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 
 import { activity } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
-import { createDownloadLink } from '@banx/utils'
+import { createDownloadLink, isBanxSolTokenType } from '@banx/utils'
 
 import { useUserTokenOffersStats } from '../../hooks'
 
@@ -22,7 +22,13 @@ export const Summary = () => {
 
   const { tokenType } = useTokenType()
 
-  const { totalLent = 0, pendingInterest = 0, paidInterest = 0, weightedApr = 0 } = data || {}
+  const {
+    totalLent = 0,
+    pendingInterest = 0,
+    paidInterest = 0,
+    weightedApr = 0,
+    claimedLstYield = 0,
+  } = data || {}
 
   const [isDownloading, setIsDownloading] = useState(false)
   const download = async () => {
@@ -58,6 +64,9 @@ export const Summary = () => {
         />
         <StatInfo label="Pending interest" value={<DisplayValue value={pendingInterest} />} />
         <StatInfo label="Earned interest" value={<DisplayValue value={paidInterest} />} />
+        {isBanxSolTokenType(tokenType) && (
+          <StatInfo label="Claimed lst yield" value={<DisplayValue value={claimedLstYield} />} />
+        )}
       </div>
       <Button onClick={download} className={styles.summaryButton} loading={isDownloading}>
         Download .CSV
