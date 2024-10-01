@@ -5,6 +5,7 @@ import { useFakeInfinityScroll } from '@banx/hooks'
 
 import BorrowCard from './components/BorrowCard'
 import FilterSection from './components/FilterSection'
+import { HeaderList } from './components/HeaderList'
 import { useRequestLoansContent } from './hooks'
 
 import styles from './RequestLoansContent.module.less'
@@ -22,11 +23,13 @@ export const RequestLoansContent = () => {
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: markets })
 
-  if (showEmptyList) return <EmptyList message="You don't have any whitelisted collections" />
-
   return (
     <div className={styles.content}>
       <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+
+      <HeaderList />
+
+      {showEmptyList && <EmptyList message="You don't have any whitelisted collections" />}
 
       {isLoading && <Loader />}
 

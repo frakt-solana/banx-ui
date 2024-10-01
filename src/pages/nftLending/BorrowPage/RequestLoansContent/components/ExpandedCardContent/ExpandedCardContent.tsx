@@ -1,7 +1,6 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { Button } from '@banx/components/Buttons'
 import { ActivityTable } from '@banx/components/CommonTables'
@@ -14,8 +13,7 @@ import { NumericStepInput } from '@banx/components/inputs'
 
 import { core } from '@banx/api/nft'
 import { DAYS_IN_YEAR } from '@banx/constants'
-import { ChevronDown, SOL, USDC } from '@banx/icons'
-import { isBanxSolTokenType, isSolTokenType } from '@banx/utils'
+import { getTokenUnit } from '@banx/utils'
 
 import RequestLoansTable from '../RequestLoansTable'
 import { INPUT_TOKEN_STEP, TABS, TabName } from './constants'
@@ -59,13 +57,17 @@ const ExpandedCardContent: FC<{ market: core.MarketPreview }> = ({ market }) => 
       <div className={styles.form}>
         <div className={styles.fields}>
           <div className={styles.borrowFieldWrapper}>
-            <SelectCurrencyInput
+            <NumericStepInput
               label="Borrow"
               value={inputLoanValue}
               onChange={handleChangeLoanValue}
               disabled={!connected || !nfts.length}
-              tokenType={tokenType}
+              placeholder="0"
+              className={styles.selectCurrencyInput}
+              step={INPUT_TOKEN_STEP[tokenType]}
+              postfix={getTokenUnit(tokenType)}
             />
+
             <p className={styles.lenderSeesMessage}>
               {!!lenderSeesLoanValue && (
                 <>Lender sees: {<DisplayValue value={lenderSeesLoanValue} />}</>
@@ -191,49 +193,6 @@ const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyInterest }) => {
         classNamesProps={statClassNames}
         tooltipText="Expected weekly interest on your loans. Interest is added to your debt balance"
         flexType="row"
-      />
-    </div>
-  )
-}
-
-interface SelectCurrencyInputProps {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  disabled: boolean
-  tokenType: LendingTokenType
-}
-
-//? Without the ability to select a token, it will be added in the future
-const SelectCurrencyInput: FC<SelectCurrencyInputProps> = ({
-  label,
-  value,
-  onChange,
-  disabled,
-  tokenType,
-}) => {
-  const isSol = isSolTokenType(tokenType)
-  const isBanxSol = isBanxSolTokenType(tokenType)
-
-  const tokenTicker = isSol || isBanxSol ? 'SOL' : 'USDC'
-
-  const Icon = isSol || isBanxSol ? SOL : USDC
-
-  return (
-    <div className={styles.selectCurrencyWrapper}>
-      <div className={styles.selectCurrencyInfo}>
-        <Icon />
-        <span>{tokenTicker}</span>
-        <ChevronDown className={styles.chevronIcon} />
-      </div>
-      <NumericStepInput
-        label={label}
-        value={value}
-        onChange={onChange}
-        placeholder="0"
-        disabled={disabled}
-        className={styles.selectCurrencyInput}
-        step={INPUT_TOKEN_STEP[tokenType]}
       />
     </div>
   )

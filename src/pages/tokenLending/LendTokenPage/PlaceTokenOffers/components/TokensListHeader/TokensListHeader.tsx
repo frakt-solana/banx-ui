@@ -27,7 +27,7 @@ const TokensListHeader = () => {
           tooltipText="Liquidity that is locked in active offers"
         />
         <Stat
-          label="Average APR"
+          label="Avg APR"
           className={styles.additionalStat}
           tooltipText="Maximum annual interest rate. Depends on the loan-to-value (LTV) offered and market capitalization"
         />

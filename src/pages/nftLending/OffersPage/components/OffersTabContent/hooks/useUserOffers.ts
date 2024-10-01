@@ -89,6 +89,7 @@ export const useUserOffers = (props?: { refetchInterval?: number }) => {
   return {
     offers,
     isLoading,
+    marketsPreview,
     updateOrAddOffer,
   }
 }
