@@ -8,7 +8,7 @@ import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 
 import { MarketCategory } from '@banx/api/tokens'
 import { useOnClickOutside } from '@banx/hooks'
-import { ChevronDown } from '@banx/icons'
+import { ChevronDown, Filter as FilterIcon } from '@banx/icons'
 
 import { SortField } from '../../hooks'
 import { MARKETS_CATEGORIES } from './constants'
@@ -33,67 +33,42 @@ const FilterSection = <T extends object>({
   return (
     <div className={styles.container}>
       <div className={styles.filterContent}>
-        <CategoryFilter selectedCategory={selectedCategory} onChange={onChangeCategory} />
         <SearchSelect
           {...searchSelectParams}
           className={styles.searchSelect}
           collapsed={searchSelectCollapsed}
           onChangeCollapsed={setSearchSelectCollapsed}
           disabled={!searchSelectParams.options.length}
-          defaultCollapsed
+        />
+        <CategoryDropdown
+          selectedOption={selectedCategory}
+          onChange={onChangeCategory}
+          options={MARKETS_CATEGORIES}
+          className={!searchSelectCollapsed ? styles.dropdownHidden : ''}
         />
       </div>
 
       <SortDropdown
         {...sortParams}
-        className={classNames({ [styles.sortDropdown]: !searchSelectCollapsed })}
+        className={!searchSelectCollapsed ? styles.dropdownHidden : ''}
       />
     </div>
   )
 }
 export default FilterSection
 
-interface CategoryFilterProps {
-  selectedCategory: MarketCategory
-  onChange: (category: MarketCategory) => void
-}
-
-const CategoryFilter: FC<CategoryFilterProps> = ({ selectedCategory, onChange }) => {
-  return (
-    <>
-      <div className={styles.categories}>
-        {MARKETS_CATEGORIES.map(({ key, label }) => (
-          <div
-            key={key}
-            onClick={() => onChange(key)}
-            className={classNames(styles.category, {
-              [styles.active]: key === selectedCategory,
-            })}
-          >
-            {label}
-          </div>
-        ))}
-      </div>
-
-      <CategoryDropdown
-        options={MARKETS_CATEGORIES}
-        selectedOption={selectedCategory}
-        onChange={onChange}
-      />
-    </>
-  )
-}
-
 interface CategoryDropdownProps {
   options: { key: MarketCategory; label: string }[]
   selectedOption: MarketCategory
   onChange: (category: MarketCategory) => void
+  className?: string
 }
 
 export const CategoryDropdown: FC<CategoryDropdownProps> = ({
   selectedOption,
   options,
   onChange,
+  className,
 }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
@@ -105,14 +80,18 @@ export const CategoryDropdown: FC<CategoryDropdownProps> = ({
   }
 
   return (
-    <div ref={dropdownRef}>
+    <div className={classNames(styles.dropdownContainer, className)} ref={dropdownRef}>
       <Button
         type="circle"
         variant="tertiary"
         className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
         onClick={toggleDropdown}
       >
-        <span>{selectedOption}</span>
+        <div className={styles.dropdownButtonTextContainer}>
+          <FilterIcon />
+          <span>{selectedOption}</span>
+        </div>
+
         <ChevronDown
           className={classNames(styles.chevronIcon, { [styles.rotate]: isDropdownOpen })}
         />
