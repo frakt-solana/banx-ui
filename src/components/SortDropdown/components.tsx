@@ -29,8 +29,6 @@ export const DropdownButton = <T,>({
       className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
       onClick={toggleDropdown}
     >
-      <div className={styles.dropdownButtonOverlayLabel}>Sort by</div>
-
       <div className={styles.dropdownButtonTextContainer}>
         <ArrowDown className={getSortOrderClassName(selectedOptionOrder)} />
         <span className={styles.dropdownButtonText}>{label}</span>

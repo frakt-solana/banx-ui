@@ -8,7 +8,7 @@ import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 
 import { MarketCategory } from '@banx/api/tokens'
 import { useOnClickOutside } from '@banx/hooks'
-import { ChevronDown } from '@banx/icons'
+import { ChevronDown, Filter as FilterIcon } from '@banx/icons'
 
 import { SortField } from '../../hooks'
 import { MARKETS_CATEGORIES } from './constants'
@@ -87,9 +87,11 @@ export const CategoryDropdown: FC<CategoryDropdownProps> = ({
         className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
         onClick={toggleDropdown}
       >
-        <div className={styles.dropdownButtonOverlayLabel}>Filter by</div>
+        <div className={styles.dropdownButtonTextContainer}>
+          <FilterIcon />
+          <span>{selectedOption}</span>
+        </div>
 
-        <span>{selectedOption}</span>
         <ChevronDown
           className={classNames(styles.chevronIcon, { [styles.rotate]: isDropdownOpen })}
         />
