@@ -1,12 +1,12 @@
 import { useState } from 'react'
 
-import { isEmpty } from 'lodash'
-
+import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import { useFakeInfinityScroll } from '@banx/hooks'
 
 import FilterSection from './components/FilterSection'
+import { HeaderList } from './components/HeaderList'
 import LendCard from './components/LendCard'
 import { useLendPageContent } from './hooks'
 
@@ -43,9 +43,14 @@ const PlaceOfferContent = () => {
         onToggleHotFilter={onToggleHotFilter}
         hotMarkets={hotMarkets}
       />
-      {isLoading && isEmpty(marketsPreview) ? (
-        <Loader />
-      ) : (
+
+      <HeaderList />
+
+      {showEmptyList && <EmptyList message="No active markets yet" />}
+
+      {isLoading && <Loader />}
+
+      {!isLoading && (
         <div className={styles.marketsList}>
           {markets.map((market) => (
             <LendCard
@@ -58,15 +63,8 @@ const PlaceOfferContent = () => {
           <div ref={fetchMoreTrigger} />
         </div>
       )}
-      {showEmptyList && <EmptyList />}
     </div>
   )
 }
 
 export default PlaceOfferContent
-
-const EmptyList = () => (
-  <div className={styles.emptyList}>
-    <h4 className={styles.emptyListTitle}>No active markets yet</h4>
-  </div>
-)

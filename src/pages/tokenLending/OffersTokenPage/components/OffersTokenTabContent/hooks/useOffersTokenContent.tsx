@@ -11,7 +11,7 @@ import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken } from '@banx/store'
 import { AssetMode, useTokenType } from '@banx/store/common'
 import { createGlobalState } from '@banx/store/createGlobalState'
-import { isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
+import { getTokenTicker, isOfferStateClosed } from '@banx/utils'
 
 import { useSortedOffers } from './useSortedOffers'
 import { useTokenOffersPreview } from './useTokenOffersPreview'
@@ -65,11 +65,9 @@ export const useOffersTokenContent = () => {
     navigate(buildUrlWithModeAndToken(PATHS.LEND, AssetMode.Token, tokenType))
   }
 
-  const tokenName = isBanxSolTokenType(tokenType) ? 'SOL' : 'USDC'
-
   const emptyListParams = {
     message: connected
-      ? `Lend ${tokenName} to view your offers`
+      ? `Lend ${getTokenTicker(tokenType)} to view your offers`
       : 'Connect wallet to view your offers',
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }

@@ -4,6 +4,7 @@ import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import FilterSection from '../FilterSection'
+import { HeaderList } from './components/HeaderList'
 import OfferCard from './components/OfferCard'
 import Summary from './components/Summary'
 import { useOffersContent } from './hooks'
@@ -14,12 +15,15 @@ const OffersTabContent = () => {
   const {
     offers,
     offersToDisplay,
-    isLoading,
-    showEmptyList,
-    emptyListParams,
     updateOrAddOffer,
-    searchSelectParams,
+    isLoading,
+    marketsPreview,
+    visibleOfferPubkey,
+    onCardClick,
     sortParams,
+    searchSelectParams,
+    emptyListParams,
+    showEmptyList,
   } = useOffersContent()
 
   return (
@@ -32,10 +36,25 @@ const OffersTabContent = () => {
         <>
           <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
 
+          <HeaderList />
+
           <div className={styles.cardsList}>
-            {offersToDisplay.map((offer) => (
-              <OfferCard key={offer.offer.publicKey} offer={offer} />
-            ))}
+            {offersToDisplay.map(({ offer }) => {
+              const isOfferVisible = visibleOfferPubkey === offer.publicKey
+              const currentMarket = marketsPreview.find(
+                (market) => market.marketPubkey === offer.hadoMarket,
+              )
+
+              return (
+                <OfferCard
+                  key={offer.publicKey}
+                  offer={offer}
+                  market={currentMarket}
+                  onToggleCard={() => onCardClick(offer.publicKey)}
+                  isOpen={isOfferVisible}
+                />
+              )
+            })}
           </div>
         </>
       )}

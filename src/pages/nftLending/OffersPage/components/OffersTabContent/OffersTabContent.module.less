@@ -22,13 +22,59 @@
 .cardsList {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding-bottom: 12px;
   flex-grow: 1;
+  padding-bottom: 8px;
+  gap: 8px;
   overflow-y: scroll;
   height: 100vh;
+}
 
-  @media (max-width: 640px) {
-    gap: 8px;
+// * HeaderList * //
+.headerList {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    display: none;
   }
 }
+
+.headerMainStat {
+  min-width: 290px;
+
+  @media (min-width: 961px) and (max-width: 1240px) {
+    min-width: 176px;
+  }
+}
+
+.headerStatLabel {
+  color: var(--content-tertiary);
+  font: var(--title-sm);
+  text-transform: uppercase;
+}
+
+.headerStats {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 48px;
+  gap: 16px;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.headerAdditionalStat {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  max-width: 180px;
+  width: 100%;
+
+  @media (max-width: 1240px) {
+    max-width: 120px;
+  }
+}
+// * HeaderList * //
