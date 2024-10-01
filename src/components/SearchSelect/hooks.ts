@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 
 import { isEqual } from 'lodash'
 
-import { TABLET_WIDTH } from '@banx/constants'
-import { useLocalStorage, useOnClickOutside, useWindowSize } from '@banx/hooks'
+import { useLocalStorage, useOnClickOutside } from '@banx/hooks'
 
 const MAX_TAG_TEXT_LENGTH = 15
 
@@ -11,17 +10,12 @@ export const useSearchSelect = ({
   selectedOptions,
   collapsed,
   onChangeCollapsed,
-  defaultCollapsed,
 }: {
   selectedOptions: string[]
   collapsed?: boolean
   onChangeCollapsed?: (value: boolean) => void
-  defaultCollapsed?: boolean
 }) => {
   const containerRef = useRef(null)
-
-  const { width } = useWindowSize()
-  const isMobile = width <= TABLET_WIDTH
 
   const handleClickOutside = () => {
     if (onChangeCollapsed) {
@@ -54,11 +48,7 @@ export const useSearchSelect = ({
 
   const showSufixIcon = !selectedOptions?.length && !inputValue
 
-  const shouldShowCollapsedContent = collapsed && onChangeCollapsed
-
-  const showCollapsedContent = defaultCollapsed
-    ? shouldShowCollapsedContent
-    : shouldShowCollapsedContent && isMobile
+  const showCollapsedContent = collapsed && onChangeCollapsed
 
   return {
     containerRef,

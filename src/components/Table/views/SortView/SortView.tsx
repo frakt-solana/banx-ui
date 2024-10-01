@@ -1,5 +1,7 @@
 import { ReactNode, useState } from 'react'
 
+import classNames from 'classnames'
+
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 import { Toggle, ToggleProps } from '@banx/components/Toggle'
@@ -47,13 +49,11 @@ export const SortView = <DataType extends object, SearchType extends object, Sor
         {customJSX}
       </div>
 
-      {searchSelectCollapsed && (
-        <div className={styles.rowGap}>
-          {showCard && <SwitchModeButton viewState={viewState} onChange={handleViewStateChange} />}
-          {toggleParams && <Toggle {...toggleParams} />}
-          {sortParams && <SortDropdown {...sortParams} />}
-        </div>
-      )}
+      <div className={classNames(styles.rowGap, { [styles.hidden]: !searchSelectCollapsed })}>
+        {showCard && <SwitchModeButton viewState={viewState} onChange={handleViewStateChange} />}
+        {toggleParams && <Toggle {...toggleParams} />}
+        {sortParams && <SortDropdown {...sortParams} />}
+      </div>
     </div>
   )
 }

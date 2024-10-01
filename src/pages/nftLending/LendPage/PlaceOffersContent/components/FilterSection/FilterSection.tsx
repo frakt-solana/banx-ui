@@ -43,6 +43,7 @@ const FilterSection = <T extends object>({
         />
         <Tooltip
           title={disabledHotFilterAction ? 'No hot collections currently' : 'Hot collections'}
+          className={!searchSelectCollapsed ? styles.hidden : ''}
         >
           <>
             <Button
@@ -61,7 +62,7 @@ const FilterSection = <T extends object>({
           </>
         </Tooltip>
       </div>
-      {searchSelectCollapsed && <SortDropdown {...sortParams} />}
+      <SortDropdown {...sortParams} className={!searchSelectCollapsed ? styles.hidden : ''} />
     </div>
   )
 }
