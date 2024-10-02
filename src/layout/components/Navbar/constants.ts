@@ -1,5 +1,15 @@
-import { DISCORD, DOCS_URL, GITHUB_URL, X_URL } from '@banx/constants'
-import { Borrow, Dashboard, Discord, Docs, Github, Lend, Rewards, Twitter } from '@banx/icons'
+import { DISCORD, DOCS_URL, GITHUB_URL, GOVERNANCE_URL, X_URL } from '@banx/constants'
+import {
+  Borrow,
+  Dashboard,
+  Discord,
+  Docs,
+  Github,
+  Governance,
+  Lend,
+  Rewards,
+  Twitter,
+} from '@banx/icons'
 import { StakeFilled } from '@banx/icons/Stake'
 import { PATHS } from '@banx/router'
 
@@ -42,6 +52,11 @@ export const SECONDARY_NAVIGATION_LINKS = [
     label: 'Stake',
     pathname: PATHS.ADVENTURES,
     icon: StakeFilled,
+  },
+  {
+    label: 'Governance',
+    href: GOVERNANCE_URL,
+    icon: Governance,
   },
 ]
 

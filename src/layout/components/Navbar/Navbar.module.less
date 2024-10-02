@@ -50,17 +50,23 @@
   }
 }
 
-.stake {
-  path {
-    fill: var(--content-primary) !important;
-  }
-
-  path[fill-rule] {
-    fill: #1b1b1b !important;
+.hiddenExternalLabel {
+  span {
+    display: none;
   }
 }
 
-.internalLinks {
+.revertLayerIcon {
+  path {
+    fill: revert-layer;
+  }
+
+  path[fill-rule] {
+    fill: revert-layer;
+  }
+}
+
+.links {
   border-bottom: var(--border-less-primary);
   display: flex;
   flex-direction: column;
