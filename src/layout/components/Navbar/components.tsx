@@ -23,7 +23,7 @@ export const InternalLink: FC<
         [styles.active]: isActivePath(pathname),
         [styles.primary]: primary,
         [styles.secondary]: !Icon,
-        [styles.stake]: pathname === PATHS.ADVENTURES,
+        [styles.revertLayerIcon]: pathname === PATHS.ADVENTURES,
       })}
     >
       {Icon && <Icon />}
@@ -32,28 +32,43 @@ export const InternalLink: FC<
   )
 }
 
-const ExternalLink: FC<ExternalLinkProps> = ({ icon: Icon, href }) => {
+const ExternalLink: FC<ExternalLinkProps> = ({ label, icon: Icon, href, className }) => {
   return (
-    <a href={href} rel="noopener noreferrer" target="_blank">
-      {Icon && <Icon />}
+    <a className={className} href={href} rel="noopener noreferrer" target="_blank">
+      {Icon && <Icon />} {label && <span>{label}</span>}
     </a>
   )
 }
 
-export const NavigationsLinks: FC<{ links: InternalLinkProps[] }> = ({ links }) => {
+type LinksProps = { links: (InternalLinkProps | ExternalLinkProps)[] }
+
+export const NavigationsLinks: FC<LinksProps> = ({ links }) => {
   const { tokenType } = useTokenType()
   const { currentAssetMode } = useAssetMode()
 
   return (
-    <div className={styles.internalLinks}>
-      {links.map((option) => (
-        <InternalLink
-          key={option.label}
-          {...option}
-          tokenType={tokenType}
-          modeType={currentAssetMode}
-        />
-      ))}
+    <div className={styles.links}>
+      {links.map((link) => {
+        const isExternalLink = 'href' in link
+
+        if (isExternalLink)
+          return (
+            <ExternalLink
+              key={link.label}
+              className={classNames(styles.link, styles.revertLayerIcon)}
+              {...link}
+            />
+          )
+
+        return (
+          <InternalLink
+            key={link.label}
+            tokenType={tokenType}
+            modeType={currentAssetMode}
+            {...link}
+          />
+        )
+      })}
     </div>
   )
 }
@@ -61,7 +76,7 @@ export const NavigationsLinks: FC<{ links: InternalLinkProps[] }> = ({ links }) 
 export const ExternalLinks: FC<{ links: ExternalLinkProps[] }> = ({ links }) => (
   <div className={styles.externalLinks}>
     {links.map((option) => (
-      <ExternalLink key={option.label} {...option} />
+      <ExternalLink key={option.label} className={styles.hiddenExternalLabel} {...option} />
     ))}
   </div>
 )
