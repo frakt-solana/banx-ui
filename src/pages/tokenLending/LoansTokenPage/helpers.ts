@@ -1,4 +1,4 @@
-import { first, groupBy, map, size, sumBy } from 'lodash'
+import { filter, first, groupBy, size, sumBy } from 'lodash'
 
 import { TokenLoan } from '@banx/api/tokens'
 import {
@@ -29,13 +29,14 @@ export const buildLoansPreviewGroupedByMint = (loans: TokenLoan[]): LoansPreview
     const weightedApr = 0
 
     const { collateralPrice = 0, collateral } = first(loans) || {}
+
     const collareralTicker = collateral?.ticker || ''
     const collateralLogoUrl = collateral?.logoUrl || ''
 
     const totalDebt = sumBy(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
 
-    const terminatingLoansAmount = size(map(loans, isTokenLoanTerminating))
-    const repaymentCallsAmount = size(map(loans, isTokenLoanRepaymentCallActive))
+    const terminatingLoansAmount = size(filter(loans, isTokenLoanTerminating))
+    const repaymentCallsAmount = size(filter(loans, isTokenLoanRepaymentCallActive))
 
     return {
       collateralMint,

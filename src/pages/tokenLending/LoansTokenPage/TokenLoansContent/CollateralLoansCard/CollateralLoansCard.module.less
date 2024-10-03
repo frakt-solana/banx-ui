@@ -143,3 +143,22 @@
   color: var(--additional-green-primary-deep);
 }
 // * CollateralLoansAdditionalInfo * //
+
+// * LoansStatus * //
+.loansStatus {
+  display: flex;
+  align-items: center;
+}
+
+.loansStatusIcon {
+  display: flex;
+  align-items: center;
+
+  span {
+    font: var(--body-text-md);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-sm);
+    }
+  }
+}

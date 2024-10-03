@@ -5,8 +5,9 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
+import Tooltip from '@banx/components/Tooltip'
 
-import { ChevronDown } from '@banx/icons'
+import { ChevronDown, Coin, CoinPlus } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
 import { getTokenDecimals } from '@banx/utils'
 
@@ -65,7 +66,14 @@ const CollateralLoansAdditionalInfo: FC<CollateralLoansAdditionalInfoProps> = ({
   loansPreview,
   isExpanded,
 }) => {
-  const { collateralPrice, totalDebt, weightedLtv, weightedApr } = loansPreview
+  const {
+    collateralPrice,
+    totalDebt,
+    weightedLtv,
+    weightedApr,
+    terminatingLoansAmount,
+    repaymentCallsAmount,
+  } = loansPreview
 
   const { tokenType } = useTokenType()
   const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
@@ -103,7 +111,41 @@ const CollateralLoansAdditionalInfo: FC<CollateralLoansAdditionalInfoProps> = ({
         classNamesProps={{ ...classNamesProps, value: styles.additionalAprStat }}
       />
 
-      <StatInfo label="Status" value="status" classNamesProps={classNamesProps} />
+      <StatInfo
+        label="Status"
+        value={
+          <LoansStatus
+            terminatingLoansAmount={terminatingLoansAmount}
+            repaymentCallsAmount={repaymentCallsAmount}
+          />
+        }
+        classNamesProps={classNamesProps}
+      />
+    </div>
+  )
+}
+
+interface LoansStatusProps {
+  terminatingLoansAmount: number
+  repaymentCallsAmount: number
+}
+
+const LoansStatus: FC<LoansStatusProps> = ({ terminatingLoansAmount, repaymentCallsAmount }) => {
+  return (
+    <div className={styles.loansStatus}>
+      <Tooltip title="Terminating loans">
+        <div className={styles.loansStatusIcon}>
+          <CoinPlus />
+          <span>{terminatingLoansAmount}</span>,
+        </div>
+      </Tooltip>
+
+      <Tooltip title="Repayment calls">
+        <div className={styles.loansStatusIcon}>
+          <Coin />
+          <span>{repaymentCallsAmount}</span>
+        </div>
+      </Tooltip>
     </div>
   )
 }
