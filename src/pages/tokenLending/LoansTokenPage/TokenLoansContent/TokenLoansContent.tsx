@@ -1,12 +1,13 @@
-import { FC, useMemo, useState } from 'react'
+import { FC } from 'react'
 
 import { Loader } from '@banx/components/Loader'
 
 import { TokenLoan } from '@banx/api/tokens'
 
-import { buildLoansPreviewGroupedByMint } from '../helpers'
 import CollateralLoansCard from './components/CollateralLoansCard'
+import { FilterSection } from './components/FilterSection'
 import { HeaderList } from './components/HeaderList'
+import { useTokenLoansContent } from './hooks'
 
 import styles from './TokenLoansContent.module.less'
 
@@ -16,16 +17,18 @@ interface TokenLoansContentProps {
 }
 
 const TokenLoansContent: FC<TokenLoansContentProps> = ({ loans, isLoading }) => {
-  const loansPreviews = useMemo(() => buildLoansPreviewGroupedByMint(loans), [loans])
-
-  const [expandedCollateralMint, setExpandedCollateralMint] = useState('')
-
-  const handleCardToggle = (mint: string) => {
-    setExpandedCollateralMint((prevMint) => (prevMint === mint ? '' : mint))
-  }
+  const {
+    loansPreviews,
+    expandedCollateralMint,
+    handleCardToggle,
+    searchSelectParams,
+    sortParams,
+  } = useTokenLoansContent(loans)
 
   return (
     <div className={styles.content}>
+      <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+
       <HeaderList />
 
       {isLoading && <Loader />}
