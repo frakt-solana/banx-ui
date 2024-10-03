@@ -6,6 +6,7 @@ import { TokenLoan } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
 import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/utils'
 
+import Summary from '../../../LoansTokenActiveTable/Summary'
 import { getTableColumns } from '../../../LoansTokenActiveTable/columns'
 
 import styles from './ExpandedCardContent.module.less'
@@ -48,9 +49,16 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
   }, [onRowClick])
 
   return (
-    <div className={styles.tableRoot}>
-      <Table data={loans} columns={columns} rowParams={rowParams} className={styles.table} />
-    </div>
+    <>
+      <Table
+        data={loans}
+        columns={columns}
+        rowParams={rowParams}
+        className={styles.table}
+        classNameTableWrapper={styles.tableWrapper}
+      />
+      <Summary loans={loans} selectedLoans={[]} setSelection={() => null} />
+    </>
   )
 }
 
