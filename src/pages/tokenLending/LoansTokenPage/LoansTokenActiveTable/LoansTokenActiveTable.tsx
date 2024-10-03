@@ -1,6 +1,5 @@
-import { FC, useCallback, useEffect, useMemo } from 'react'
+import { FC } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
@@ -10,12 +9,8 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/tokens'
 import { Coin, Warning } from '@banx/icons'
-import { useTokenType } from '@banx/store/common'
 
-import Summary from './Summary'
-import { getTableColumns } from './columns'
 import { useLoansTokenActiveTable } from './hooks'
-import { useSelectedTokenLoans } from './loansState'
 
 import styles from './LoansTokenActiveTable.module.less'
 
@@ -25,11 +20,6 @@ interface LoansTokenActiveTableProps {
 }
 
 const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({ loans: rawLoans, isLoading }) => {
-  const { tokenType } = useTokenType()
-
-  const { publicKey: walletPublicKey } = useWallet()
-  const walletPublicKeyString = walletPublicKey?.toBase58() || ''
-
   const {
     loans,
     loading,
@@ -39,68 +29,10 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({ loans: rawLoans
     isRepaymentCallFilterEnabled,
     toggleTerminationFilter,
     toggleRepaymentCallFilter,
-    showSummary,
     showEmptyList,
     sortViewParams,
     emptyListParams,
   } = useLoansTokenActiveTable({ loans: rawLoans, isLoading })
-
-  const {
-    selection,
-    toggle: toggleLoanInSelection,
-    find,
-    clear: clearSelection,
-    set: setSelection,
-  } = useSelectedTokenLoans()
-
-  //? Clear selection when tokenType changes
-  //? To prevent selection transfering from one tokenType to another
-  useEffect(() => {
-    clearSelection()
-  }, [clearSelection, tokenType])
-
-  const walletSelectedLoans = useMemo(() => {
-    if (!walletPublicKeyString) return []
-    return selection.filter(({ wallet }) => wallet === walletPublicKeyString)
-  }, [selection, walletPublicKeyString])
-
-  const hasSelectedLoans = useMemo(() => !!walletSelectedLoans?.length, [walletSelectedLoans])
-
-  const onSelectAll = useCallback(() => {
-    if (hasSelectedLoans) {
-      clearSelection()
-    } else {
-      setSelection(loans, walletPublicKeyString)
-    }
-  }, [clearSelection, hasSelectedLoans, loans, setSelection, walletPublicKeyString])
-
-  const findLoanInSelection = useCallback(
-    (loanPubkey: string) => {
-      return find(loanPubkey, walletPublicKeyString)
-    },
-    [find, walletPublicKeyString],
-  )
-
-  const onRowClick = useCallback(
-    (loan: core.TokenLoan) => {
-      toggleLoanInSelection(loan, walletPublicKeyString)
-    },
-    [toggleLoanInSelection, walletPublicKeyString],
-  )
-
-  const columns = getTableColumns({
-    onSelectAll,
-    findLoanInSelection,
-    toggleLoanInSelection: onRowClick,
-    hasSelectedLoans,
-    tokenType,
-  })
-
-  const rowParams = useMemo(() => {
-    return {
-      onRowClick,
-    }
-  }, [onRowClick])
 
   const customJSX = (
     <div className={styles.filterButtons}>
@@ -123,17 +55,13 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({ loans: rawLoans
     <div className={styles.tableRoot}>
       <Table
         data={loans}
-        columns={columns}
-        rowParams={rowParams}
+        columns={[]}
+        rowParams={{}}
         sortViewParams={sortViewParams}
         className={styles.table}
         customJSX={customJSX}
         loading={loading}
-        showCard
       />
-      {showSummary && (
-        <Summary loans={loans} selectedLoans={walletSelectedLoans} setSelection={setSelection} />
-      )}
     </div>
   )
 }

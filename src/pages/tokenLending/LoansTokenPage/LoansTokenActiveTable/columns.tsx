@@ -7,23 +7,23 @@ import { HeaderCell } from '@banx/components/TableComponents'
 import { TokenLoan } from '@banx/api/tokens'
 import { formatCollateralTokenValue, getTokenLoanSupply } from '@banx/utils'
 
+import { TokenLoanOptimistic } from '../TokenLoansContent/loansCart'
 import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
-import { TokenLoanOptimistic } from './loansState'
 
 import styles from './LoansTokenActiveTable.module.less'
 
 interface GetTableColumnsProps {
-  toggleLoanInSelection: (loan: TokenLoan) => void
   findLoanInSelection: (loanPubkey: string) => TokenLoanOptimistic | null
+  onRowClick: (loan: TokenLoan) => void
   onSelectAll: () => void
   hasSelectedLoans: boolean
   tokenType: LendingTokenType
 }
 
 export const getTableColumns = ({
-  onSelectAll,
   findLoanInSelection,
-  toggleLoanInSelection,
+  onRowClick,
+  onSelectAll,
   hasSelectedLoans,
   tokenType,
 }: GetTableColumnsProps) => {
@@ -41,7 +41,7 @@ export const getTableColumns = ({
           <div className={styles.checkboxCell}>
             <Checkbox
               className={styles.checkbox}
-              onChange={() => toggleLoanInSelection(loan)}
+              onChange={() => onRowClick(loan)}
               checked={!!findLoanInSelection(loan.publicKey)}
             />
 

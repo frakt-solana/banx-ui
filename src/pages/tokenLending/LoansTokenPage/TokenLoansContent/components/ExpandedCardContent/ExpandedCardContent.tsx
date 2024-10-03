@@ -1,4 +1,6 @@
-import { FC, useCallback, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo } from 'react'
+
+import { useWallet } from '@solana/wallet-adapter-react'
 
 import Table from '@banx/components/Table'
 
@@ -8,6 +10,7 @@ import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/ut
 
 import Summary from '../../../LoansTokenActiveTable/Summary'
 import { getTableColumns } from '../../../LoansTokenActiveTable/columns'
+import { useSelectedTokenLoans } from '../../loansCart'
 
 import styles from './ExpandedCardContent.module.less'
 
@@ -16,17 +19,56 @@ interface ExpandedCardContentProps {
 }
 
 const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
+  const { publicKey: walletPublicKey } = useWallet()
+  const walletPubkey = walletPublicKey?.toBase58() || ''
+
   const { tokenType } = useTokenType()
 
-  const onRowClick = useCallback(() => {
-    return
-  }, [])
+  const {
+    selection: selectedLoans,
+    toggle: toggleLoanInSelection,
+    find,
+    clear: clearSelection,
+    set: setSelection,
+  } = useSelectedTokenLoans()
+
+  //? Clear selection when tokenType changes
+  //? To prevent selection transfering from one tokenType to another
+  useEffect(() => {
+    clearSelection()
+  }, [clearSelection, tokenType])
+
+  const walletSelectedLoans = useMemo(() => {
+    if (!walletPubkey) return []
+
+    return selectedLoans.filter(({ wallet }) => wallet === walletPubkey)
+  }, [selectedLoans, walletPubkey])
+
+  const hasSelectedLoans = !!walletSelectedLoans.length
+
+  const onSelectAll = useCallback(() => {
+    if (hasSelectedLoans) {
+      clearSelection()
+    }
+
+    return setSelection(loans, walletPubkey)
+  }, [clearSelection, hasSelectedLoans, loans, setSelection, walletPubkey])
+
+  const findLoanInSelection = useCallback(
+    (loanPubkey: string) => find(loanPubkey, walletPubkey),
+    [find, walletPubkey],
+  )
+
+  const onRowClick = useCallback(
+    (loan: TokenLoan) => toggleLoanInSelection(loan, walletPubkey),
+    [toggleLoanInSelection, walletPubkey],
+  )
 
   const columns = getTableColumns({
-    onSelectAll: () => null,
-    findLoanInSelection: () => null,
-    toggleLoanInSelection: onRowClick,
-    hasSelectedLoans: false,
+    findLoanInSelection,
+    onSelectAll,
+    onRowClick,
+    hasSelectedLoans,
     tokenType,
   })
 
@@ -57,7 +99,7 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
       />
-      <Summary loans={loans} selectedLoans={[]} setSelection={() => null} />
+      <Summary loans={loans} selectedLoans={selectedLoans} setSelection={setSelection} />
     </>
   )
 }
