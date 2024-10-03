@@ -5,7 +5,8 @@ import { Loader } from '@banx/components/Loader'
 import { TokenLoan } from '@banx/api/tokens'
 
 import { buildLoansPreviewGroupedByMint } from '../helpers'
-import CollateralLoansCard from './CollateralLoansCard'
+import CollateralLoansCard from './components/CollateralLoansCard'
+import { HeaderList } from './components/HeaderList'
 
 import styles from './TokenLoansContent.module.less'
 
@@ -25,6 +26,8 @@ const TokenLoansContent: FC<TokenLoansContentProps> = ({ loans, isLoading }) => 
 
   return (
     <div className={styles.content}>
+      <HeaderList />
+
       {isLoading && <Loader />}
 
       {!isLoading && (

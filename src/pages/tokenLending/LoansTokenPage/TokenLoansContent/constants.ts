@@ -1,0 +1,6 @@
+export const TOOLTIP_TEXTS = {
+  PRICE: 'PRICE',
+  TOTAL_DEBT: 'TOTAL_DEBT',
+  WLTV: 'WLTV',
+  WAPR: 'TWAPR',
+}

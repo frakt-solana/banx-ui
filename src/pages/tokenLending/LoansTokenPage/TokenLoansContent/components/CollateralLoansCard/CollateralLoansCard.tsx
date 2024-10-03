@@ -11,7 +11,8 @@ import { ChevronDown, Coin, CoinPlus } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
 import { getTokenDecimals } from '@banx/utils'
 
-import { LoansPreview } from '../../helpers'
+import { LoansPreview } from '../../../helpers'
+import { TOOLTIP_TEXTS } from '../../constants'
 
 import styles from './CollateralLoansCard.module.less'
 
@@ -89,11 +90,13 @@ const CollateralLoansAdditionalInfo: FC<CollateralLoansAdditionalInfoProps> = ({
         label="Price"
         value={<DisplayValue value={collateralPrice / marketTokenDecimals} isSubscriptFormat />}
         classNamesProps={classNamesProps}
+        tooltipText={TOOLTIP_TEXTS.PRICE}
       />
 
       <StatInfo
         label="Total debt"
         value={<DisplayValue value={totalDebt} />}
+        tooltipText={TOOLTIP_TEXTS.PRICE}
         classNamesProps={classNamesProps}
       />
 
@@ -101,6 +104,7 @@ const CollateralLoansAdditionalInfo: FC<CollateralLoansAdditionalInfoProps> = ({
         label="WLTV"
         value={weightedLtv}
         valueType={VALUES_TYPES.PERCENT}
+        tooltipText={TOOLTIP_TEXTS.WLTV}
         classNamesProps={classNamesProps}
       />
 
@@ -108,6 +112,7 @@ const CollateralLoansAdditionalInfo: FC<CollateralLoansAdditionalInfoProps> = ({
         label="WAPR"
         value={weightedApr}
         valueType={VALUES_TYPES.PERCENT}
+        tooltipText={TOOLTIP_TEXTS.WAPR}
         classNamesProps={{ ...classNamesProps, value: styles.additionalAprStat }}
       />
 
