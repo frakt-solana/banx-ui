@@ -13,6 +13,7 @@ import { getTokenDecimals } from '@banx/utils'
 
 import { LoansPreview } from '../../../helpers'
 import { TOOLTIP_TEXTS } from '../../constants'
+import ExpandedCardContent from '../ExpandedCardContent'
 
 import styles from './CollateralLoansCard.module.less'
 
@@ -52,6 +53,7 @@ const CollateralLoansCard: FC<CollateralLoansCardProps> = ({
           </Button>
         </div>
       </div>
+      {isExpanded && <ExpandedCardContent loans={loansPreview.loans} />}
     </div>
   )
 }

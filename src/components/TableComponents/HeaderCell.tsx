@@ -11,11 +11,23 @@ interface HeaderCellProps {
   value?: string
   tooltipText?: string
   align?: 'left' | 'right'
+  className?: string
 }
 
-export const HeaderCell: FC<HeaderCellProps> = ({ label, tooltipText, align = 'right' }) => {
+export const HeaderCell: FC<HeaderCellProps> = ({
+  label,
+  tooltipText,
+  align = 'right',
+  className,
+}) => {
   return (
-    <div className={classNames(styles.headerCell, { [styles.headerCellLeft]: align === 'left' })}>
+    <div
+      className={classNames(
+        styles.headerCell,
+        { [styles.headerCellLeft]: align === 'left' },
+        className,
+      )}
+    >
       <span>{label}</span>
       {!!tooltipText && <Tooltip placement="top" title={tooltipText} />}
     </div>

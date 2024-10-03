@@ -74,7 +74,11 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   )
 
   return (
-    <HorizontalCell tooltipContent={tooltipContent} value={<DisplayValue value={debtValue} />} />
+    <HorizontalCell
+      tooltipContent={tooltipContent}
+      value={<DisplayValue value={debtValue} />}
+      className={styles.bodyCellText}
+    />
   )
 }
 
@@ -105,47 +109,41 @@ export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
       value={createPercentValueJSX(ltvPercent)}
       tooltipContent={tooltipContent}
       textColor={getColorByPercent(ltvPercent, HealthColorIncreasing)}
+      className={styles.bodyCellText}
     />
   )
 }
 
 export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
-  const apr =
-    calcBorrowerTokenAPR(
-      loan.bondTradeTransaction.amountOfBonds,
-      new web3.PublicKey(loan.fraktBond.hadoMarket),
-    ) / 100
+  const marketPubkey = new web3.PublicKey(loan.fraktBond.hadoMarket)
+  const apr = calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds, marketPubkey) / 100
 
-  return <HorizontalCell value={createPercentValueJSX(apr)} isHighlighted />
+  return (
+    <HorizontalCell
+      value={createPercentValueJSX(apr)}
+      className={styles.bodyCellText}
+      isHighlighted
+    />
+  )
 }
 
 interface StatusCellProps {
   loan: core.TokenLoan
-  isCardView?: boolean
 }
 
-export const StatusCell: FC<StatusCellProps> = ({ loan, isCardView = false }) => {
+export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
   const loanStatus = STATUS_LOANS_MAP[loan.bondTradeTransaction.bondTradeTransactionState]
   const loanStatusColor = STATUS_LOANS_COLOR_MAP[loanStatus]
 
   const timeContent = getTimeContent(loan)
 
-  const statusInfoTitle = (
-    <span style={{ color: loanStatusColor }} className={styles.columnCellTitle}>
-      {capitalize(loanStatus)}
-    </span>
-  )
-  const statusInfoSubtitle = <span className={styles.columnCellSubtitle}>{timeContent}</span>
-
-  return !isCardView ? (
-    <div className={styles.columnCell}>
-      {statusInfoSubtitle}
-      {statusInfoTitle}
+  return (
+    <div className={styles.statusCell}>
+      <span className={styles.statusCellTimeText}>{timeContent}</span>
+      <span style={{ color: loanStatusColor }} className={styles.bodyCellText}>
+        {capitalize(loanStatus)}
+      </span>
     </div>
-  ) : (
-    <span>
-      {statusInfoSubtitle} ({statusInfoTitle})
-    </span>
   )
 }
 
@@ -168,20 +166,18 @@ const getTimeContent = (loan: core.TokenLoan) => {
 
 interface ActionsCellProps {
   loan: core.TokenLoan
-  isCardView: boolean
   disableActions: boolean
 }
 
-export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableActions }) => {
+export const ActionsCell: FC<ActionsCellProps> = ({ loan, disableActions }) => {
   const { open } = useModal()
 
   const isLoanTerminating = isTokenLoanTerminating(loan)
-  const buttonSize = isCardView ? 'large' : 'medium'
 
   return (
     <div className={styles.actionsButtons}>
       <Button
-        size={buttonSize}
+        size="medium"
         variant="secondary"
         onClick={(event) => {
           open(RefinanceTokenModal, { loan })
@@ -191,7 +187,7 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView, disableAct
         {isLoanTerminating ? 'Extend' : 'Rollover'}
       </Button>
       <Button
-        size={buttonSize}
+        size="medium"
         disabled={disableActions}
         onClick={(event) => {
           open(RepayTokenModal, { loan })

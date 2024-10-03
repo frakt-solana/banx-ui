@@ -2,9 +2,9 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
-import { CollateralTokenCell, HeaderCell } from '@banx/components/TableComponents'
+import { HeaderCell } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/tokens'
+import { TokenLoan } from '@banx/api/tokens'
 import { formatCollateralTokenValue, getTokenLoanSupply } from '@banx/utils'
 
 import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
@@ -13,11 +13,10 @@ import { TokenLoanOptimistic } from './loansState'
 import styles from './LoansTokenActiveTable.module.less'
 
 interface GetTableColumnsProps {
-  toggleLoanInSelection: (loan: core.TokenLoan) => void
+  toggleLoanInSelection: (loan: TokenLoan) => void
   findLoanInSelection: (loanPubkey: string) => TokenLoanOptimistic | null
   onSelectAll: () => void
   hasSelectedLoans: boolean
-  isCardView: boolean
   tokenType: LendingTokenType
 }
 
@@ -26,70 +25,57 @@ export const getTableColumns = ({
   findLoanInSelection,
   toggleLoanInSelection,
   hasSelectedLoans,
-  isCardView,
   tokenType,
 }: GetTableColumnsProps) => {
-  const columns: ColumnType<core.TokenLoan>[] = [
+  const columns: ColumnType<TokenLoan>[] = [
     {
       key: 'collateral',
       title: (
-        <div className={styles.headerTitleRow}>
+        <div className={styles.checkboxCell}>
           <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedLoans} />
-          <HeaderCell label="Collateral" />
+          <HeaderCell label="Collateral" className={styles.headerCellText} />
         </div>
       ),
       render: (loan) => {
         return (
-          <CollateralTokenCell
-            key={loan.publicKey}
-            selected={!!findLoanInSelection(loan.publicKey)}
-            onCheckboxClick={() => toggleLoanInSelection(loan)}
-            collateralTokenAmount={formatCollateralTokenValue(getTokenLoanSupply(loan))}
-            collateralImageUrl={loan.collateral.logoUrl}
-            collateralTokenTicker={loan.collateral.ticker}
-          />
+          <div className={styles.checkboxCell}>
+            <Checkbox
+              className={styles.checkbox}
+              onChange={() => toggleLoanInSelection(loan)}
+              checked={!!findLoanInSelection(loan.publicKey)}
+            />
+
+            <span className={styles.collateralTokenAmount}>
+              {formatCollateralTokenValue(getTokenLoanSupply(loan))}
+            </span>
+          </div>
         )
       },
     },
     {
       key: 'debt',
-      title: (
-        <HeaderCell
-          label="Debt"
-          tooltipText="Hover over the debt balance of your loans below to view a breakdown of your principal, interest and repayments (if any) to date"
-        />
-      ),
+      title: <HeaderCell label="Debt" className={styles.headerCellText} />,
       render: (loan) => <DebtCell loan={loan} />,
     },
     {
       key: 'ltv',
-      title: <HeaderCell label="LTV" />,
+      title: <HeaderCell label="LTV" className={styles.headerCellText} />,
       render: (loan) => <LTVCell loan={loan} tokenType={tokenType} />,
     },
     {
       key: 'apr',
-      title: <HeaderCell label="APR" />,
+      title: <HeaderCell label="APR" className={styles.headerCellText} />,
       render: (loan) => <APRCell loan={loan} />,
     },
     {
       key: 'status',
-      title: (
-        <HeaderCell
-          label="Status"
-          tooltipText="Current status and duration of the loan that has been passed"
-        />
-      ),
-      render: (loan) => <StatusCell loan={loan} isCardView={isCardView} />,
+      title: <HeaderCell label="Status" className={styles.headerCellText} />,
+      render: (loan) => <StatusCell loan={loan} />,
     },
     {
       key: 'actionsCell',
-      title: <HeaderCell label="" />,
       render: (loan) => (
-        <ActionsCell
-          loan={loan}
-          isCardView={isCardView}
-          disableActions={!!findLoanInSelection(loan.publicKey)}
-        />
+        <ActionsCell loan={loan} disableActions={!!findLoanInSelection(loan.publicKey)} />
       ),
     },
   ]

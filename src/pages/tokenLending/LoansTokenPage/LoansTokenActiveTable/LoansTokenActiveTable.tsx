@@ -10,8 +10,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { core } from '@banx/api/tokens'
 import { Coin, Warning } from '@banx/icons'
-import { ViewState, useTableView, useTokenType } from '@banx/store/common'
-import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/utils'
+import { useTokenType } from '@banx/store/common'
 
 import Summary from './Summary'
 import { getTableColumns } from './columns'
@@ -67,8 +66,6 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({ loans: rawLoans
 
   const hasSelectedLoans = useMemo(() => !!walletSelectedLoans?.length, [walletSelectedLoans])
 
-  const { viewState } = useTableView()
-
   const onSelectAll = useCallback(() => {
     if (hasSelectedLoans) {
       clearSelection()
@@ -96,25 +93,12 @@ const LoansTokenActiveTable: FC<LoansTokenActiveTableProps> = ({ loans: rawLoans
     findLoanInSelection,
     toggleLoanInSelection: onRowClick,
     hasSelectedLoans,
-    isCardView: viewState === ViewState.CARD,
     tokenType,
   })
 
   const rowParams = useMemo(() => {
     return {
       onRowClick,
-      activeRowParams: [
-        {
-          condition: isTokenLoanTerminating,
-          className: styles.terminated,
-          cardClassName: styles.terminated,
-        },
-        {
-          condition: isTokenLoanRepaymentCallActive,
-          className: styles.repaymentCallActive,
-          cardClassName: styles.repaymentCallActive,
-        },
-      ],
     }
   }, [onRowClick])
 
