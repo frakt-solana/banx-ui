@@ -11,8 +11,8 @@ import { ChevronDown, Coin, CoinPlus } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
 import { getTokenDecimals } from '@banx/utils'
 
-import { LoansPreview } from '../../../helpers'
 import { TOOLTIP_TEXTS } from '../../constants'
+import { LoansPreview } from '../../types'
 import ExpandedCardContent from '../ExpandedCardContent'
 
 import styles from './CollateralLoansCard.module.less'

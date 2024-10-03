@@ -7,7 +7,9 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { TokenLoan } from '@banx/api/tokens'
 import { createGlobalState } from '@banx/store'
 
-import { LoansPreview, buildLoansPreviewGroupedByMint } from '../helpers'
+import { SORT_OPTIONS, SORT_VALUE_MAP } from './constants'
+import { buildLoansPreviewGroupedByMint } from './helpers'
+import { LoansPreview, SortField } from './types'
 
 const useCollateralsStore = createGlobalState<string[]>([])
 
@@ -75,26 +77,6 @@ const createSearchSelectParams = ({
   }
 
   return searchSelectParams
-}
-
-export enum SortField {
-  APR = 'apr',
-  DEBT = 'debt',
-  LTV = 'ltv',
-}
-
-type SortValueGetter = (loan: LoansPreview) => number
-
-const SORT_OPTIONS: SortOption<SortField>[] = [
-  { label: 'APR', value: [SortField.APR, 'desc'] },
-  { label: 'Debt', value: [SortField.DEBT, 'desc'] },
-  { label: 'LTV', value: [SortField.LTV, 'desc'] },
-]
-
-const SORT_VALUE_MAP: Record<SortField, string | SortValueGetter> = {
-  [SortField.APR]: (preview) => preview.weightedApr,
-  [SortField.DEBT]: (preview) => preview.totalDebt,
-  [SortField.LTV]: (preview) => preview.weightedLtv,
 }
 
 export const useSortedLoansPreviews = (loansPreviews: LoansPreview[]) => {
