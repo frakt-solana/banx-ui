@@ -48,7 +48,7 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
 
   const onSelectAll = useCallback(() => {
     if (hasSelectedLoans) {
-      clearSelection()
+      return clearSelection()
     }
 
     return setSelection(loans, walletPubkey)
