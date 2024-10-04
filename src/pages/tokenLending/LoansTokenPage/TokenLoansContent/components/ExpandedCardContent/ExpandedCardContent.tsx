@@ -1,7 +1,9 @@
-import { FC, useCallback, useEffect, useMemo } from 'react'
+import { FC, useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { filter } from 'lodash'
 
+import { RBOption } from '@banx/components/RadioButton'
 import Table from '@banx/components/Table'
 
 import { TokenLoan } from '@banx/api/tokens'
@@ -10,6 +12,7 @@ import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/ut
 
 import { getTableColumns } from '../../../LoansTokenActiveTable/columns'
 import { useSelectedTokenLoans } from '../../loansCart'
+import { FilterStatus, FilterTableSection } from './FilterTableSection'
 import { Summary } from './Summary'
 
 import styles from './ExpandedCardContent.module.less'
@@ -90,16 +93,43 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
     }
   }, [onRowClick])
 
+  const [currentOption, setCurrentOption] = useState<RBOption | undefined>()
+
+  const filteredLoans = useMemo(() => {
+    if (!currentOption) return loans
+
+    if (currentOption.value === FilterStatus.TERMINATING) {
+      return filter(loans, isTokenLoanTerminating)
+    }
+
+    if (currentOption.value === FilterStatus.REPAYMENT_CALL) {
+      return filter(loans, isTokenLoanRepaymentCallActive)
+    }
+
+    return loans
+  }, [currentOption, loans])
+
   return (
     <>
+      <FilterTableSection
+        loans={filteredLoans}
+        onChange={setCurrentOption}
+        currentOption={currentOption}
+      />
+
       <Table
-        data={loans}
+        data={filteredLoans}
         columns={columns}
         rowParams={rowParams}
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
       />
-      <Summary loans={loans} selectedLoansOptimistics={selectedLoans} setSelection={setSelection} />
+
+      <Summary
+        loans={filteredLoans}
+        selectedLoansOptimistics={selectedLoans}
+        setSelection={setSelection}
+      />
     </>
   )
 }
