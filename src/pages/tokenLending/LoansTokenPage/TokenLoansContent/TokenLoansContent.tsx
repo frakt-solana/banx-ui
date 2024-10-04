@@ -7,7 +7,7 @@ import { TokenLoan } from '@banx/api/tokens'
 import CollateralLoansCard from './components/CollateralLoansCard'
 import { FilterSection } from './components/FilterSection'
 import { HeaderList } from './components/HeaderList'
-import { useTokenLoansContent } from './hooks'
+import { useTokenLoansContent } from './hooks/useTokenLoansContent'
 
 import styles from './TokenLoansContent.module.less'
 

@@ -7,9 +7,9 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { TokenLoan } from '@banx/api/tokens'
 import { createGlobalState } from '@banx/store'
 
-import { SORT_OPTIONS, SORT_VALUE_MAP } from './constants'
-import { buildLoansPreviewGroupedByMint } from './helpers'
-import { LoansPreview, SortField } from './types'
+import { SORT_OPTIONS, SORT_VALUE_MAP } from '../constants'
+import { buildLoansPreviewGroupedByMint } from '../helpers'
+import { LoansPreview, SortField } from '../types'
 
 const useCollateralsStore = createGlobalState<string[]>([])
 
@@ -79,7 +79,7 @@ const createSearchSelectParams = ({
   return searchSelectParams
 }
 
-export const useSortedLoansPreviews = (loansPreviews: LoansPreview[]) => {
+const useSortedLoansPreviews = (loansPreviews: LoansPreview[]) => {
   const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
 
   const sortedLoansPreviews = useMemo(() => {

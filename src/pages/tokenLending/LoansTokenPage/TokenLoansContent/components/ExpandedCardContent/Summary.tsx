@@ -10,7 +10,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 
 import { core } from '@banx/api/tokens'
 
-import { useTokenLoansTransactions } from '../../../LoansTokenActiveTable/hooks'
+import { useTokenLoansTransactions } from '../../hooks'
 import { TokenLoanOptimistic } from '../../loansCart'
 import { calculateLoansStats, getPayInterestActionText } from './helpers'
 
