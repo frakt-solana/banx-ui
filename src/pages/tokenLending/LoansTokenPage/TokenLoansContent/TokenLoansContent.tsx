@@ -1,5 +1,8 @@
 import { FC } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
+import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
 import { TokenLoan } from '@banx/api/tokens'
@@ -17,13 +20,21 @@ interface TokenLoansContentProps {
 }
 
 const TokenLoansContent: FC<TokenLoansContentProps> = ({ loans, isLoading }) => {
+  const { connected } = useWallet()
+
   const {
     loansPreviews,
     expandedCollateralMint,
     handleCardToggle,
+    emptyListParams,
     searchSelectParams,
     sortParams,
   } = useTokenLoansContent(loans)
+
+  const noData = !loansPreviews.length && !isLoading
+  const showEmptyList = noData || !connected
+
+  if (showEmptyList) return <EmptyList {...emptyListParams} />
 
   return (
     <div className={styles.content}>

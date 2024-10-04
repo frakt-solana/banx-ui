@@ -61,7 +61,11 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoansOptimistics, set
           value={<DisplayValue value={totalValueToPay} />}
           classNamesProps={classNamesProps}
         />
-        <StatInfo label="Weekly fee" value={<DisplayValue value={totalWeeklyFee} />} />
+        <StatInfo
+          label="Weekly fee"
+          value={<DisplayValue value={totalWeeklyFee} />}
+          classNamesProps={{ container: styles.summaryAdditionalStat }}
+        />
         <StatInfo
           label="Weighted apr"
           value={weightedApr}

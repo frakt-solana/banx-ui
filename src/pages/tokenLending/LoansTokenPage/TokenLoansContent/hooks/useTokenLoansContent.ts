@@ -1,11 +1,16 @@
 import { useMemo, useState } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { map, orderBy } from 'lodash'
+import { useNavigate } from 'react-router-dom'
 
 import { SortOption } from '@banx/components/SortDropdown'
 
 import { TokenLoan } from '@banx/api/tokens'
-import { createGlobalState } from '@banx/store'
+import { PATHS } from '@banx/router'
+import { buildUrlWithModeAndToken, createGlobalState } from '@banx/store'
+import { AssetMode, useTokenType } from '@banx/store/common'
+import { getTokenTicker } from '@banx/utils'
 
 import { SORT_OPTIONS, SORT_VALUE_MAP } from '../constants'
 import { buildLoansPreviewGroupedByMint } from '../helpers'
@@ -14,6 +19,10 @@ import { LoansPreview, SortField } from '../types'
 const useCollateralsStore = createGlobalState<string[]>([])
 
 export const useTokenLoansContent = (loans: TokenLoan[]) => {
+  const { connected } = useWallet()
+  const { tokenType } = useTokenType()
+  const navigate = useNavigate()
+
   const loansPreviews = useMemo(() => buildLoansPreviewGroupedByMint(loans), [loans])
 
   const [selectedCollaterals, setSelectedCollaterals] = useCollateralsStore()
@@ -32,16 +41,34 @@ export const useTokenLoansContent = (loans: TokenLoan[]) => {
 
   const { sortedLoansPreviews, sortParams } = useSortedLoansPreviews(loansPreviews)
 
+  const goToBorrowPage = () => {
+    navigate(buildUrlWithModeAndToken(PATHS.BORROW, AssetMode.Token, tokenType))
+  }
+
+  const emptyListParams = {
+    message: connected
+      ? createConnectedMessage(getTokenTicker(tokenType))
+      : createNotConnectedMessage(getTokenTicker(tokenType)),
+    buttonProps: connected ? { text: 'Borrow', onClick: goToBorrowPage } : undefined,
+  }
+
   return {
     loansPreviews: sortedLoansPreviews,
 
     expandedCollateralMint,
     handleCardToggle,
 
+    emptyListParams,
+
     searchSelectParams,
     sortParams,
   }
 }
+
+const createNotConnectedMessage = (ticker: string) =>
+  `Connect wallet to borrow ${ticker} against your collaterals`
+
+const createConnectedMessage = (ticker: string) => `Borrow ${ticker} against your collaterals`
 
 interface CreateSearchSelectProps {
   options: LoansPreview[]
