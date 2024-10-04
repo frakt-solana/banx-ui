@@ -31,10 +31,7 @@ import {
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
-import {
-  caclFractionToRepay,
-  caclFractionToRepayForRepaymentCall,
-} from '../../LoansTokenActiveTable/helpers'
+import { caclFractionToRepay, caclFractionToRepayForRepaymentCall } from '../helpers'
 import { useSelectedTokenLoans } from '../loansCart'
 
 export const useTokenLoansTransactions = () => {

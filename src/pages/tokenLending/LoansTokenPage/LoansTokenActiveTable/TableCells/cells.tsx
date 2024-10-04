@@ -31,7 +31,7 @@ import {
   isTokenLoanTerminating,
 } from '@banx/utils'
 
-import { calcAccruedInterest } from '../helpers'
+import { calculateAccruedInterest } from '../../TokenLoansContent/helpers'
 import RefinanceTokenModal from './RefinanceTokenModal'
 import RepayTokenModal from './RepayTokenModal'
 
@@ -57,7 +57,7 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
   const borrowedValue = fraktBond.borrowedAmount
 
-  const totalAccruedInterest = calcAccruedInterest(loan)
+  const totalAccruedInterest = calculateAccruedInterest(loan)
 
   const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
 

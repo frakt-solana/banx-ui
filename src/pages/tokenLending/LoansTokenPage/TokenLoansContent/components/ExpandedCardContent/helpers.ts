@@ -10,7 +10,7 @@ import {
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
-import { calcTokenTotalValueToPay } from '../../../LoansTokenActiveTable/helpers'
+import { calcTokenTotalValueToPay } from '../../helpers'
 
 export const getPayInterestActionText = (loans: TokenLoan[]) => {
   if (loans.length === 0) return 'Pay'

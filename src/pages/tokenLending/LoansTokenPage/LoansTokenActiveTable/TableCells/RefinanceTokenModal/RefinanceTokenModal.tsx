@@ -34,8 +34,8 @@ import {
   enqueueWaitingConfirmation,
 } from '@banx/utils'
 
-import { getCurrentLoanInfo } from '../../helpers'
-import { useSelectedTokenLoans } from '../../loansState'
+import { getCurrentLoanInfo } from '../../../TokenLoansContent/helpers'
+import { useSelectedTokenLoans } from '../../../TokenLoansContent/loansCart'
 import OrderBook from './OrderBook'
 
 import styles from './RefinanceTokenModal.module.less'

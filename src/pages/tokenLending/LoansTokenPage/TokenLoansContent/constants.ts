@@ -22,3 +22,5 @@ export const SORT_VALUE_MAP: Record<SortField, (loan: LoansPreview) => number> =
   [SortField.LTV]: (preview) => preview.weightedLtv,
 }
 // * Sorting *//
+
+export const PARTIAL_REPAY_ACCOUNT_CREATION_FEE = 3229 * 1e3
