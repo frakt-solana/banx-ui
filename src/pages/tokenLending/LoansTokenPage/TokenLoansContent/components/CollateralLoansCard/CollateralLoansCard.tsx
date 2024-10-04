@@ -9,7 +9,7 @@ import Tooltip from '@banx/components/Tooltip'
 
 import { ChevronDown, Coin, CoinPlus } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
-import { getTokenDecimals } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
 
 import { TOOLTIP_TEXTS } from '../../constants'
 import { LoansPreview } from '../../types'
@@ -105,6 +105,7 @@ const CollateralLoansAdditionalInfo: FC<CollateralLoansAdditionalInfoProps> = ({
       <StatInfo
         label="WLTV"
         value={weightedLtv}
+        valueStyles={{ color: getColorByPercent(weightedLtv, HealthColorIncreasing) }}
         valueType={VALUES_TYPES.PERCENT}
         tooltipText={TOOLTIP_TEXTS.WLTV}
         classNamesProps={classNamesProps}

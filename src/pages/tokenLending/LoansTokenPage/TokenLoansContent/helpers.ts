@@ -5,7 +5,7 @@ import {
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
-import { filter, first, groupBy, size, sumBy } from 'lodash'
+import { filter, first, groupBy, map, size, sumBy } from 'lodash'
 import moment from 'moment'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
@@ -13,7 +13,9 @@ import { TokenLoan } from '@banx/api/tokens'
 import {
   ZERO_BN,
   caclulateBorrowTokenLoanValue,
+  calcWeightedAverage,
   calculateIdleFundsInOffer,
+  calculateTokenLoanLtvByLoanValue,
   isBanxSolTokenType,
   isTokenLoanRepaymentCallActive,
   isTokenLoanTerminating,
@@ -26,8 +28,8 @@ export const buildLoansPreviewGroupedByMint = (loans: TokenLoan[]): LoansPreview
   const groupedLoans = groupBy(loans, (loan) => loan.collateral.mint)
 
   return Object.entries(groupedLoans).map(([collateralMint, loans]) => {
-    const weightedLtv = 0
-    const weightedApr = 0
+    const weightedLtv = calculateWeightedLtv(loans)
+    const weightedApr = calculateWeightedApr(loans)
 
     const { collateralPrice = 0, collateral } = first(loans) || {}
 
@@ -53,6 +55,28 @@ export const buildLoansPreviewGroupedByMint = (loans: TokenLoan[]): LoansPreview
       loans,
     }
   })
+}
+
+export const calculateWeightedLtv = (loans: TokenLoan[]) => {
+  const totalLtvValues = loans.map((loan) => {
+    const loanValue = caclulateBorrowTokenLoanValue(loan).toNumber()
+    return calculateTokenLoanLtvByLoanValue(loan, loanValue)
+  })
+
+  const totalRepayValues = loans.map((loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
+
+  return calcWeightedAverage(totalLtvValues, totalRepayValues)
+}
+
+export const calculateWeightedApr = (loans: TokenLoan[]) => {
+  const totalAprValues = map(loans, (loan) => {
+    const marketPubkey = new web3.PublicKey(loan.fraktBond.hadoMarket)
+    return calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds, marketPubkey) / 100
+  })
+
+  const totalRepayValues = map(loans, (loan) => caclulateBorrowTokenLoanValue(loan).toNumber())
+
+  return calcWeightedAverage(totalAprValues, totalRepayValues)
 }
 
 //? This fee is associated with account creation. It's used to display the correct value when the SOL token type is used.
