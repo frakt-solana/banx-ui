@@ -8,9 +8,9 @@ import { TokenLoan } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
 import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/utils'
 
-import Summary from '../../../LoansTokenActiveTable/Summary'
 import { getTableColumns } from '../../../LoansTokenActiveTable/columns'
 import { useSelectedTokenLoans } from '../../loansCart'
+import { Summary } from './Summary'
 
 import styles from './ExpandedCardContent.module.less'
 
@@ -99,7 +99,7 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
         className={styles.table}
         classNameTableWrapper={styles.tableWrapper}
       />
-      <Summary loans={loans} selectedLoans={selectedLoans} setSelection={setSelection} />
+      <Summary loans={loans} selectedLoansOptimistics={selectedLoans} setSelection={setSelection} />
     </>
   )
 }
