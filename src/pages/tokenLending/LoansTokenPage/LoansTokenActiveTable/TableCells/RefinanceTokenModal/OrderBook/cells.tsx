@@ -127,7 +127,7 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
         [styles.negative]: isNegativeDifference,
       })}
     >
-      Renew
+      Rollover
       <p className={styles.differenceValue}>
         {showSing && sign}
         {createDisplayValueJSX(displayValue.toString(), tokenUnit)}

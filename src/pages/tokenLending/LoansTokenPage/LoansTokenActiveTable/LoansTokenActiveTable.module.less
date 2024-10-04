@@ -79,17 +79,13 @@
 
 .statusCell {
   display: flex;
-  flex-direction: column;
+  flex-direction: column-reverse;
   white-space: nowrap;
   align-items: flex-end;
-  gap: 2px;
-
-  @media (max-width: 640px) {
-    gap: unset;
-  }
 }
 
-.statusCellTimeText {
+.statusCellTimeText,
+.statusCellTimeText span {
   font: var(--body-text-xs);
 }
 // * Cells *//

@@ -49,14 +49,6 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
 
   const hasSelectedLoans = !!walletSelectedLoans.length
 
-  const onSelectAll = useCallback(() => {
-    if (hasSelectedLoans) {
-      return clearSelection()
-    }
-
-    return setSelection(loans, walletPubkey)
-  }, [clearSelection, hasSelectedLoans, loans, setSelection, walletPubkey])
-
   const findLoanInSelection = useCallback(
     (loanPubkey: string) => find(loanPubkey, walletPubkey),
     [find, walletPubkey],
@@ -66,32 +58,6 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
     (loan: TokenLoan) => toggleLoanInSelection(loan, walletPubkey),
     [toggleLoanInSelection, walletPubkey],
   )
-
-  const columns = getTableColumns({
-    findLoanInSelection,
-    onSelectAll,
-    onRowClick,
-    hasSelectedLoans,
-    tokenType,
-  })
-
-  const rowParams = useMemo(() => {
-    return {
-      onRowClick,
-      activeRowParams: [
-        {
-          condition: isTokenLoanTerminating,
-          className: styles.terminated,
-          cardClassName: styles.terminated,
-        },
-        {
-          condition: isTokenLoanRepaymentCallActive,
-          className: styles.repaymentCallActive,
-          cardClassName: styles.repaymentCallActive,
-        },
-      ],
-    }
-  }, [onRowClick])
 
   const [currentOption, setCurrentOption] = useState<RBOption | undefined>()
 
@@ -108,6 +74,38 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
 
     return loans
   }, [currentOption, loans])
+
+  const onSelectAll = useCallback(() => {
+    if (hasSelectedLoans) {
+      return clearSelection()
+    }
+
+    return setSelection(filteredLoans, walletPubkey)
+  }, [clearSelection, hasSelectedLoans, filteredLoans, setSelection, walletPubkey])
+
+  const columns = getTableColumns({
+    findLoanInSelection,
+    onSelectAll,
+    onRowClick,
+    hasSelectedLoans,
+    tokenType,
+  })
+
+  const rowParams = useMemo(() => {
+    return {
+      onRowClick,
+      activeRowParams: [
+        {
+          condition: isTokenLoanTerminating,
+          className: styles.terminated,
+        },
+        {
+          condition: isTokenLoanRepaymentCallActive,
+          className: styles.repaymentCallActive,
+        },
+      ],
+    }
+  }, [onRowClick])
 
   return (
     <>
