@@ -14,7 +14,6 @@ import {
 } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/tokens'
-import { calculateTokensToGet } from '@banx/pages/tokenLending/LoansTokenPage/TokenLoansContent/helpers'
 import {
   adjustTokenAmountWithUpfrontFee,
   caclulateBorrowTokenLoanValue,
@@ -25,6 +24,8 @@ import {
   getTokenDecimals,
   getTokenUnit,
 } from '@banx/utils'
+
+import { calculateTokensToGet } from '../helpers'
 
 import styles from './OrderBook.module.less'
 
