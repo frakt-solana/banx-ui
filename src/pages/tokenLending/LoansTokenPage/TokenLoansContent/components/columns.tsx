@@ -7,10 +7,10 @@ import { HeaderCell } from '@banx/components/TableComponents'
 import { TokenLoan } from '@banx/api/tokens'
 import { formatCollateralTokenValue, getTokenLoanSupply } from '@banx/utils'
 
-import { TokenLoanOptimistic } from '../TokenLoansContent/loansCart'
-import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './TableCells'
+import { TokenLoanOptimistic } from '../loansCart'
+import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './tableCells'
 
-import styles from './LoansTokenActiveTable.module.less'
+import styles from '../TokenLoansContent.module.less'
 
 interface GetTableColumnsProps {
   findLoanInSelection: (loanPubkey: string) => TokenLoanOptimistic | null

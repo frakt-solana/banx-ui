@@ -31,11 +31,11 @@ import {
   isTokenLoanTerminating,
 } from '@banx/utils'
 
-import RefinanceTokenModal from '../../TokenLoansContent/components/RefinanceTokenModal'
-import RepayTokenModal from '../../TokenLoansContent/components/RepayTokenModal'
-import { calculateAccruedInterest } from '../../TokenLoansContent/helpers'
+import { calculateAccruedInterest } from '../helpers'
+import RefinanceTokenModal from './RefinanceTokenModal'
+import RepayTokenModal from './RepayTokenModal'
 
-import styles from '../LoansTokenActiveTable.module.less'
+import styles from '../TokenLoansContent.module.less'
 
 interface TooltipRowProps {
   label: string

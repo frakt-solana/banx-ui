@@ -13,8 +13,6 @@ import {
   isTokenLoanTerminating,
 } from '@banx/utils'
 
-import styles from '../LoansTokenActiveTable.module.less'
-
 enum SortField {
   DEBT = 'debt',
   APR = 'apr',
@@ -103,7 +101,6 @@ export const useSortedLoans = (loans: core.TokenLoan[]) => {
     sortParams: {
       option: sortOption,
       onChange: onChangeSortOption,
-      className: styles.sortDropdown,
       options: SORT_OPTIONS,
     },
   }

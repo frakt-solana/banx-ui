@@ -10,8 +10,8 @@ import { TokenLoan } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
 import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/utils'
 
-import { getTableColumns } from '../../../LoansTokenActiveTable/columns'
 import { useSelectedTokenLoans } from '../../loansCart'
+import { getTableColumns } from '../columns'
 import { FilterStatus, FilterTableSection } from './FilterTableSection'
 import { Summary } from './Summary'
 
