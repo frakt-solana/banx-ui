@@ -31,9 +31,9 @@ import {
   isTokenLoanTerminating,
 } from '@banx/utils'
 
+import RefinanceTokenModal from '../../TokenLoansContent/components/RefinanceTokenModal'
+import RepayTokenModal from '../../TokenLoansContent/components/RepayTokenModal'
 import { calculateAccruedInterest } from '../../TokenLoansContent/helpers'
-import RefinanceTokenModal from './RefinanceTokenModal'
-import RepayTokenModal from './RepayTokenModal'
 
 import styles from '../LoansTokenActiveTable.module.less'
 
