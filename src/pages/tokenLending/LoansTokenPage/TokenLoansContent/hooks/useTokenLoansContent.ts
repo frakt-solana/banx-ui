@@ -1,22 +1,19 @@
 import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { map, orderBy } from 'lodash'
+import { map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
-
-import { SortOption } from '@banx/components/SortDropdown'
 
 import { TokenLoan } from '@banx/api/tokens'
 import { PATHS } from '@banx/router'
-import { buildUrlWithModeAndToken, createGlobalState } from '@banx/store'
+import { buildUrlWithModeAndToken } from '@banx/store'
 import { AssetMode, useTokenType } from '@banx/store/common'
 import { getTokenTicker } from '@banx/utils'
 
-import { SORT_OPTIONS, SORT_VALUE_MAP } from '../constants'
 import { buildLoansPreviewGroupedByMint } from '../helpers'
-import { LoansPreview, SortField } from '../types'
-
-const useCollateralsStore = createGlobalState<string[]>([])
+import { LoansPreview } from '../types'
+import { useFilterTokenLoansPreviews } from './useFilterTokenLoansPreviews'
+import { useSortTokenLoansPreviews } from './useSortTokenLoansPreviews'
 
 export const useTokenLoansContent = (loans: TokenLoan[]) => {
   const { connected } = useWallet()
@@ -25,21 +22,34 @@ export const useTokenLoansContent = (loans: TokenLoan[]) => {
 
   const loansPreviews = useMemo(() => buildLoansPreviewGroupedByMint(loans), [loans])
 
-  const [selectedCollaterals, setSelectedCollaterals] = useCollateralsStore()
-
-  const searchSelectParams = createSearchSelectParams({
-    options: loansPreviews,
-    selectedOptions: selectedCollaterals,
-    onChange: setSelectedCollaterals,
-  })
-
   const [expandedCollateralMint, setExpandedCollateralMint] = useState('')
 
   const handleCardToggle = (mint: string) => {
     setExpandedCollateralMint((prevMint) => (prevMint === mint ? '' : mint))
   }
 
-  const { sortedLoansPreviews, sortParams } = useSortedLoansPreviews(loansPreviews)
+  const {
+    filteredLoansPreviews,
+    filteredLoansPreviewsBySelectedCollateral,
+    terminatingLoansAmount,
+    repaymentCallsAmount,
+    isTerminationFilterEnabled,
+    toggleTerminationFilter,
+    isRepaymentCallFilterEnabled,
+    toggleRepaymentCallFilter,
+    selectedCollateralMints,
+    setSelectedCollateralMints,
+  } = useFilterTokenLoansPreviews(loansPreviews)
+
+  const { sortedLoansPreviews, sortParams } = useSortTokenLoansPreviews(
+    filteredLoansPreviewsBySelectedCollateral,
+  )
+
+  const searchSelectParams = createSearchSelectParams({
+    options: filteredLoansPreviews,
+    selectedOptions: selectedCollateralMints,
+    onChange: setSelectedCollateralMints,
+  })
 
   const goToBorrowPage = () => {
     navigate(buildUrlWithModeAndToken(PATHS.BORROW, AssetMode.Token, tokenType))
@@ -54,6 +64,13 @@ export const useTokenLoansContent = (loans: TokenLoan[]) => {
 
   return {
     loansPreviews: sortedLoansPreviews,
+
+    terminatingLoansAmount,
+    repaymentCallsAmount,
+    isTerminationFilterEnabled,
+    toggleTerminationFilter,
+    isRepaymentCallFilterEnabled,
+    toggleRepaymentCallFilter,
 
     expandedCollateralMint,
     handleCardToggle,
@@ -104,31 +121,4 @@ const createSearchSelectParams = ({
   }
 
   return searchSelectParams
-}
-
-const useSortedLoansPreviews = (loansPreviews: LoansPreview[]) => {
-  const [sortOption, setSortOption] = useState(SORT_OPTIONS[0])
-
-  const sortedLoansPreviews = useMemo(() => {
-    if (!sortOption) return loansPreviews
-
-    const [field, order] = sortOption.value
-
-    const sortValueGetter = SORT_VALUE_MAP[field]
-
-    return orderBy(loansPreviews, sortValueGetter, order)
-  }, [sortOption, loansPreviews])
-
-  const onChangeSortOption = (option: SortOption<SortField>) => {
-    setSortOption(option)
-  }
-
-  return {
-    sortedLoansPreviews,
-    sortParams: {
-      option: sortOption,
-      onChange: onChangeSortOption,
-      options: SORT_OPTIONS,
-    },
-  }
 }

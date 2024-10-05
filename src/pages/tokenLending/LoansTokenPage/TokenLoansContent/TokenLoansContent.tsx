@@ -24,6 +24,12 @@ const TokenLoansContent: FC<TokenLoansContentProps> = ({ loans, isLoading }) => 
 
   const {
     loansPreviews,
+    terminatingLoansAmount,
+    repaymentCallsAmount,
+    isTerminationFilterEnabled,
+    toggleTerminationFilter,
+    isRepaymentCallFilterEnabled,
+    toggleRepaymentCallFilter,
     expandedCollateralMint,
     handleCardToggle,
     emptyListParams,
@@ -38,13 +44,22 @@ const TokenLoansContent: FC<TokenLoansContentProps> = ({ loans, isLoading }) => 
 
   return (
     <div className={styles.content}>
-      <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
+      <FilterSection
+        searchSelectParams={searchSelectParams}
+        sortParams={sortParams}
+        terminatingLoansAmount={terminatingLoansAmount}
+        repaymentCallsAmount={repaymentCallsAmount}
+        isTerminationFilterEnabled={isTerminationFilterEnabled}
+        toggleTerminationFilter={toggleTerminationFilter}
+        isRepaymentCallFilterEnabled={isRepaymentCallFilterEnabled}
+        toggleRepaymentCallFilter={toggleRepaymentCallFilter}
+      />
 
       <HeaderList />
 
       {isLoading && <Loader />}
 
-      {!isLoading && (
+      {!noData && (
         <div className={styles.cardsList}>
           {loansPreviews.map((preview) => (
             <CollateralLoansCard
