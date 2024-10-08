@@ -1,9 +1,10 @@
 import { FC, useEffect, useState } from 'react'
 
+import { CaretRightOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
-import { uniqueId } from 'lodash'
+import { set, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
@@ -186,14 +187,22 @@ type EscrowTabsProps = {
   setTab: (tab: 'wallet' | 'escrow') => void
 }
 const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, walletBalance }) => {
+  const onChange = () => {
+    if (tab === 'wallet') setTab('escrow')
+    else setTab('wallet')
+  }
+
   return (
-    <div className={styles.tabs}>
+    <div className={styles.tabs} onClick={onChange}>
       <EscrowTab
         label="Wallet balance"
         balance={walletBalance}
         isActive={tab === 'wallet'}
         onClick={() => setTab('wallet')}
       />
+      <div className={classNames(styles.arrow, { [styles.arrowIconRotated]: tab === 'escrow' })}>
+        <CaretRightOutlined className={styles.arrowIcon} />
+      </div>
       <EscrowTab
         label="Escrow balance"
         balance={escrowBalance}

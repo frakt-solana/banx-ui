@@ -11,8 +11,8 @@
 .tabs {
   padding: 10px 0;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  column-gap: 48px;
+  grid-template-columns: 1fr 48px 1fr;
+  cursor: pointer;
 }
 
 .tab {
@@ -40,6 +40,22 @@
   pointer-events: none;
   background: var(--accent-primary-sub);
   border-color: var(--accent-primary-sub);
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.arrowIconRotated {
+  transform: rotate(180deg);
+}
+
+.arrowIcon svg {
+  fill: var(--accent-primary);
+  width: 18px;
+  height: 18px;
 }
 
 .numbericInput {
