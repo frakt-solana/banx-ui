@@ -13,5 +13,5 @@ export const fetchUserVaults: FetchUserVaults = async ({ walletPublicKey }) => {
     `${BACKEND_BASE_URL}/vault/${walletPublicKey}`,
   )
 
-  return await parseResponseSafe<UserVault[]>(data?.data?.vaults, UserVaultSchema.array())
+  return await parseResponseSafe<UserVault[]>(data?.data, UserVaultSchema.array())
 }
