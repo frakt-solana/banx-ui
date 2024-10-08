@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
@@ -10,7 +10,7 @@ import { Button } from '@banx/components/Buttons'
 import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { getLenderVaultInfo } from '@banx/components/WalletModal'
+import { getLenderVaultInfo, useUserVault } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft/core'
@@ -50,6 +50,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
 
   const { tokenType } = useTokenType()
   const { open, close } = useModal()
+  const { userVault } = useUserVault()
 
   const { data: clusterStats } = useClusterStats()
 
@@ -64,7 +65,7 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
       const txnsData = await Promise.all(
         offers.map((offer) =>
           createClaimLenderVaultTxnData(
-            { offer: convertBondOfferV3ToCore(offer), tokenType, clusterStats },
+            { userVault, offer: convertBondOfferV3ToCore(offer), tokenType, clusterStats },
             walletAndConnection,
           ),
         ),
@@ -113,25 +114,20 @@ const Summary: FC<SummaryProps> = ({ offers, updateOrAddOffer }) => {
     }
   }
 
-  const convertedBondOffersV3ToCore = useMemo(() => {
-    return offers.map((offer) => convertBondOfferV3ToCore(offer))
-  }, [offers])
-
   const {
     totalAccruedInterest,
     totalRepaymets,
     totalLstYield,
     totalLiquidityValue,
-    totalClosedOffersValue,
+
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
-  } = getLenderVaultInfo(convertedBondOffersV3ToCore, clusterStats)
+  } = getLenderVaultInfo({ userVault, clusterStats })
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Repayments" value={totalRepaymets} />
-      <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
     </div>
   )

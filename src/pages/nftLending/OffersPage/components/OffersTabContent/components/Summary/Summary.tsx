@@ -1,4 +1,4 @@
-import { FC, useMemo } from 'react'
+import { FC } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
@@ -9,7 +9,7 @@ import { Button } from '@banx/components/Buttons'
 import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { getLenderVaultInfo } from '@banx/components/WalletModal'
+import { getLenderVaultInfo, useUserVault } from '@banx/components/WalletModal'
 import { BanxSolYieldWarningModal } from '@banx/components/modals'
 
 import { core } from '@banx/api/nft'
@@ -49,12 +49,11 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
   const { isLedger } = useIsLedger()
 
   const { tokenType } = useTokenType()
+  const { userVault } = useUserVault()
 
   const { data: clusterStats } = useClusterStats()
 
   const { open, close } = useModal()
-
-  const rawOffers = useMemo(() => offers.map((offer) => offer.offer), [offers])
 
   const claimVault = async () => {
     if (!offers.length) return
@@ -68,6 +67,7 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
         offers.map(({ offer }) =>
           createClaimLenderVaultTxnData(
             {
+              userVault,
               offer,
               tokenType,
               clusterStats,
@@ -126,16 +126,14 @@ const Summary: FC<SummaryProps> = ({ updateOrAddOffer, offers }) => {
     totalRepaymets,
     totalLstYield,
     totalLiquidityValue,
-    totalClosedOffersValue,
     totalClaimableValue,
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
-  } = getLenderVaultInfo(rawOffers, clusterStats)
+  } = getLenderVaultInfo({ userVault, clusterStats })
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Repayments" value={totalRepaymets} />
-      <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
     </div>
   )

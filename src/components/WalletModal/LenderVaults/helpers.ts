@@ -4,50 +4,37 @@ import {
   calculateBanxSolStakingRewards,
   calculateCurrentInterestSolPure,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, sumBy } from 'lodash'
 import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
-import { core } from '@banx/api/nft'
-import { isOfferStateClosed } from '@banx/utils'
+import { UserVault } from '@banx/api/shared'
 
-export const getLenderVaultInfo = (
-  offers: core.Offer[],
-  clusterStats: ClusterStats | undefined,
-) => {
+type GetLenderVaultInfoParams = {
+  userVault: UserVault | undefined
+  clusterStats: ClusterStats | undefined
+}
+export const getLenderVaultInfo = ({ userVault, clusterStats }: GetLenderVaultInfoParams) => {
   const { slot = 0, epochStartedAt = 0 } = clusterStats || {}
 
-  const closedOffers = offers.filter((offer) => isOfferStateClosed(offer.pairState))
+  const totalAccruedInterest = userVault?.interestRewardsAmount.toNumber() ?? 0
+  const totalRepaymets = userVault?.repaymentsAmount.toNumber() ?? 0
 
-  const totalAccruedInterest = sumBy(offers, (offer) => offer.concentrationIndex)
-  const totalRepaymets = sumBy(offers, (offer) => offer.bidCap)
+  const totalLstYield = userVault
+    ? calculateLstYield({ userVault, slot, epochStartedAt }).toNumber()
+    : 0
 
-  const totalClosedOffersValue = sumBy(
-    closedOffers,
-    (offer) => offer.fundsSolOrTokenBalance + offer.bidSettlement,
-  )
-
-  const totalLstYield = chain(offers)
-    .filter((offer) => offer.bondingCurve.bondingType !== BondingCurveType.LinearUsdc)
-    .sumBy((offer) => calculateLstYield({ offer, slot, epochStartedAt }).toNumber())
-    .value()
-
-  const totalLiquidityValue = totalAccruedInterest + totalRepaymets + totalClosedOffersValue
+  const totalLiquidityValue = totalAccruedInterest + totalRepaymets
   const totalClaimableValue = totalLiquidityValue + totalLstYield
 
-  const totalFundsInCurrentEpoch = sumBy(offers, (offer) =>
-    calculateYieldInCurrentEpoch(offer, clusterStats),
-  )
+  const totalFundsInCurrentEpoch = userVault
+    ? calculateYieldInCurrentEpoch(userVault, clusterStats)
+    : 0
 
-  const totalFundsInNextEpoch = sumBy(offers, (offer) =>
-    calculateYieldInNextEpoch(offer, clusterStats),
-  )
+  const totalFundsInNextEpoch = userVault ? calculateYieldInNextEpoch(userVault, clusterStats) : 0
 
   return {
     totalAccruedInterest,
     totalRepaymets,
-    totalClosedOffersValue,
     totalLiquidityValue,
     totalLstYield,
     totalClaimableValue,
@@ -56,10 +43,14 @@ export const getLenderVaultInfo = (
   }
 }
 
-type CalculateLstYield = (props: { offer: core.Offer; slot: number; epochStartedAt: number }) => BN
-const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) => {
+type CalculateLstYield = (props: {
+  userVault: UserVault
+  slot: number
+  epochStartedAt: number
+}) => BN
+const calculateLstYield: CalculateLstYield = ({ userVault, slot, epochStartedAt }) => {
   const totalYield = calculateBanxSolStakingRewards({
-    bondOffer: core.convertCoreOfferToBondOfferV3(offer),
+    userVault,
     nowSlot: new BN(slot),
     currentEpochStartAt: new BN(epochStartedAt),
   })
@@ -68,7 +59,7 @@ const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) =
 }
 
 export const calculateYieldInCurrentEpoch = (
-  offer: core.Offer,
+  userVault: UserVault,
   clusterStats: ClusterStats | undefined,
 ) => {
   const {
@@ -78,12 +69,12 @@ export const calculateYieldInCurrentEpoch = (
     slotsInEpoch = 0,
   } = clusterStats || {}
 
-  const epochWhenOfferChanged = offer.lastCalculatedSlot / slotsInEpoch
+  const epochWhenOfferChanged = userVault.lastCalculatedSlot.toNumber() / slotsInEpoch
 
   const loanValue =
     epochWhenOfferChanged < epoch
-      ? offer.fundsInCurrentEpoch + offer.fundsInNextEpoch
-      : offer.fundsInCurrentEpoch
+      ? userVault.fundsInCurrentEpoch.add(userVault.fundsInNextEpoch).toNumber()
+      : userVault.fundsInCurrentEpoch.toNumber()
 
   const currentTimeInUnix = moment().unix()
   const epochEndedAt = currentTimeInUnix + epochApproxTimeRemaining
@@ -97,7 +88,7 @@ export const calculateYieldInCurrentEpoch = (
 }
 
 export const calculateYieldInNextEpoch = (
-  offer: core.Offer,
+  userVault: UserVault,
   clusterStats: ClusterStats | undefined,
 ) => {
   const { epochApproxTimeRemaining = 0, epochDuration = 0 } = clusterStats || {}
@@ -106,7 +97,7 @@ export const calculateYieldInNextEpoch = (
   const epochStartedAt = currentTimeInUnix + epochApproxTimeRemaining
 
   return calculateCurrentInterestSolPure({
-    loanValue: offer.fundsInCurrentEpoch + offer.fundsInNextEpoch,
+    loanValue: userVault.fundsInCurrentEpoch.add(userVault.fundsInNextEpoch).toNumber(),
     startTime: epochStartedAt,
     currentTime: epochStartedAt + epochDuration,
     rateBasePoints: BANX_SOL_STAKING_YEILD_APR,

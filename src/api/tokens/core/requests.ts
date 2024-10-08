@@ -172,7 +172,7 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   })
 
   const { data } = await axios.get<{ data: BorrowOffer[] }>(
-    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v5?${queryParams?.toString()}`,
   )
 
   return await parseResponseSafe<BorrowOffer[]>(data?.data, BorrowOfferSchema.array())

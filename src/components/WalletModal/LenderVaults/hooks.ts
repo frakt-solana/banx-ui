@@ -1,15 +1,47 @@
 import { useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+import { useQuery } from '@tanstack/react-query'
+
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
+import { UserVault, fetchUserVaults } from '@banx/api/shared'
 import { useClusterStats } from '@banx/hooks'
 import { useUserOffers } from '@banx/pages/nftLending/OffersPage/components/OffersTabContent'
 import { useTokenOffersPreview } from '@banx/pages/tokenLending/OffersTokenPage/components/OffersTokenTabContent'
-import { AssetMode, useAssetMode } from '@banx/store/common'
+import { AssetMode, useAssetMode, useTokenType } from '@banx/store/common'
 
 import { getLenderVaultInfo } from './helpers'
 
+export const useUserVault = () => {
+  const { publicKey } = useWallet()
+  const walletPublicKey = publicKey?.toBase58() || ''
+
+  const { tokenType } = useTokenType()
+
+  const {
+    data: userVaults,
+    isLoading,
+    refetch,
+  } = useQuery(['userVaults', walletPublicKey], () => fetchUserVaults({ walletPublicKey }), {
+    staleTime: 60_000,
+    enabled: !!publicKey,
+    refetchOnWindowFocus: false,
+  })
+
+  const userVault: UserVault | undefined = userVaults?.find(
+    (vault) => vault.lendingTokenType === tokenType,
+  )
+
+  return {
+    userVault,
+    isLoading,
+    refetch,
+  }
+}
+
 export const useLenderVaultInfo = () => {
   const { currentAssetMode } = useAssetMode()
+  const { userVault } = useUserVault()
 
   const { data: clusterStats } = useClusterStats()
 
@@ -34,7 +66,7 @@ export const useLenderVaultInfo = () => {
     return tokenRawOffers
   }, [currentAssetMode, nftsRawOffers, tokenRawOffers])
 
-  const lenderVaultInfo = getLenderVaultInfo(offers, clusterStats)
+  const lenderVaultInfo = getLenderVaultInfo({ userVault, clusterStats })
 
   return { offers, lenderVaultInfo, updateTokenOffer, clusterStats, updateNftOffer }
 }

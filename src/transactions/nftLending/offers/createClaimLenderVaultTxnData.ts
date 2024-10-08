@@ -14,6 +14,7 @@ import {
 
 import { ClusterStats } from '@banx/api/common'
 import { core } from '@banx/api/nft'
+import { UserVault } from '@banx/api/shared'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
@@ -22,6 +23,7 @@ import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../../
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateClaimLenderVaultTxnDataParams = {
+  userVault: UserVault | undefined
   offer: core.Offer
   tokenType: LendingTokenType
   clusterStats: ClusterStats | undefined
@@ -81,13 +83,15 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   const nowSlot = new BN(clusterStats?.slot || 0)
   const currentEpochStartAt = new BN(clusterStats?.epochStartedAt || 0)
 
-  const calculateLstYield = calculateBanxSolStakingRewards({
-    bondOffer: core.convertCoreOfferToBondOfferV3(offer),
-    nowSlot,
-    currentEpochStartAt,
-  })
+  const lstYield = params.userVault
+    ? calculateBanxSolStakingRewards({
+        userVault: params.userVault,
+        nowSlot,
+        currentEpochStartAt,
+      })
+    : ZERO_BN
 
-  if (isBanxSolTokenType(tokenType) && calculateLstYield.gt(ZERO_BN)) {
+  if (isBanxSolTokenType(tokenType) && lstYield.gt(ZERO_BN)) {
     const { instructions: claimYieldInstructions, signers: claimYieldSigners } =
       await claimPerpetualBondOfferStakingRewards({
         accounts: accountsParams,
@@ -109,7 +113,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   const totalClaimableValue = new BN(offer.concentrationIndex)
     .add(new BN(offer.bidCap))
     .add(new BN(closedOffersValue))
-    .add(calculateLstYield)
+    .add(lstYield)
 
   if (isBanxSolTokenType(tokenType) && totalClaimableValue.gt(ZERO_BN)) {
     return await banxSol.combineWithSellBanxSolInstructions(

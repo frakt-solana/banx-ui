@@ -30,7 +30,7 @@ import {
 
 import { TooltipRow } from '../components'
 import { BanxSolEpochContent, YieldStat } from './components'
-import { useLenderVaultInfo } from './hooks'
+import { useLenderVaultInfo, useUserVault } from './hooks'
 
 import styles from '../WalletModal.module.less'
 
@@ -40,6 +40,7 @@ export const TokenLenderVault = () => {
   const { tokenType } = useTokenType()
 
   const { isLedger } = useIsLedger()
+  const { userVault } = useUserVault()
 
   const { offers, lenderVaultInfo, updateTokenOffer, clusterStats } = useLenderVaultInfo()
 
@@ -53,7 +54,10 @@ export const TokenLenderVault = () => {
 
       const txnsData = await Promise.all(
         offers.map((offer) =>
-          createClaimLenderVaultTxnData({ offer, tokenType, clusterStats }, walletAndConnection),
+          createClaimLenderVaultTxnData(
+            { userVault, offer, tokenType, clusterStats },
+            walletAndConnection,
+          ),
         ),
       )
 
@@ -104,7 +108,6 @@ export const TokenLenderVault = () => {
     totalAccruedInterest,
     totalRepaymets,
     totalLstYield,
-    totalClosedOffersValue,
     totalLiquidityValue,
     totalClaimableValue,
     totalFundsInCurrentEpoch,
@@ -114,7 +117,6 @@ export const TokenLenderVault = () => {
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Repayments" value={totalRepaymets} />
-      <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
     </div>
   )
@@ -157,6 +159,7 @@ export const NftLenderVault = () => {
   const { tokenType } = useTokenType()
 
   const { isLedger } = useIsLedger()
+  const { userVault } = useUserVault()
 
   const { offers, lenderVaultInfo, updateNftOffer, clusterStats } = useLenderVaultInfo()
 
@@ -164,7 +167,6 @@ export const NftLenderVault = () => {
     totalAccruedInterest,
     totalRepaymets,
     totalLstYield,
-    totalClosedOffersValue,
     totalLiquidityValue,
     totalClaimableValue,
     totalFundsInCurrentEpoch,
@@ -181,7 +183,10 @@ export const NftLenderVault = () => {
 
       const txnsData = await Promise.all(
         offers.map((offer) =>
-          createClaimLenderVaultTxnData({ offer, tokenType, clusterStats }, walletAndConnection),
+          createClaimLenderVaultTxnData(
+            { userVault, offer, tokenType, clusterStats },
+            walletAndConnection,
+          ),
         ),
       )
 
@@ -231,7 +236,6 @@ export const NftLenderVault = () => {
   const tooltipContent = (
     <div className={styles.tooltipContent}>
       <TooltipRow label="Repayments" value={totalRepaymets} />
-      <TooltipRow label="Closed offers" value={totalClosedOffersValue} />
       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
     </div>
   )
