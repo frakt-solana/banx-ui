@@ -18,7 +18,7 @@ import Checkbox from '../Checkbox'
 import { StatInfo } from '../StatInfo'
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
-import { EscrowVault } from './LenderVaults'
+import { ClaimSection, EscrowVault } from './LenderVaults'
 import { iconComponents } from './constants'
 
 import styles from './WalletModal.module.less'
@@ -100,6 +100,7 @@ export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => {
     <div className={styles.userInfoContainer}>
       <UserGeneralInfo />
       <EscrowVault />
+      <ClaimSection />
       <div className={styles.buttonsWrapper}>
         <div className={styles.changeWalletButton} onClick={onChangeWallet}>
           <ChangeWallet />

@@ -5,7 +5,6 @@ import { Loader } from '@banx/components/Loader'
 
 import FilterSection from '../FilterSection'
 import OfferTokenCard from '../OfferTokenCard'
-import Summary from '../Summary'
 import TokensListHeader from '../TokensListHeader'
 import { useOffersTokenContent } from './hooks'
 
@@ -14,8 +13,6 @@ import styles from './OffersTokenTabContent.module.less'
 const OffersTokenTabContent = () => {
   const {
     offersToDisplay,
-    rawOffers,
-    updateOrAddOffer,
     isLoading,
     showEmptyList,
     searchSelectParams,
@@ -49,8 +46,6 @@ const OffersTokenTabContent = () => {
           </div>
         </>
       )}
-
-      <Summary offers={rawOffers} updateOrAddOffer={updateOrAddOffer} />
     </div>
   )
 }

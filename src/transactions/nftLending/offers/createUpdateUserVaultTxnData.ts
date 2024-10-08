@@ -1,6 +1,6 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { addLiquidityToUserVault } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { updateLiquidityToUserVault } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
@@ -17,31 +17,33 @@ import { isBanxSolTokenType } from '@banx/utils'
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
-export type CreateDepositUserVaultTxnDataParams = {
+export type CreateUpdateUserVaultTxnDataParams = {
   amount: BN
   lendingTokenType: LendingTokenType
+  add: boolean
 }
 
-type CreateDepositUserVaultTxnData = (
-  params: CreateDepositUserVaultTxnDataParams,
+type CreateUpdateUserVaultTxnData = (
+  params: CreateUpdateUserVaultTxnDataParams,
   walletAndConnection: WalletAndConnection,
-) => Promise<CreateTxnData<CreateDepositUserVaultTxnDataParams>>
+) => Promise<CreateTxnData<CreateUpdateUserVaultTxnDataParams>>
 
-export const createDepositUserVaultTxnData: CreateDepositUserVaultTxnData = async (
+export const createUpdateUserVaultTxnData: CreateUpdateUserVaultTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { amount, lendingTokenType } = params
+  const { amount, lendingTokenType, add } = params
 
   const {
     instructions,
     signers,
     accounts: accountsCollection,
-  } = await addLiquidityToUserVault({
+  } = await updateLiquidityToUserVault({
     connection: walletAndConnection.connection,
     args: {
       amount,
       lendingTokenType,
+      add,
     },
     accounts: {
       userPubkey: walletAndConnection.wallet.publicKey,
@@ -52,7 +54,7 @@ export const createDepositUserVaultTxnData: CreateDepositUserVaultTxnData = asyn
   const accounts = [accountsCollection['lenderVault']]
   const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
-  if (isBanxSolTokenType(lendingTokenType)) {
+  if (isBanxSolTokenType(lendingTokenType) && add) {
     const banxSolBalance = await fetchTokenBalance({
       tokenAddress: BANX_SOL_ADDRESS,
       publicKey: walletAndConnection.wallet.publicKey,
@@ -66,6 +68,21 @@ export const createDepositUserVaultTxnData: CreateDepositUserVaultTxnData = asyn
         params,
         accounts,
         inputAmount: diff.abs(),
+
+        instructions,
+        signers,
+        lookupTables,
+      },
+      walletAndConnection,
+    )
+  }
+
+  if (isBanxSolTokenType(lendingTokenType) && !add) {
+    return await banxSol.combineWithSellBanxSolInstructions(
+      {
+        params,
+        accounts,
+        inputAmount: amount,
 
         instructions,
         signers,

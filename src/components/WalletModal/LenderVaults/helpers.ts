@@ -4,6 +4,7 @@ import {
   calculateBanxSolStakingRewards,
   calculateCurrentInterestSolPure,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
@@ -16,34 +17,39 @@ type GetLenderVaultInfoParams = {
 export const getLenderVaultInfo = ({ userVault, clusterStats }: GetLenderVaultInfoParams) => {
   const { slot = 0, epochStartedAt = 0 } = clusterStats || {}
 
-  const totalAccruedInterest = userVault?.interestRewardsAmount.toNumber() ?? 0
-  const totalRepaymets = userVault?.repaymentsAmount.toNumber() ?? 0
+  const offerLiquidityAmount = userVault ? userVault.offerLiquidityAmount.toNumber() : 0
 
-  const totalLstYield = userVault
-    ? calculateLstYield({ userVault, slot, epochStartedAt }).toNumber()
-    : 0
+  const repaymentsAmount = userVault ? userVault.repaymentsAmount.toNumber() : 0
+  const interestRewardsAmount = userVault ? userVault.interestRewardsAmount.toNumber() : 0
+  const rentRewards = userVault ? userVault.rentRewards.toNumber() : 0
+  const totalLstYield =
+    userVault && userVault.lendingTokenType === LendingTokenType.BanxSol
+      ? calculateLstYield({ userVault, slot, epochStartedAt }).toNumber()
+      : 0
+
+  const totalClaimAmount = repaymentsAmount + interestRewardsAmount + rentRewards + totalLstYield
 
   const totalLiquidityValue = userVault
-    ? userVault.offerLiquidityAmount
-        .add(userVault.repaymentsAmount)
-        .add(userVault.interestRewardsAmount)
-        .toNumber()
+    ? userVault.offerLiquidityAmount.toNumber() + totalClaimAmount
     : 0
-
-  const totalClaimableValue = totalLiquidityValue + totalLstYield
 
   const totalFundsInCurrentEpoch = userVault
     ? calculateYieldInCurrentEpoch(userVault, clusterStats)
     : 0
-
   const totalFundsInNextEpoch = userVault ? calculateYieldInNextEpoch(userVault, clusterStats) : 0
 
   return {
-    totalAccruedInterest,
-    totalRepaymets,
-    totalLiquidityValue,
+    offerLiquidityAmount,
+
+    repaymentsAmount,
+    interestRewardsAmount,
+    rentRewards,
     totalLstYield,
-    totalClaimableValue,
+
+    totalClaimAmount,
+
+    totalLiquidityValue,
+
     totalFundsInCurrentEpoch,
     totalFundsInNextEpoch,
   }
@@ -54,7 +60,7 @@ type CalculateLstYield = (props: {
   slot: number
   epochStartedAt: number
 }) => BN
-const calculateLstYield: CalculateLstYield = ({ userVault, slot, epochStartedAt }) => {
+export const calculateLstYield: CalculateLstYield = ({ userVault, slot, epochStartedAt }) => {
   const totalYield = calculateBanxSolStakingRewards({
     userVault,
     nowSlot: new BN(slot),

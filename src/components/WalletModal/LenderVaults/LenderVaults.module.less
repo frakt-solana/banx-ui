@@ -48,10 +48,37 @@
 
 .actionWrapper {
   margin: 0 -16px;
-  border-top: 0.5px dashed var(--bg-border);
+  border-bottom: 0.5px dashed var(--bg-border);
   padding: 8px 16px 12px;
 }
 
 .actionButton {
   width: 100%;
+}
+
+//? ClaimSection
+.claimSection {
+  padding: 8px 0;
+}
+
+.lenderValtStatsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  width: 100%;
+
+  &.hiddenBorder {
+    border-top: 0;
+  }
+}
+
+.lenderVaultStats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  & > div {
+    gap: 0;
+  }
 }

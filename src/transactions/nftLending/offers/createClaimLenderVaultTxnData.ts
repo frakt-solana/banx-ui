@@ -5,7 +5,7 @@ import {
   claimPerpetualBondOfferRepayments,
   claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -13,20 +13,17 @@ import {
 } from 'solana-transactions-executor'
 
 import { ClusterStats } from '@banx/api/common'
-import { core } from '@banx/api/nft'
 import { UserVault } from '@banx/api/shared'
 import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
-import { ZERO_BN, isBanxSolTokenType, isOfferStateClosed } from '@banx/utils'
+import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
 
-import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../../functions'
+import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateClaimLenderVaultTxnDataParams = {
-  userVault: UserVault | undefined
-  offer: core.Offer
-  tokenType: LendingTokenType
-  clusterStats: ClusterStats | undefined
+  userVault: UserVault
+  clusterStats: ClusterStats
 }
 
 type CreateClaimLenderVaultTxnData = (
@@ -38,91 +35,95 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   params,
   walletAndConnection,
 ) => {
-  const { offer, tokenType, clusterStats } = params
+  const { userVault, clusterStats } = params
 
-  const instructions: web3.TransactionInstruction[] = []
-  const signers: web3.Signer[] = []
+  const repaymentsAmount = userVault.repaymentsAmount
+  const interestRewardsAmount = userVault.interestRewardsAmount
+  const rentRewards = userVault.rentRewards
+  const totalLstYield =
+    userVault.lendingTokenType === LendingTokenType.BanxSol
+      ? calculateBanxSolStakingRewards({
+          userVault: params.userVault,
+          nowSlot: new BN(clusterStats.slot),
+          currentEpochStartAt: new BN(clusterStats.epochStartedAt ?? 0),
+        })
+      : ZERO_BN
 
-  const accountsParams = {
-    bondOffer: new web3.PublicKey(offer.publicKey),
-    userPubkey: walletAndConnection.wallet.publicKey,
+  const totalClaimAmount = repaymentsAmount
+    .add(interestRewardsAmount)
+    .add(rentRewards)
+    .add(totalLstYield)
+
+  const instructionsArray: web3.TransactionInstruction[] = []
+  const signersArray: web3.Signer[] = []
+
+  // const accountsParams = {
+  //   bondOffer: new web3.PublicKey(offer.publicKey),
+  //   userPubkey: walletAndConnection.wallet.publicKey,
+  // }
+
+  if (repaymentsAmount.gt(ZERO_BN)) {
+    const { instructions, signers } = await claimPerpetualBondOfferRepayments({
+      accounts: {
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      args: {
+        lendingTokenType: userVault.lendingTokenType,
+      },
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      connection: walletAndConnection.connection,
+      sendTxn: sendTxnPlaceHolder,
+    })
+
+    instructionsArray.push(...instructions)
+    signersArray.push(...signers)
   }
 
-  if (offer.concentrationIndex) {
-    const { instructions: claimInterestInstructions, signers: claimInterestSigners } =
-      await claimPerpetualBondOfferInterest({
-        accounts: accountsParams,
-        args: {
-          lendingTokenType: tokenType,
-        },
-        programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-        connection: walletAndConnection.connection,
-        sendTxn: sendTxnPlaceHolder,
-      })
+  if (interestRewardsAmount.gt(ZERO_BN)) {
+    const { instructions, signers } = await claimPerpetualBondOfferInterest({
+      accounts: {
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      args: {
+        lendingTokenType: userVault.lendingTokenType,
+      },
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      connection: walletAndConnection.connection,
+      sendTxn: sendTxnPlaceHolder,
+    })
 
-    instructions.push(...claimInterestInstructions)
-    signers.push(...claimInterestSigners)
+    instructionsArray.push(...instructions)
+    signersArray.push(...signers)
   }
 
-  if (offer.bidCap || offer.fundsSolOrTokenBalance || offer.bidSettlement) {
-    const { instructions: claimRepaymetsInstructions, signers: claimRepaymetsSigners } =
-      await claimPerpetualBondOfferRepayments({
-        accounts: accountsParams,
-        args: {
-          lendingTokenType: tokenType,
-        },
-        programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-        connection: walletAndConnection.connection,
-        sendTxn: sendTxnPlaceHolder,
-      })
-
-    instructions.push(...claimRepaymetsInstructions)
-    signers.push(...claimRepaymetsSigners)
+  if (rentRewards.gt(ZERO_BN)) {
+    //TODO: Add rent rewards ixn
   }
 
-  const nowSlot = new BN(clusterStats?.slot || 0)
-  const currentEpochStartAt = new BN(clusterStats?.epochStartedAt || 0)
+  if (isBanxSolTokenType(userVault.lendingTokenType) && totalLstYield.gt(ZERO_BN)) {
+    const { instructions, signers } = await claimPerpetualBondOfferStakingRewards({
+      accounts: {
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      connection: walletAndConnection.connection,
+      sendTxn: sendTxnPlaceHolder,
+    })
 
-  const lstYield = params.userVault
-    ? calculateBanxSolStakingRewards({
-        userVault: params.userVault,
-        nowSlot,
-        currentEpochStartAt,
-      })
-    : ZERO_BN
-
-  if (isBanxSolTokenType(tokenType) && lstYield.gt(ZERO_BN)) {
-    const { instructions: claimYieldInstructions, signers: claimYieldSigners } =
-      await claimPerpetualBondOfferStakingRewards({
-        accounts: accountsParams,
-        programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-        connection: walletAndConnection.connection,
-        sendTxn: sendTxnPlaceHolder,
-      })
-
-    instructions.push(...claimYieldInstructions)
-    signers.push(...claimYieldSigners)
+    instructionsArray.push(...instructions)
+    signersArray.push(...signers)
   }
 
-  const accounts = [new web3.PublicKey(offer.publicKey)]
+  const accounts = [userVault.publicKey]
 
-  const closedOffersValue = isOfferStateClosed(offer.pairState)
-    ? offer.fundsSolOrTokenBalance + offer.bidSettlement
-    : 0
-
-  const totalClaimableValue = new BN(offer.concentrationIndex)
-    .add(new BN(offer.bidCap))
-    .add(new BN(closedOffersValue))
-    .add(lstYield)
-
-  if (isBanxSolTokenType(tokenType) && totalClaimableValue.gt(ZERO_BN)) {
+  if (isBanxSolTokenType(userVault.lendingTokenType) && totalClaimAmount.gt(ZERO_BN)) {
     return await banxSol.combineWithSellBanxSolInstructions(
       {
         params,
         accounts,
-        inputAmount: totalClaimableValue,
-        instructions,
-        signers,
+        inputAmount: totalClaimAmount,
+        instructions: instructionsArray,
+        signers: signersArray,
       },
       walletAndConnection,
     )
@@ -131,8 +132,8 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   return {
     params,
     accounts,
-    instructions,
-    signers,
+    instructions: instructionsArray,
+    signers: signersArray,
     lookupTables: [],
   }
 }
@@ -142,13 +143,5 @@ export const parseClaimLenderVaultSimulatedAccounts = (
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
-  return results?.['bondOfferV3']?.[0] as core.Offer
-}
-
-export const parseClaimTokenLenderVaultSimulatedAccounts = (
-  accountInfoByPubkey: SimulatedAccountInfoByPubkey,
-) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
-
-  return results?.['bondOfferV3']?.[0] as BondOfferV3
+  return results?.['userVault']?.[0] as UserVault
 }

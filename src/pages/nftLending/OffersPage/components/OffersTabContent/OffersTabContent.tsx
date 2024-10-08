@@ -6,16 +6,13 @@ import { Loader } from '@banx/components/Loader'
 import FilterSection from '../FilterSection'
 import { HeaderList } from './components/HeaderList'
 import OfferCard from './components/OfferCard'
-import Summary from './components/Summary'
 import { useOffersContent } from './hooks'
 
 import styles from './OffersTabContent.module.less'
 
 const OffersTabContent = () => {
   const {
-    offers,
     offersToDisplay,
-    updateOrAddOffer,
     isLoading,
     marketsPreview,
     visibleOfferPubkey,
@@ -58,8 +55,6 @@ const OffersTabContent = () => {
           </div>
         </>
       )}
-
-      <Summary updateOrAddOffer={updateOrAddOffer} offers={offers} />
     </div>
   )
 }

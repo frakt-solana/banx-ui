@@ -7,6 +7,7 @@ import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
+import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import { NumericStepInput } from '@banx/components/inputs'
 
@@ -18,8 +19,11 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
-  CreateDepositUserVaultTxnDataParams,
-  createDepositUserVaultTxnData,
+  CreateClaimLenderVaultTxnDataParams,
+  CreateUpdateUserVaultTxnDataParams,
+  createClaimLenderVaultTxnData,
+  createUpdateUserVaultTxnData,
+  parseClaimLenderVaultSimulatedAccounts,
   parseDepositSimulatedAccounts,
 } from '@banx/transactions/nftLending'
 import {
@@ -31,10 +35,12 @@ import {
   enqueueWaitingConfirmation,
   getTokenDecimals,
   getTokenUnit,
+  isBanxSolTokenType,
   stringToBN,
 } from '@banx/utils'
 
-import { useLenderVaultInfo } from './hooks'
+import { TooltipRow } from '../components'
+import { useLenderVaultInfo, useUserVault } from './hooks'
 
 import styles from './LenderVaults.module.less'
 
@@ -59,14 +65,14 @@ export const EscrowVault = () => {
   const onTabClick = (nextValue: 'wallet' | 'escrow') => {
     setActiveTab(nextValue)
 
-    const value = nextValue === 'wallet' ? walletBalance : lenderVaultInfo.totalLiquidityValue
+    const value = nextValue === 'wallet' ? walletBalance : lenderVaultInfo.offerLiquidityAmount
 
     const valueString = (value / getTokenDecimals(tokenType)).toString()
 
     setInputValue(valueString)
   }
 
-  const deposit = async (amount: BN) => {
+  const update = async (amount: BN) => {
     if (amount.lt(ZERO_BN)) return
 
     const loadingSnackbarId = uniqueId()
@@ -74,15 +80,16 @@ export const EscrowVault = () => {
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createDepositUserVaultTxnData(
+      const txnData = await createUpdateUserVaultTxnData(
         {
           amount,
           lendingTokenType: tokenType,
+          add: activeTab === 'wallet',
         },
         walletAndConnection,
       )
 
-      await new TxnExecutor<CreateDepositUserVaultTxnDataParams>(walletAndConnection, {
+      await new TxnExecutor<CreateUpdateUserVaultTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
       })
         .addTxnData(txnData)
@@ -133,14 +140,7 @@ export const EscrowVault = () => {
   }
 
   const onActionClick = () => {
-    if (activeTab === 'wallet') {
-      deposit(stringToBN(inputValue, Math.log10(tokenDecimals)))
-      //addLiquidityToUserVault
-
-      return
-    }
-
-    //createClaimLenderVaultTxnData
+    update(stringToBN(inputValue, Math.log10(tokenDecimals)))
   }
 
   return (
@@ -151,7 +151,7 @@ export const EscrowVault = () => {
         tab={activeTab}
         setTab={onTabClick}
         walletBalance={walletBalance}
-        escrowBalance={lenderVaultInfo.totalLiquidityValue}
+        escrowBalance={lenderVaultInfo.offerLiquidityAmount}
       />
 
       <NumericStepInput
@@ -172,7 +172,7 @@ export const EscrowVault = () => {
           disabled={false}
           size="medium"
         >
-          {activeTab === 'wallet' ? 'Deposit' : 'Claim'}
+          {activeTab === 'wallet' ? 'Deposit' : 'Withdraw'}
         </Button>
       </div>
     </div>
@@ -221,241 +221,102 @@ const EscrowTab: FC<EscrowTabProps> = ({ label, balance, onClick, isActive }) =>
   )
 }
 
-// export const TokenLenderVault = () => {
-//   const wallet = useWallet()
-//   const { connection } = useConnection()
-//   const { tokenType } = useTokenType()
+export const ClaimSection = () => {
+  const wallet = useWallet()
+  const { connection } = useConnection()
+  const { tokenType } = useTokenType()
+  const { userVault } = useUserVault()
 
-//   const { isLedger } = useIsLedger()
-//   const { userVault } = useUserVault()
+  const { lenderVaultInfo, clusterStats } = useLenderVaultInfo()
 
-//   const { offers, lenderVaultInfo, updateTokenOffer, clusterStats } = useLenderVaultInfo()
+  const { totalClaimAmount } = lenderVaultInfo
 
-//   const claimVault = async () => {
-//     if (!offers.length) return
+  const claimVault = async () => {
+    if (totalClaimAmount <= 0 || !userVault || !clusterStats) return
 
-//     const loadingSnackbarId = uniqueId()
+    const loadingSnackbarId = uniqueId()
 
-//     try {
-//       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-//       const txnsData = await Promise.all(
-//         offers.map((offer) =>
-//           createClaimLenderVaultTxnData(
-//             { userVault, offer, tokenType, clusterStats },
-//             walletAndConnection,
-//           ),
-//         ),
-//       )
+      const txnData = await createClaimLenderVaultTxnData(
+        { userVault, clusterStats },
+        walletAndConnection,
+      )
 
-//       await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(walletAndConnection, {
-//         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-//         chunkSize: isLedger ? 5 : 40,
-//       })
-//         .addTxnsData(txnsData)
-//         .on('sentAll', () => {
-//           enqueueTransactionsSent()
-//           enqueueWaitingConfirmation(loadingSnackbarId)
-//         })
-//         .on('confirmedAll', (results) => {
-//           const { confirmed, failed } = results
+      await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      })
+        .addTxnData(txnData)
+        .on('sentAll', () => {
+          enqueueTransactionsSent()
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
 
-//           destroySnackbar(loadingSnackbarId)
+          destroySnackbar(loadingSnackbarId)
 
-//           if (confirmed.length) {
-//             enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
-//             confirmed.forEach(({ accountInfoByPubkey }) => {
-//               if (!accountInfoByPubkey) return
-//               const offer = parseClaimTokenLenderVaultSimulatedAccounts(accountInfoByPubkey)
-//               updateTokenOffer([offer])
-//             })
-//           }
+          if (confirmed.length) {
+            enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
+            confirmed.forEach(({ accountInfoByPubkey }) => {
+              if (!accountInfoByPubkey) return
+              const userVault = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
 
-//           if (failed.length) {
-//             return failed.forEach(({ signature, reason }) =>
-//               enqueueConfirmationError(signature, reason),
-//             )
-//           }
-//         })
-//         .on('error', (error) => {
-//           throw error
-//         })
-//         .execute()
-//     } catch (error) {
-//       destroySnackbar(loadingSnackbarId)
-//       defaultTxnErrorHandler(error, {
-//         additionalData: offers,
-//         walletPubkey: wallet?.publicKey?.toBase58(),
-//         transactionName: 'ClaimLenderVault',
-//       })
-//     }
-//   }
+              //TODO Implement useQuery optimistic
+              // eslint-disable-next-line no-console
+              console.log(userVault)
+            })
+          }
 
-//   const {
-//     totalAccruedInterest,
-//     totalRepaymets,
-//     totalLstYield,
-//     totalLiquidityValue,
-//     totalClaimableValue,
-//     totalFundsInCurrentEpoch,
-//     totalFundsInNextEpoch,
-//   } = lenderVaultInfo
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'ClaimLenderVault',
+      })
+    }
+  }
 
-//   const tooltipContent = (
-//     <div className={styles.tooltipContent}>
-//       <TooltipRow label="Repayments" value={totalRepaymets} />
-//       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
-//     </div>
-//   )
+  const { repaymentsAmount, interestRewardsAmount, rentRewards } = lenderVaultInfo
 
-//   return (
-//     <div className={styles.lenderVaultContainer}>
-//       {isBanxSolTokenType(tokenType) && (
-//         <BanxSolEpochContent
-//           currentEpochYield={totalFundsInCurrentEpoch}
-//           nextEpochYield={totalFundsInNextEpoch}
-//           tokenType={tokenType}
-//         />
-//       )}
-//       <div
-//         className={classNames(styles.lenderValtStatsContainer, {
-//           [styles.hiddenBorder]: !isBanxSolTokenType(tokenType),
-//         })}
-//       >
-//         <div className={styles.lenderVaultStats}>
-//           <StatInfo
-//             label="Liquidity"
-//             tooltipText={tooltipContent}
-//             value={<DisplayValue value={totalLiquidityValue} />}
-//           />
-//           {isBanxSolTokenType(tokenType) && (
-//             <YieldStat totalYield={totalLstYield} tokenType={tokenType} />
-//           )}
-//         </div>
-//         <Button onClick={claimVault} disabled={!totalClaimableValue} size="medium">
-//           Claim
-//         </Button>
-//       </div>
-//     </div>
-//   )
-// }
+  const tooltipContent = (
+    <div className={styles.tooltipContent}>
+      <TooltipRow label="Repayments" value={repaymentsAmount} />
+      <TooltipRow label="Accrued interest" value={interestRewardsAmount} />
+      <TooltipRow label="Rent rewards" value={rentRewards} />
+      {isBanxSolTokenType(tokenType) && <TooltipRow label="totalLstYield" value={rentRewards} />}
+    </div>
+  )
 
-// export const NftLenderVault = () => {
-//   const wallet = useWallet()
-//   const { connection } = useConnection()
-//   const { tokenType } = useTokenType()
-
-//   const { isLedger } = useIsLedger()
-//   const { userVault } = useUserVault()
-
-//   const { offers, lenderVaultInfo, updateNftOffer, clusterStats } = useLenderVaultInfo()
-
-//   const {
-//     totalAccruedInterest,
-//     totalRepaymets,
-//     totalLstYield,
-//     totalLiquidityValue,
-//     totalClaimableValue,
-//     totalFundsInCurrentEpoch,
-//     totalFundsInNextEpoch,
-//   } = lenderVaultInfo
-
-//   const claimVault = async () => {
-//     if (!offers.length) return
-
-//     const loadingSnackbarId = uniqueId()
-
-//     try {
-//       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
-
-//       const txnsData = await Promise.all(
-//         offers.map((offer) =>
-//           createClaimLenderVaultTxnData(
-//             { userVault, offer, tokenType, clusterStats },
-//             walletAndConnection,
-//           ),
-//         ),
-//       )
-
-//       await new TxnExecutor<CreateClaimLenderVaultTxnDataParams>(walletAndConnection, {
-//         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
-//         chunkSize: isLedger ? 5 : 40,
-//       })
-//         .addTxnsData(txnsData)
-//         .on('sentAll', () => {
-//           enqueueTransactionsSent()
-//           enqueueWaitingConfirmation(loadingSnackbarId)
-//         })
-//         .on('confirmedAll', (results) => {
-//           const { confirmed, failed } = results
-
-//           destroySnackbar(loadingSnackbarId)
-
-//           if (confirmed.length) {
-//             enqueueSnackbar({ message: 'Successfully claimed', type: 'success' })
-//             confirmed.forEach(({ accountInfoByPubkey }) => {
-//               if (!accountInfoByPubkey) return
-//               const offer = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
-//               updateNftOffer([offer])
-//             })
-//           }
-
-//           if (failed.length) {
-//             return failed.forEach(({ signature, reason }) =>
-//               enqueueConfirmationError(signature, reason),
-//             )
-//           }
-//         })
-//         .on('error', (error) => {
-//           throw error
-//         })
-//         .execute()
-//     } catch (error) {
-//       destroySnackbar(loadingSnackbarId)
-//       defaultTxnErrorHandler(error, {
-//         additionalData: offers,
-//         walletPubkey: wallet?.publicKey?.toBase58(),
-//         transactionName: 'ClaimLenderVault',
-//       })
-//     }
-//   }
-
-//   const tooltipContent = (
-//     <div className={styles.tooltipContent}>
-//       <TooltipRow label="Repayments" value={totalRepaymets} />
-//       <TooltipRow label="Accrued interest" value={totalAccruedInterest} />
-//     </div>
-//   )
-
-//   return (
-//     <div className={styles.lenderVaultContainer}>
-//       {isBanxSolTokenType(tokenType) && (
-//         <BanxSolEpochContent
-//           currentEpochYield={totalFundsInCurrentEpoch}
-//           nextEpochYield={totalFundsInNextEpoch}
-//           tokenType={tokenType}
-//         />
-//       )}
-
-//       <div
-//         className={classNames(styles.lenderValtStatsContainer, {
-//           [styles.hiddenBorder]: !isBanxSolTokenType(tokenType),
-//         })}
-//       >
-//         <div className={styles.lenderVaultStats}>
-//           <StatInfo
-//             label="Liquidity"
-//             tooltipText={tooltipContent}
-//             value={<DisplayValue value={totalLiquidityValue} />}
-//           />
-//           {isBanxSolTokenType(tokenType) && (
-//             <YieldStat totalYield={totalLstYield} tokenType={tokenType} />
-//           )}
-//         </div>
-//         <Button onClick={claimVault} disabled={!totalClaimableValue} size="medium">
-//           Claim
-//         </Button>
-//       </div>
-//     </div>
-//   )
-// }
+  return (
+    <div className={styles.claimSection}>
+      <div
+        className={classNames(styles.lenderValtStatsContainer, {
+          [styles.hiddenBorder]: !isBanxSolTokenType(tokenType),
+        })}
+      >
+        <div className={styles.lenderVaultStats}>
+          <StatInfo
+            label="Available to claim"
+            tooltipText={tooltipContent}
+            value={<DisplayValue value={totalClaimAmount} />}
+          />
+        </div>
+        <Button onClick={claimVault} disabled={!totalClaimAmount} size="medium">
+          Claim
+        </Button>
+      </div>
+    </div>
+  )
+}
