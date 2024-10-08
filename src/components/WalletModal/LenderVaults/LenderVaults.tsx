@@ -104,7 +104,10 @@ export const EscrowVault = () => {
           destroySnackbar(loadingSnackbarId)
 
           if (confirmed.length) {
-            enqueueSnackbar({ message: 'Successfully deposited', type: 'success' })
+            enqueueSnackbar({
+              message: activeTab === 'wallet' ? 'Successfully deposited' : 'Successfully withdrawn',
+              type: 'success',
+            })
             confirmed.forEach(({ accountInfoByPubkey }) => {
               if (!accountInfoByPubkey) return
               const userVault = parseDepositSimulatedAccounts(accountInfoByPubkey)
@@ -135,7 +138,7 @@ export const EscrowVault = () => {
           lendingTokenType: tokenType,
         },
         walletPubkey: wallet?.publicKey?.toBase58(),
-        transactionName: 'DepositUserVault',
+        transactionName: 'UpdateUserVault',
       })
     }
   }
