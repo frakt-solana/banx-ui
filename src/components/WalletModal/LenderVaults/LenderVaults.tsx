@@ -4,7 +4,7 @@ import { CaretRightOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
-import { set, uniqueId } from 'lodash'
+import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { Button } from '@banx/components/Buttons'
