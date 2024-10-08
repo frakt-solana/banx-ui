@@ -21,6 +21,15 @@ export const SORT_VALUE_MAP: Record<SortField, (loan: LoansPreview) => number> =
   [SortField.DEBT]: (preview) => preview.totalDebt,
   [SortField.LTV]: (preview) => preview.weightedLtv,
 }
+
+export enum TableColumnKey {
+  DEBT = 'debt',
+  APR = 'apr',
+  LTV = 'ltv',
+  STATUS = 'status',
+  DURATION = 'duration',
+}
+
 // * Sorting *//
 
 export const PARTIAL_REPAY_ACCOUNT_CREATION_FEE = 3229 * 1e3

@@ -10,6 +10,7 @@ import { TokenLoan } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
 import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/utils'
 
+import { useSortedLoans } from '../../hooks'
 import { useSelectedTokenLoans } from '../../loansCart'
 import { getTableColumns } from '../columns'
 import { FilterStatus, FilterTableSection } from './FilterTableSection'
@@ -83,12 +84,16 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
     return setSelection(filteredLoans, walletPubkey)
   }, [clearSelection, hasSelectedLoans, filteredLoans, setSelection, walletPubkey])
 
+  const { sortedLoans, selectedSortOption, onChangeSortOption } = useSortedLoans(filteredLoans)
+
   const columns = getTableColumns({
     findLoanInSelection,
     onSelectAll,
     onRowClick,
     hasSelectedLoans,
     tokenType,
+    onSort: onChangeSortOption,
+    selectedSortOption,
   })
 
   const rowParams = useMemo(() => {
@@ -116,7 +121,7 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
       />
 
       <Table
-        data={filteredLoans}
+        data={sortedLoans}
         columns={columns}
         rowParams={rowParams}
         className={styles.table}

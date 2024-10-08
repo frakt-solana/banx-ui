@@ -7,6 +7,8 @@ import { HeaderCell } from '@banx/components/TableComponents'
 import { TokenLoan } from '@banx/api/tokens'
 import { formatCollateralTokenValue, getTokenLoanSupply } from '@banx/utils'
 
+import { TableColumnKey } from '../constants'
+import { SortColumnOption } from '../hooks/useSortedLoans'
 import { TokenLoanOptimistic } from '../loansCart'
 import { APRCell, ActionsCell, DebtCell, LTVCell, StatusCell } from './tableCells'
 
@@ -18,6 +20,8 @@ interface GetTableColumnsProps {
   onSelectAll: () => void
   hasSelectedLoans: boolean
   tokenType: LendingTokenType
+  onSort: (value: SortColumnOption<TableColumnKey>) => void
+  selectedSortOption: SortColumnOption<TableColumnKey>
 }
 
 export const getTableColumns = ({
@@ -26,6 +30,8 @@ export const getTableColumns = ({
   onSelectAll,
   hasSelectedLoans,
   tokenType,
+  onSort,
+  selectedSortOption,
 }: GetTableColumnsProps) => {
   const columns: ColumnType<TokenLoan>[] = [
     {
@@ -53,23 +59,55 @@ export const getTableColumns = ({
       },
     },
     {
-      key: 'debt',
-      title: <HeaderCell label="Debt" className={styles.headerCellText} />,
+      key: TableColumnKey.DEBT,
+      title: (
+        <HeaderCell
+          label="Debt"
+          className={styles.headerCellText}
+          columnKey={TableColumnKey.DEBT}
+          onSort={onSort}
+          selectedSortOption={selectedSortOption}
+        />
+      ),
       render: (loan) => <DebtCell loan={loan} />,
     },
     {
-      key: 'ltv',
-      title: <HeaderCell label="LTV" className={styles.headerCellText} />,
+      key: TableColumnKey.LTV,
+      title: (
+        <HeaderCell
+          label="LTV"
+          className={styles.headerCellText}
+          columnKey={TableColumnKey.LTV}
+          onSort={onSort}
+          selectedSortOption={selectedSortOption}
+        />
+      ),
       render: (loan) => <LTVCell loan={loan} tokenType={tokenType} />,
     },
     {
-      key: 'apr',
-      title: <HeaderCell label="APR" className={styles.headerCellText} />,
+      key: TableColumnKey.APR,
+      title: (
+        <HeaderCell
+          label="APR"
+          className={styles.headerCellText}
+          columnKey={TableColumnKey.APR}
+          onSort={onSort}
+          selectedSortOption={selectedSortOption}
+        />
+      ),
       render: (loan) => <APRCell loan={loan} />,
     },
     {
-      key: 'status',
-      title: <HeaderCell label="Status" className={styles.headerCellText} />,
+      key: TableColumnKey.STATUS,
+      title: (
+        <HeaderCell
+          label="Status"
+          className={styles.headerCellText}
+          columnKey={TableColumnKey.STATUS}
+          onSort={onSort}
+          selectedSortOption={selectedSortOption}
+        />
+      ),
       render: (loan) => <StatusCell loan={loan} />,
     },
     {
