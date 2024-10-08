@@ -351,12 +351,14 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
               })
 
               const { loan } = params
+
               const bondTradeTransaction = parseRepaymentCallSimulatedAccounts(accountInfoByPubkey)
 
               const optimisticLoan: core.Loan = {
                 ...loan,
                 fraktBond: {
                   ...loan.fraktBond,
+                  hadoMarket: params.loan.fraktBond.hadoMarket,
                   lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
                 },
                 bondTradeTransaction,
