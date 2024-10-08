@@ -61,7 +61,8 @@ export const EscrowVault = () => {
   useEffect(() => {
     const valueString = (walletBalance / getTokenDecimals(tokenType)).toString()
     setInputValue(valueString)
-  }, [tokenType, walletBalance])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const onTabClick = (nextValue: 'wallet' | 'escrow') => {
     setActiveTab(nextValue)
