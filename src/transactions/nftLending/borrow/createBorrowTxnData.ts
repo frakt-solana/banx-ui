@@ -38,6 +38,8 @@ export type CreateBorrowTxnData = (
 ) => Promise<CreateTxnData<CreateBorrowTxnDataParams>>
 
 export const createBorrowTxnData: CreateBorrowTxnData = async (params, walletAndConnection) => {
+  console.log({ params })
+
   const { nft, loanValue, offer, optimizeIntoReserves, tokenType } = params
 
   const borrowType = getNftBorrowType(nft)
@@ -158,7 +160,7 @@ const getTxnDataByBorrowType = async ({
         perpetualBorrowParamsAndAccounts: [
           {
             amountOfSolToGet: Math.floor(loanValue),
-            lender: walletAndConnection.wallet.publicKey,
+            lender: new web3.PublicKey(offer.assetReceiver),
             tokenMint: new web3.PublicKey(nft.mint),
             bondOfferV2: new web3.PublicKey(offer.publicKey),
             hadoMarket: new web3.PublicKey(offer.hadoMarket),
@@ -200,7 +202,7 @@ const getTxnDataByBorrowType = async ({
 
       accounts: {
         userPubkey: walletAndConnection.wallet.publicKey,
-        lender: walletAndConnection.wallet.publicKey,
+        lender: new web3.PublicKey(offer.assetReceiver),
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         nftMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -249,7 +251,7 @@ const getTxnDataByBorrowType = async ({
       perpetualBorrowParamsAndAccounts: [
         {
           amountOfSolToGet: new BN(Math.floor(loanValue)),
-          lender: walletAndConnection.wallet.publicKey,
+          lender: new web3.PublicKey(offer.assetReceiver),
           ruleSet: ruleSet,
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),
