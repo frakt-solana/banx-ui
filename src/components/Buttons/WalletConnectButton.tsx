@@ -38,7 +38,7 @@ export const WalletConnectButton = () => {
         </span>
         <BalanceContent
           walletBalance={walletBalance}
-          vaultBalance={lenderVaultInfo.totalClaimableValue}
+          vaultBalance={lenderVaultInfo.totalLiquidityValue}
         />
       </div>
       <HorizontalDots className={styles.connectedWalletIcon} />

@@ -23,7 +23,13 @@ export const getLenderVaultInfo = ({ userVault, clusterStats }: GetLenderVaultIn
     ? calculateLstYield({ userVault, slot, epochStartedAt }).toNumber()
     : 0
 
-  const totalLiquidityValue = totalAccruedInterest + totalRepaymets
+  const totalLiquidityValue = userVault
+    ? userVault.offerLiquidityAmount
+        .add(userVault.repaymentsAmount)
+        .add(userVault.interestRewardsAmount)
+        .toNumber()
+    : 0
+
   const totalClaimableValue = totalLiquidityValue + totalLstYield
 
   const totalFundsInCurrentEpoch = userVault
