@@ -304,7 +304,7 @@ export const ClaimSection = () => {
       <TooltipRow label="Repayments" value={repaymentsAmount} />
       <TooltipRow label="Accrued interest" value={interestRewardsAmount} />
       <TooltipRow label="Rent rewards" value={rentRewards} />
-      {isBanxSolTokenType(tokenType) && <TooltipRow label="totalLstYield" value={rentRewards} />}
+      {isBanxSolTokenType(tokenType) && <TooltipRow label="Total LST Yield" value={rentRewards} />}
     </div>
   )
 
