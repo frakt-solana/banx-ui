@@ -1,0 +1,57 @@
+// .wrapper {
+// }
+
+.title {
+  padding: 12px 0 0;
+  font: var(--title-md);
+  text-transform: uppercase;
+  color: var(--content-primary);
+}
+
+.tabs {
+  padding: 10px 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  column-gap: 48px;
+}
+
+.tab {
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: var(--border-less-primary);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tabBalance {
+  font: var(--important-text-md);
+  margin-bottom: 2px;
+}
+.tabLabel {
+  color: var(--content-tertiary);
+  text-transform: uppercase;
+  font: var(--title-sm);
+  text-align: center;
+}
+
+.tabActive {
+  pointer-events: none;
+  background: var(--accent-primary-sub);
+  border-color: var(--accent-primary-sub);
+}
+
+.numbericInput {
+  margin-bottom: 12px;
+}
+
+.actionWrapper {
+  margin: 0 -16px;
+  border-top: 0.5px dashed var(--bg-border);
+  padding: 8px 16px 12px;
+}
+
+.actionButton {
+  width: 100%;
+}

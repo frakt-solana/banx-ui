@@ -6,7 +6,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { useBanxSolBalance, useDiscordUser, useSolanaBalance } from '@banx/hooks'
 import { BanxSOL, ChangeWallet, Copy, SignOut } from '@banx/icons'
-import { AssetMode, useAssetMode, useIsLedger, useTokenType } from '@banx/store/common'
+import { useIsLedger, useTokenType } from '@banx/store/common'
 import {
   copyToClipboard,
   formatValueByTokenType,
@@ -18,7 +18,7 @@ import Checkbox from '../Checkbox'
 import { StatInfo } from '../StatInfo'
 import { DisplayValue } from '../TableComponents'
 import UserAvatar from '../UserAvatar'
-import { NftLenderVault, TokenLenderVault } from './LenderVaults'
+import { EscrowVault } from './LenderVaults'
 import { iconComponents } from './constants'
 
 import styles from './WalletModal.module.less'
@@ -96,12 +96,10 @@ interface UserInfoProps {
 }
 
 export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => {
-  const { currentAssetMode } = useAssetMode()
-
   return (
     <div className={styles.userInfoContainer}>
       <UserGeneralInfo />
-      {currentAssetMode === AssetMode.NFT ? <NftLenderVault /> : <TokenLenderVault />}
+      <EscrowVault />
       <div className={styles.buttonsWrapper}>
         <div className={styles.changeWalletButton} onClick={onChangeWallet}>
           <ChangeWallet />

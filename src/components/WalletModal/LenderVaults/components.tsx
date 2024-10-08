@@ -2,7 +2,6 @@ import { FC } from 'react'
 
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
-import { EpochProgressBar } from '@banx/components/EpochProgressBar'
 import { StatInfo } from '@banx/components/StatInfo'
 
 import { BanxSOL } from '@banx/icons'
@@ -31,8 +30,14 @@ export const BanxSolEpochContent: FC<BanxSolEpochContentProps> = ({
 
   return (
     <div className={styles.epochContainer}>
-      <EpochProgressBar />
       <div className={styles.epochStats}>
+        <StatInfo
+          label="Epoch ends in"
+          tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
+          value={formattedTotalFundsInCurrentEpoch}
+          icon={BanxSOL}
+          flexType="row"
+        />
         <StatInfo
           label="Yield for this epoch"
           tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
