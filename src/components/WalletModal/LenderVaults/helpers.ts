@@ -33,10 +33,10 @@ export const getLenderVaultInfo = ({ userVault, clusterStats }: GetLenderVaultIn
     ? userVault.offerLiquidityAmount.toNumber() + totalClaimAmount
     : 0
 
-  const totalFundsInCurrentEpoch = userVault
+  const banxSolYieldInCurrentEpoch = userVault
     ? calculateYieldInCurrentEpoch(userVault, clusterStats)
     : 0
-  const totalFundsInNextEpoch = userVault ? calculateYieldInNextEpoch(userVault, clusterStats) : 0
+  const banxSolYieldInNextEpoch = userVault ? calculateYieldInNextEpoch(userVault, clusterStats) : 0
 
   return {
     offerLiquidityAmount,
@@ -50,8 +50,8 @@ export const getLenderVaultInfo = ({ userVault, clusterStats }: GetLenderVaultIn
 
     totalLiquidityValue,
 
-    totalFundsInCurrentEpoch,
-    totalFundsInNextEpoch,
+    banxSolYieldInCurrentEpoch,
+    banxSolYieldInNextEpoch,
   }
 }
 

@@ -1,31 +1,34 @@
 import { FC } from 'react'
 
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import moment from 'moment'
 
 import { StatInfo } from '@banx/components/StatInfo'
+import Timer from '@banx/components/Timer'
 
+import { useClusterStats } from '@banx/hooks'
 import { BanxSOL } from '@banx/icons'
-import { formatValueByTokenType } from '@banx/utils'
+import { useTokenType } from '@banx/store/common'
+import { CountdownUnits, formatCountdownUnits, formatValueByTokenType } from '@banx/utils'
+
+import { useLenderVaultInfo } from './hooks'
 
 import styles from '../WalletModal.module.less'
 
-interface BanxSolEpochContentProps {
-  currentEpochYield: number
-  nextEpochYield: number
-  tokenType: LendingTokenType
-}
+export const BanxSolEpochContent = () => {
+  const { data: clusterStats } = useClusterStats()
+  const { lenderVaultInfo } = useLenderVaultInfo()
+  const { tokenType } = useTokenType()
+  const { banxSolYieldInCurrentEpoch, banxSolYieldInNextEpoch } = lenderVaultInfo
+  const { epochApproxTimeRemaining = 0 } = clusterStats || {}
+  const expiredAt = moment().unix() + epochApproxTimeRemaining
 
-export const BanxSolEpochContent: FC<BanxSolEpochContentProps> = ({
-  currentEpochYield,
-  nextEpochYield,
-  tokenType,
-}) => {
-  const formattedTotalFundsInCurrentEpoch = currentEpochYield
-    ? formatValueByTokenType(currentEpochYield, tokenType)
+  const formattedTotalFundsInCurrentEpoch = banxSolYieldInCurrentEpoch
+    ? formatValueByTokenType(banxSolYieldInCurrentEpoch, tokenType)
     : 0
 
-  const formattedTotalFundsInNextEpoch = nextEpochYield
-    ? formatValueByTokenType(nextEpochYield, tokenType)
+  const formattedTotalFundsInNextEpoch = banxSolYieldInNextEpoch
+    ? formatValueByTokenType(banxSolYieldInNextEpoch, tokenType)
     : 0
 
   return (
@@ -34,7 +37,9 @@ export const BanxSolEpochContent: FC<BanxSolEpochContentProps> = ({
         <StatInfo
           label="Epoch ends in"
           tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
-          value={formattedTotalFundsInCurrentEpoch}
+          value={
+            <Timer expiredAt={expiredAt} formatCountdownUnits={customEpochFormatCountdownUnits} />
+          }
           icon={BanxSOL}
           flexType="row"
         />
@@ -55,6 +60,23 @@ export const BanxSolEpochContent: FC<BanxSolEpochContentProps> = ({
       </div>
     </div>
   )
+}
+
+export const customEpochFormatCountdownUnits = (countdownUnits: CountdownUnits): string => {
+  const { days, hours, minutes } = countdownUnits
+
+  if (!days && !hours && !minutes) {
+    return '<1m'
+  }
+  if (!days && !hours) {
+    return formatCountdownUnits(countdownUnits, 'm')
+  }
+
+  if (!days) {
+    return formatCountdownUnits(countdownUnits, 'h:m')
+  }
+
+  return formatCountdownUnits(countdownUnits, 'd:h')
 }
 
 interface YieldStatProps {

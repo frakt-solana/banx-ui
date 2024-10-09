@@ -4,6 +4,7 @@ import { CaretRightOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -41,6 +42,7 @@ import {
 } from '@banx/utils'
 
 import { TooltipRow } from '../components'
+import { BanxSolEpochContent } from './components'
 import { useLenderVaultInfo, useUserVault } from './hooks'
 
 import styles from './LenderVaults.module.less'
@@ -330,6 +332,7 @@ export const ClaimSection = () => {
           Claim
         </Button>
       </div>
+      {userVault?.lendingTokenType === LendingTokenType.BanxSol && <BanxSolEpochContent />}
     </div>
   )
 }
