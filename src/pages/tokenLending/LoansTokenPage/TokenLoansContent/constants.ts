@@ -3,13 +3,13 @@ import { SortOption } from '@banx/components/SortDropdown'
 import { LoansPreview, SortField } from './types'
 
 export const TOOLTIP_TEXTS = {
-  PRICE: 'PRICE',
-  TOTAL_DEBT: 'TOTAL_DEBT',
-  WLTV: 'WLTV',
-  WAPR: 'TWAPR',
+  PRICE: 'Token market price',
+  TOTAL_DEBT: 'Total amount of outstanding debt for the token',
+  WLTV: 'Weighted Loan-to-Value ratio (LTV)',
+  WAPR: 'Weighted average annual percentage rate (APR)',
 }
 
-// * Sorting *//
+// * Sorting * //
 export const SORT_OPTIONS: SortOption<SortField>[] = [
   { label: 'APR', value: [SortField.APR, 'desc'] },
   { label: 'Debt', value: [SortField.DEBT, 'desc'] },
@@ -30,6 +30,6 @@ export enum TableColumnKey {
   DURATION = 'duration',
 }
 
-// * Sorting *//
+// * Sorting * //
 
 export const PARTIAL_REPAY_ACCOUNT_CREATION_FEE = 3229 * 1e3
