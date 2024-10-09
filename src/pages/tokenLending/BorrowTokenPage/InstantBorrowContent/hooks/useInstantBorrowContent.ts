@@ -4,12 +4,7 @@ import { BN } from 'fbonds-core'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
-import {
-  adjustTokenAmountWithUpfrontFee,
-  bnToHuman,
-  stringToBN,
-  sumBNs,
-} from '@banx/utils'
+import { adjustTokenAmountWithUpfrontFee, bnToHuman, stringToBN, sumBNs } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
 import { getErrorMessage } from '../helpers'
