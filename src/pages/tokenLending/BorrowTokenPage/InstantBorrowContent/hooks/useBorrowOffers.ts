@@ -36,7 +36,6 @@ export const useBorrowOffers = (
     {
       collateralToken,
       borrowToken,
-      debouncedCollateralsAmount,
       debouncedLtvSliderValue,
       walletPubkeyString,
     },
