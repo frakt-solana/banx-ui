@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { map } from 'lodash'
+import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
 
 import { AssetType, stats } from '@banx/api/nft'
@@ -80,9 +80,13 @@ export const useWalletTokenLoans = () => {
     ]
 
     //? Filter out repaid loans and liquidated loans
-    return combinedActiveLoans
+    return chain(combinedActiveLoans)
+      .groupBy((loan) => loan.publicKey)
+      .map((groupedLoans) => maxBy(groupedLoans, (loan) => loan.fraktBond.lastTransactedAt))
+      .compact()
       .filter((loan) => !isTokenLoanRepaid(loan))
       .filter((loan) => !isTokenLoanLiquidated(loan))
+      .value()
   }, [data, walletOptimisticLoans])
 
   return {
