@@ -69,13 +69,15 @@ export const useBorrowOffers = (
 
   useEffect(() => {
     if (borrowOffers) {
-      const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
-      const collateralsAmount = stringToBN(inputCollateralsAmount, marketTokenDecimals)
+      const collateralsAmount = stringToBN(
+        inputCollateralsAmount,
+        collateralToken?.collateral.decimals || 0,
+      )
 
       const updatedOffers = getUpdatedBorrowOffers({
         collateralsAmount,
         offers: borrowOffers,
-        tokenDecimals: collateralTokenDecimals,
+        tokenDecimals: marketTokenDecimals,
       })
 
       setOffers(updatedOffers)
