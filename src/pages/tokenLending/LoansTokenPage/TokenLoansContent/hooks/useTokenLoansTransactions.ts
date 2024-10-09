@@ -349,6 +349,7 @@ const createOptimisticLoan = (
     fraktBond: {
       ...newFraktBond,
       lastTransactedAt: currentTimeInSeconds, //? Needs to prevent BE data overlap in optimistics logic
+      hadoMarket: loan.fraktBond.hadoMarket,
     },
     bondTradeTransaction: newBondTradeTransaction,
   }

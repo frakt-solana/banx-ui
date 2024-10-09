@@ -114,11 +114,7 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
 
   return (
     <>
-      <FilterTableSection
-        loans={filteredLoans}
-        onChange={setCurrentOption}
-        currentOption={currentOption}
-      />
+      <FilterTableSection loans={loans} onChange={setCurrentOption} currentOption={currentOption} />
 
       <Table
         data={sortedLoans}
@@ -129,7 +125,7 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
       />
 
       <Summary
-        loans={filteredLoans}
+        loans={sortedLoans}
         selectedLoansOptimistics={selectedLoans}
         setSelection={setSelection}
       />
