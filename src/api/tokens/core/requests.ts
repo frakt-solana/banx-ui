@@ -147,27 +147,16 @@ type FetchBorrowOffers = (props: {
   market: string
   bondingCurveType: BondingCurveType
   ltvLimit: number //? base points
-  collateralsAmount: string
   excludeWallet?: string
-  disableMultiBorrow: boolean
 }) => Promise<BorrowOffer[] | undefined>
 export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
-  const {
-    market,
-    bondingCurveType,
-    ltvLimit,
-    collateralsAmount,
-    excludeWallet,
-    disableMultiBorrow,
-  } = props
+  const { market, bondingCurveType, ltvLimit, excludeWallet } = props
 
   const queryParams = new URLSearchParams({
     market: String(market),
     bondingCurveType: String(bondingCurveType),
     ltvLimit: String(ltvLimit),
-    collateralsAmount: String(collateralsAmount),
     excludeWallet: String(excludeWallet),
-    disableMultiBorrow: String(disableMultiBorrow),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 

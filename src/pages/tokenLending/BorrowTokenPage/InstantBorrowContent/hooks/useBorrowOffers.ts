@@ -45,7 +45,6 @@ export const useBorrowOffers = (
   const fetchBorrowOffers = () => {
     const marketPubkey = collateralToken?.marketPubkey || ''
     const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
-    const collateralsAmount = stringToBN(debouncedCollateralsAmount, marketTokenDecimals)
 
     const ltvLimit = debouncedLtvSliderValue * 100 //? base points 50% => 5000
 
@@ -53,9 +52,7 @@ export const useBorrowOffers = (
       market: marketPubkey,
       bondingCurveType,
       ltvLimit,
-      collateralsAmount: collateralsAmount.toString(),
       excludeWallet: walletPubkeyString || PUBKEY_PLACEHOLDER,
-      disableMultiBorrow: false,
     })
   }
 
