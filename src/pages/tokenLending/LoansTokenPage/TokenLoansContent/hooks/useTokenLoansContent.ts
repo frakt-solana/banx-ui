@@ -37,8 +37,8 @@ export const useTokenLoansContent = (loans: TokenLoan[]) => {
     toggleTerminationFilter,
     isRepaymentCallFilterEnabled,
     toggleRepaymentCallFilter,
-    selectedCollateralMints,
-    setSelectedCollateralMints,
+    selectedCollateralTicker,
+    setSelectedCollateralTicker,
   } = useFilterTokenLoansPreviews(loansPreviews)
 
   const { sortedLoansPreviews, sortParams } = useSortTokenLoansPreviews(
@@ -47,8 +47,8 @@ export const useTokenLoansContent = (loans: TokenLoan[]) => {
 
   const searchSelectParams = createSearchSelectParams({
     options: filteredLoansPreviews,
-    selectedOptions: selectedCollateralMints,
-    onChange: setSelectedCollateralMints,
+    selectedOptions: selectedCollateralTicker,
+    onChange: setSelectedCollateralTicker,
   })
 
   const goToBorrowPage = () => {
@@ -112,7 +112,7 @@ const createSearchSelectParams = ({
     labels: ['Collateral', 'Loans'],
     optionKeys: {
       labelKey: 'collareralTicker',
-      valueKey: 'collateralMint',
+      valueKey: 'collareralTicker',
       imageKey: 'collateralLogoUrl',
       secondLabel: {
         key: 'loansAmount',

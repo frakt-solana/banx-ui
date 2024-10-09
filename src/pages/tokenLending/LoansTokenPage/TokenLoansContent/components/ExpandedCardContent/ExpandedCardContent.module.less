@@ -157,3 +157,80 @@
   }
 }
 // * filterTableSection *//
+
+// * Cells *//
+.headerCellText {
+  font: var(--title-xs);
+}
+
+.bodyCellText {
+  font: var(--body-text-sm);
+}
+
+.checkboxCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.collateralTokenAmount {
+  color: var(--content-secondary);
+  font: var(--important-text-xl);
+
+  @media (max-width: 640px) {
+    font: var(--important-text-md);
+  }
+}
+
+.actionsButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+
+  button {
+    width: 100%;
+  }
+}
+
+.statusCell {
+  display: flex;
+  flex-direction: column-reverse;
+  white-space: nowrap;
+  align-items: flex-end;
+}
+
+.statusCellTimeText,
+.statusCellTimeText span {
+  font: var(--body-text-xs);
+}
+// * Cells *//
+
+// * TooltipContent * //
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+}
+.tooltipRowLabel {
+  color: var(--content-secondary);
+  font: var(--title-xs);
+  text-transform: uppercase;
+}
+
+.tooltipRowValue {
+  font: var(--body-text-sm);
+}
+// * TooltipContent * //

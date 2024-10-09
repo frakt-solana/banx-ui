@@ -12,9 +12,9 @@ import { isTokenLoanRepaymentCallActive, isTokenLoanTerminating } from '@banx/ut
 
 import { useSortedLoans } from '../../hooks'
 import { useSelectedTokenLoans } from '../../loansCart'
-import { getTableColumns } from '../columns'
 import { FilterStatus, FilterTableSection } from './FilterTableSection'
 import { Summary } from './Summary'
+import { getTableColumns } from './columns'
 
 import styles from './ExpandedCardContent.module.less'
 

@@ -82,7 +82,7 @@ const RepaymentCallFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, l
   <Tooltip title={loansAmount ? 'Repayment calls' : 'No repayment calls currently'}>
     <div
       className={classNames(styles.filterButtonWrapper, styles.repaymentCall)}
-      data-loans-amount={loansAmount}
+      data-loans-amount={loansAmount && loansAmount > 0 ? loansAmount : null}
     >
       <Button
         className={classNames(
@@ -105,7 +105,7 @@ const TerminatingFilterButton: FC<FilterButtonProps> = ({ isActive, onClick, loa
   <Tooltip title={loansAmount ? 'Terminating loans' : 'No terminating loans currently'}>
     <div
       className={classNames(styles.filterButtonWrapper, styles.terminating)}
-      data-loans-amount={loansAmount}
+      data-loans-amount={loansAmount && loansAmount > 0 ? loansAmount : null}
     >
       <Button
         className={classNames(

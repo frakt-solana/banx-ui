@@ -6,13 +6,13 @@ import { createGlobalState } from '@banx/store'
 
 import { LoansPreview } from '../types'
 
-const useCollateralMintsStore = createGlobalState<string[]>([])
+const useCollateralTickerStore = createGlobalState<string[]>([])
 
 export const useFilterTokenLoansPreviews = (loansPreviews: LoansPreview[]) => {
   const [isTerminationFilterEnabled, setTerminationFilterState] = useState(false)
   const [isRepaymentCallFilterEnabled, setIsRepaymentCallFilterState] = useState(false)
 
-  const [selectedCollateralMints, setSelectedCollateralMints] = useCollateralMintsStore()
+  const [selectedCollateralTicker, setSelectedCollateralTicker] = useCollateralTickerStore()
 
   const toggleTerminationFilter = () => {
     setIsRepaymentCallFilterState(false)
@@ -39,17 +39,17 @@ export const useFilterTokenLoansPreviews = (loansPreviews: LoansPreview[]) => {
     [isTerminationFilterEnabled, isRepaymentCallFilterEnabled],
   )
 
-  const filteredLoansByCollateralMints = useMemo(() => {
-    if (!selectedCollateralMints.length) return loansPreviews
+  const filteredLoansByCollateralTicker = useMemo(() => {
+    if (!selectedCollateralTicker.length) return loansPreviews
 
     return filter(loansPreviews, (preview) =>
-      selectedCollateralMints.includes(preview.collateralMint),
+      selectedCollateralTicker.includes(preview.collareralTicker),
     )
-  }, [loansPreviews, selectedCollateralMints])
+  }, [loansPreviews, selectedCollateralTicker])
 
   const filteredLoansBySelectedCollateral = useMemo(
-    () => applyActiveFilters(filteredLoansByCollateralMints),
-    [filteredLoansByCollateralMints, applyActiveFilters],
+    () => applyActiveFilters(filteredLoansByCollateralTicker),
+    [filteredLoansByCollateralTicker, applyActiveFilters],
   )
 
   const filteredLoansPreviews = useMemo(
@@ -58,13 +58,13 @@ export const useFilterTokenLoansPreviews = (loansPreviews: LoansPreview[]) => {
   )
 
   const terminatingLoansAmount = useMemo(
-    () => sumBy(filteredLoansByCollateralMints, (preview) => preview.terminatingLoansAmount || 0),
-    [filteredLoansByCollateralMints],
+    () => sumBy(filteredLoansByCollateralTicker, (preview) => preview.terminatingLoansAmount || 0),
+    [filteredLoansByCollateralTicker],
   )
 
   const repaymentCallsAmount = useMemo(
-    () => sumBy(filteredLoansByCollateralMints, (preview) => preview.repaymentCallsAmount || 0),
-    [filteredLoansByCollateralMints],
+    () => sumBy(filteredLoansByCollateralTicker, (preview) => preview.repaymentCallsAmount || 0),
+    [filteredLoansByCollateralTicker],
   )
 
   return {
@@ -80,7 +80,7 @@ export const useFilterTokenLoansPreviews = (loansPreviews: LoansPreview[]) => {
     isRepaymentCallFilterEnabled,
     toggleRepaymentCallFilter,
 
-    selectedCollateralMints,
-    setSelectedCollateralMints,
+    selectedCollateralTicker,
+    setSelectedCollateralTicker,
   }
 }
