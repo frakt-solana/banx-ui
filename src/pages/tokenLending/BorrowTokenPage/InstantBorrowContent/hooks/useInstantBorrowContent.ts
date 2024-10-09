@@ -7,7 +7,6 @@ import { useTokenType } from '@banx/store/common'
 import {
   adjustTokenAmountWithUpfrontFee,
   bnToHuman,
-  getTokenDecimals,
   stringToBN,
   sumBNs,
 } from '@banx/utils'
@@ -30,8 +29,6 @@ export const useInstantBorrowContent = () => {
 
   const { collateralsList } = useCollateralsList()
   const { borrowTokensList } = useBorrowTokensList()
-
-  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
   const {
     data: offers,
@@ -115,10 +112,11 @@ export const useInstantBorrowContent = () => {
 
   const canFundRequiredCollaterals = useMemo(() => {
     const maxCollateralsToFund = sumBNs(offers.map((offer) => new BN(offer.maxCollateralToReceive)))
-    const requiredCollaterals = stringToBN(collateralInputValue, marketTokenDecimals)
+    const collaterDecimals = collateralToken?.collateral.decimals || 0
+    const requiredCollaterals = stringToBN(collateralInputValue, collaterDecimals)
 
     return maxCollateralsToFund.gt(requiredCollaterals)
-  }, [offers, collateralInputValue, marketTokenDecimals])
+  }, [offers, collateralInputValue, collateralToken])
 
   return {
     offers,
