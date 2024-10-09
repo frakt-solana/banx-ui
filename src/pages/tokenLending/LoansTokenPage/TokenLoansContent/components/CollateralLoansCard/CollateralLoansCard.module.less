@@ -37,10 +37,13 @@
 .expandButton {
   display: flex;
 
-  &.expanded svg {
-    transform: rotate(180deg);
-  }
+  &.expanded {
+    background-color: var(--accent-secondary);
 
+    svg {
+      transform: rotate(180deg);
+    }
+  }
   @media (max-width: 960px) {
     position: absolute;
     top: 8px;

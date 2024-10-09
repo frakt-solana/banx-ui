@@ -67,7 +67,7 @@ export const Summary: FC<SummaryProps> = ({ loans, selectedLoansOptimistics, set
           classNamesProps={{ container: styles.summaryAdditionalStat }}
         />
         <StatInfo
-          label="Weighted apr"
+          label="WAPR"
           value={weightedApr}
           valueType={VALUES_TYPES.PERCENT}
           classNamesProps={classNamesProps}
