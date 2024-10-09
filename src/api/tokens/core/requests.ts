@@ -146,7 +146,7 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
 type FetchBorrowOffers = (props: {
   market: string
   bondingCurveType: BondingCurveType
-  ltvLimit: number //? base points
+  ltvLimit: number | undefined //? base points
   excludeWallet?: string
 }) => Promise<BorrowOffer[] | undefined>
 export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
@@ -155,10 +155,12 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   const queryParams = new URLSearchParams({
     market: String(market),
     bondingCurveType: String(bondingCurveType),
-    ltvLimit: String(ltvLimit),
     excludeWallet: String(excludeWallet),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
+  if (ltvLimit) {
+    queryParams.append('ltvLimit', String(ltvLimit))
+  }
 
   const { data } = await axios.get<{ data: BorrowOffer[] }>(
     `${BACKEND_BASE_URL}/lending/spl/borrow-token-v5?${queryParams?.toString()}`,
