@@ -90,7 +90,11 @@ export const useTokenLenderLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
+              updateOrAddLoan({
+                ...loan,
+                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
+                bondTradeTransaction,
+              })
               removeLoan(loan.publicKey, wallet.publicKey.toBase58())
               close()
             }
@@ -143,7 +147,11 @@ export const useTokenLenderLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
+              updateOrAddLoan({
+                ...loan,
+                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
+                bondTradeTransaction,
+              })
             })
             clearSelection()
           }
@@ -394,6 +402,7 @@ export const useTokenLenderLoansTransactions = () => {
                 ...loan,
                 fraktBond: {
                   ...loan.fraktBond,
+                  hadoMarket: params.loan.fraktBond.hadoMarket,
                   lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
                 },
                 bondTradeTransaction,

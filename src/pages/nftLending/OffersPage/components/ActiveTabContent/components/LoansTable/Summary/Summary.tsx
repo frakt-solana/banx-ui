@@ -98,7 +98,11 @@ export const Summary: FC<SummaryProps> = ({
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
+              updateOrAddLoan({
+                ...loan,
+                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
+                bondTradeTransaction,
+              })
             })
             clearSelection()
           }

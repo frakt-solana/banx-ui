@@ -134,7 +134,11 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
+              updateOrAddLoan({
+                ...loan,
+                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
+                bondTradeTransaction,
+              })
               removeLoan(loan.publicKey, wallet.publicKey.toBase58())
               close()
             }
