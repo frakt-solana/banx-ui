@@ -43,7 +43,7 @@ import {
 
 import { TooltipRow } from '../components'
 import { BanxSolEpochContent, EscrowTabs } from './components'
-import { useLenderVaultInfo, useUserVault } from './hooks'
+import { useLenderVaultInfo } from './hooks'
 
 import styles from './LenderVaults.module.less'
 
@@ -52,7 +52,7 @@ export const EscrowVault = () => {
   const { connection } = useConnection()
   const { tokenType } = useTokenType()
 
-  const { lenderVaultInfo } = useLenderVaultInfo()
+  const { lenderVaultInfo, updateUserVaultOptimistic } = useLenderVaultInfo()
   const walletBalance = useWalletBalance(tokenType)
 
   const [activeTab, setActiveTab] = useState<'wallet' | 'escrow'>('wallet')
@@ -113,11 +113,10 @@ export const EscrowVault = () => {
               if (!accountInfoByPubkey) return
               const userVault = parseDepositSimulatedAccounts(accountInfoByPubkey)
 
-              // eslint-disable-next-line no-console
-              console.log({ userVault })
-
-              // const offer = parseClaimTokenLenderVaultSimulatedAccounts(accountInfoByPubkey)
-              // updateTokenOffer([offer])
+              updateUserVaultOptimistic({
+                walletPubkey: walletAndConnection.wallet.publicKey.toBase58(),
+                updatedUserVault: userVault,
+              })
             })
           }
 
@@ -181,9 +180,9 @@ export const ClaimSection = () => {
   const wallet = useWallet()
   const { connection } = useConnection()
   const { tokenType } = useTokenType()
-  const { userVault } = useUserVault()
 
-  const { lenderVaultInfo, clusterStats } = useLenderVaultInfo()
+  const { userVault, updateUserVaultOptimistic, lenderVaultInfo, clusterStats } =
+    useLenderVaultInfo()
 
   const { totalClaimAmount, repaymentsAmount, interestRewardsAmount, rentRewards } = lenderVaultInfo
 
@@ -219,9 +218,10 @@ export const ClaimSection = () => {
               if (!accountInfoByPubkey) return
               const userVault = parseClaimLenderVaultSimulatedAccounts(accountInfoByPubkey)
 
-              //TODO Implement useQuery optimistic
-              // eslint-disable-next-line no-console
-              console.log(userVault)
+              updateUserVaultOptimistic({
+                walletPubkey: walletAndConnection.wallet.publicKey.toBase58(),
+                updatedUserVault: userVault,
+              })
             })
           }
 

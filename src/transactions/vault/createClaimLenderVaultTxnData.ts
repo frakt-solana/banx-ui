@@ -17,7 +17,7 @@ import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
 
-import { parseAccountInfoByPubkey } from '../functions'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateClaimLenderVaultTxnDataParams = {
@@ -132,7 +132,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
 export const parseClaimLenderVaultSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
 
   return results?.['userVault']?.[0] as UserVault
 }

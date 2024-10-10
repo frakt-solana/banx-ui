@@ -14,7 +14,7 @@ import { BANX_SOL_ADDRESS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { isBanxSolTokenType } from '@banx/utils'
 
-import { parseAccountInfoByPubkey } from '../functions'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateUpdateUserVaultTxnDataParams = {
@@ -102,7 +102,7 @@ export const createUpdateUserVaultTxnData: CreateUpdateUserVaultTxnData = async 
 export const parseDepositSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
 
   return results?.['userVault']?.[0] as UserVault
 }
