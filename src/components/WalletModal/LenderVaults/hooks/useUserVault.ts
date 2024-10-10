@@ -6,7 +6,7 @@ import { useClusterStats } from '@banx/hooks'
 import { queryClient } from '@banx/providers'
 import { useTokenType } from '@banx/store/common'
 
-import { getLenderVaultInfo } from './helpers'
+import { getLenderVaultInfo } from '../helpers'
 
 const USE_USER_VAULT_QUERY_KEY = 'userVaults'
 const createUserVaultQueryKey = (walletPubkey: string) => [USE_USER_VAULT_QUERY_KEY, walletPubkey]

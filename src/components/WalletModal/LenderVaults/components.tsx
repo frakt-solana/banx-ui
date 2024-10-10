@@ -14,20 +14,20 @@ import { BanxSOL } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
 import { CountdownUnits, formatCountdownUnits, formatValueByTokenType } from '@banx/utils'
 
-import { useLenderVaultInfo } from './hooks'
+import { TabName, useLenderVaultInfo } from './hooks'
 
 import styles from './LenderVaults.module.less'
 
 type EscrowTabsProps = {
   walletBalance: number
   escrowBalance: number
-  tab: 'wallet' | 'escrow'
-  setTab: (tab: 'wallet' | 'escrow') => void
+  tab: TabName
+  setTab: (tab: TabName) => void
 }
 export const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, walletBalance }) => {
   const onChange = () => {
-    if (tab === 'wallet') setTab('escrow')
-    else setTab('wallet')
+    if (tab === TabName.Wallet) setTab(TabName.Escrow)
+    else setTab(TabName.Wallet)
   }
 
   return (
@@ -35,8 +35,8 @@ export const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, wa
       <EscrowTab
         label="Wallet balance"
         balance={walletBalance}
-        isActive={tab === 'wallet'}
-        onClick={() => setTab('wallet')}
+        isActive={tab === TabName.Wallet}
+        onClick={() => setTab(TabName.Wallet)}
       />
       <div className={classNames(styles.arrow, { [styles.rotated]: tab === 'escrow' })}>
         <CaretRightOutlined />
@@ -44,8 +44,8 @@ export const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, wa
       <EscrowTab
         label="Escrow balance"
         balance={escrowBalance}
-        isActive={tab === 'escrow'}
-        onClick={() => setTab('escrow')}
+        isActive={tab === TabName.Escrow}
+        onClick={() => setTab(TabName.Escrow)}
       />
     </div>
   )
