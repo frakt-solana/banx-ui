@@ -11,7 +11,7 @@ import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
-import { NumericStepInput } from '@banx/components/inputs'
+import { InputErrorMessage, NumericStepInput } from '@banx/components/inputs'
 
 import { useWalletBalance } from '@banx/hooks'
 import { useTokenType } from '@banx/store/common'
@@ -43,6 +43,7 @@ import {
 
 import { TooltipRow } from '../components'
 import { BanxSolEpochContent, EscrowTabs } from './components'
+import { getInputErrorMessage } from './helpers'
 import { useLenderVaultInfo } from './hooks'
 
 import styles from './LenderVaults.module.less'
@@ -147,6 +148,14 @@ export const EscrowVault = () => {
     update(stringToBN(inputValue, Math.log10(tokenDecimals)))
   }
 
+  const errorMessage = getInputErrorMessage({
+    activeTab,
+    walletBalance,
+    escrowBalance: lenderVaultInfo.offerLiquidityAmount,
+    inputValue,
+    tokenType,
+  })
+
   return (
     <div className={styles.wrapper}>
       <h3 className={styles.title}>
@@ -161,14 +170,22 @@ export const EscrowVault = () => {
       />
 
       <NumericStepInput
-        className={styles.numericInput}
         value={inputValue}
         onChange={setInputValue}
         postfix={getTokenUnit(tokenType)}
       />
 
+      <div className={styles.errorMessageContainer}>
+        {errorMessage && <InputErrorMessage message={errorMessage} />}
+      </div>
+
       <div className={styles.actionWrapper}>
-        <Button className={styles.actionButton} onClick={onActionClick} size="medium">
+        <Button
+          className={styles.actionButton}
+          onClick={onActionClick}
+          size="medium"
+          disabled={!!errorMessage || parseFloat(inputValue) === 0}
+        >
           {activeTab === 'wallet' ? 'Deposit' : 'Withdraw'}
         </Button>
       </div>
