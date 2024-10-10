@@ -1,4 +1,5 @@
 import {
+  BONDS_PROGRAM_PUBKEY,
   PROTOCOL_FEE,
   PROTOCOL_FEE_TOKEN,
   REPAY_FEE_APR,
@@ -6,7 +7,7 @@ import {
 
 export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production'
 
-export const BACKEND_BASE_URL = 'https://api.banx.gg'
+export const BACKEND_BASE_URL = 'http://ec2-52-87-120-232.compute-1.amazonaws.com:3000'
 
 export const FCM = {
   AUTH_DOMAIN: 'frakt-ee9cc.firebaseapp.com',
@@ -30,7 +31,7 @@ export const SENTRY = {
 }
 
 export const BONDS = {
-  PROGRAM_PUBKEY: '4tdmkuY6EStxbS6Y8s5ueznL3VPMSugrvQuDeAHGZhSt',
+  PROGRAM_PUBKEY: BONDS_PROGRAM_PUBKEY,
   ADMIN_PUBKEY: 'revJ8QJgQ3xCcZ6CMykjsmGMYdg8Pj9WnqgJZBHBwSK',
   PROTOCOL_FEE: PROTOCOL_FEE, //? Base points
   REPAY_FEE_APR: REPAY_FEE_APR, //? Base points
