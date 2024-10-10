@@ -27,7 +27,7 @@ import {
   createUpdateUserVaultTxnData,
   parseClaimLenderVaultSimulatedAccounts,
   parseDepositSimulatedAccounts,
-} from '@banx/transactions/nftLending'
+} from '@banx/transactions/vault'
 import {
   ZERO_BN,
   destroySnackbar,

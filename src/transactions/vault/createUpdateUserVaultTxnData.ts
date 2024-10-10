@@ -14,8 +14,8 @@ import { BANX_SOL_ADDRESS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { isBanxSolTokenType } from '@banx/utils'
 
-import { parseAccountInfoByPubkey } from '../../functions'
-import { sendTxnPlaceHolder } from '../../helpers'
+import { parseAccountInfoByPubkey } from '../functions'
+import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateUpdateUserVaultTxnDataParams = {
   amount: BN
@@ -68,7 +68,6 @@ export const createUpdateUserVaultTxnData: CreateUpdateUserVaultTxnData = async 
         params,
         accounts,
         inputAmount: diff.abs(),
-
         instructions,
         signers,
         lookupTables,
@@ -83,7 +82,6 @@ export const createUpdateUserVaultTxnData: CreateUpdateUserVaultTxnData = async 
         params,
         accounts,
         inputAmount: amount,
-
         instructions,
         signers,
         lookupTables,
