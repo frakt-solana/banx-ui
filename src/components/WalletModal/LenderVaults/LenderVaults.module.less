@@ -1,64 +1,16 @@
-// .wrapper {
-// }
-
+// * EscrowVault * //
 .title {
-  padding: 12px 0 0;
+  color: var(--content-primary);
   font: var(--title-md);
   text-transform: uppercase;
-  color: var(--content-primary);
-}
 
-.tabs {
-  padding: 10px 0;
-  display: grid;
-  grid-template-columns: 1fr 48px 1fr;
-  cursor: pointer;
-}
-
-.tab {
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: var(--border-less-primary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tabBalance {
-  font: var(--important-text-md);
-  margin-bottom: 2px;
-}
-.tabLabel {
-  color: var(--content-tertiary);
-  text-transform: uppercase;
-  font: var(--title-sm);
-  text-align: center;
-}
-
-.tabActive {
-  pointer-events: none;
-  background: var(--accent-primary-sub);
-  border-color: var(--accent-primary-sub);
-}
-
-.arrow {
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 12px 0 0;
+  gap: 4px;
 }
 
-.arrowIconRotated {
-  transform: rotate(180deg);
-}
-
-.arrowIcon svg {
-  fill: var(--accent-primary);
-  width: 18px;
-  height: 18px;
-}
-
-.numbericInput {
+.numericInput {
   margin-bottom: 12px;
 }
 
@@ -71,8 +23,63 @@
 .actionButton {
   width: 100%;
 }
+// * EscrowVault * //
 
-//? ClaimSection
+// * EscrowTabs * //
+.tabs {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  padding: 10px 0;
+}
+
+.tab {
+  border: var(--border-less-primary);
+  border-radius: 6px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+
+  &.active {
+    pointer-events: none;
+    background: var(--accent-primary-sub);
+    border-color: var(--accent-primary-sub);
+  }
+}
+
+.tabBalance {
+  font: var(--important-text-md);
+  margin-bottom: 2px;
+}
+
+.tabLabel {
+  color: var(--content-tertiary);
+  text-transform: uppercase;
+  font: var(--title-sm);
+  text-align: center;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+
+  svg {
+    fill: var(--accent-primary);
+    width: 18px;
+    height: 18px;
+  }
+}
+// * EscrowTabs * //
+
+// * ClaimSection * //
 .claimSection {
   padding: 8px 0;
 }
@@ -98,3 +105,4 @@
     gap: 0;
   }
 }
+// * ClaimSection * //

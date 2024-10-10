@@ -1,6 +1,5 @@
-import { FC, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { CaretRightOutlined } from '@ant-design/icons'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 import { BN } from 'fbonds-core'
@@ -11,6 +10,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
+import Tooltip from '@banx/components/Tooltip'
 import { NumericStepInput } from '@banx/components/inputs'
 
 import { useWalletBalance } from '@banx/hooks'
@@ -42,38 +42,36 @@ import {
 } from '@banx/utils'
 
 import { TooltipRow } from '../components'
-import { BanxSolEpochContent } from './components'
+import { BanxSolEpochContent, EscrowTabs } from './components'
 import { useLenderVaultInfo, useUserVault } from './hooks'
 
 import styles from './LenderVaults.module.less'
 
 export const EscrowVault = () => {
-  const { tokenType } = useTokenType()
-  const walletBalance = useWalletBalance(tokenType, { isLive: false })
-  const { lenderVaultInfo } = useLenderVaultInfo()
   const wallet = useWallet()
   const { connection } = useConnection()
+  const { tokenType } = useTokenType()
+
+  const { lenderVaultInfo } = useLenderVaultInfo()
+  const walletBalance = useWalletBalance(tokenType)
 
   const [activeTab, setActiveTab] = useState<'wallet' | 'escrow'>('wallet')
-
   const [inputValue, setInputValue] = useState('0')
 
   const tokenDecimals = getTokenDecimals(tokenType)
 
+  const formatBalance = (balance: number) => (balance / tokenDecimals).toString()
+
   useEffect(() => {
-    const valueString = (walletBalance / getTokenDecimals(tokenType)).toString()
-    setInputValue(valueString)
+    setInputValue(formatBalance(walletBalance))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const onTabClick = (nextValue: 'wallet' | 'escrow') => {
-    setActiveTab(nextValue)
+  const onTabClick = (nextTab: 'wallet' | 'escrow') => {
+    setActiveTab(nextTab)
 
-    const value = nextValue === 'wallet' ? walletBalance : lenderVaultInfo.offerLiquidityAmount
-
-    const valueString = (value / getTokenDecimals(tokenType)).toString()
-
-    setInputValue(valueString)
+    const balance = nextTab === 'wallet' ? walletBalance : lenderVaultInfo.offerLiquidityAmount
+    setInputValue(formatBalance(balance))
   }
 
   const update = async (amount: BN) => {
@@ -152,7 +150,9 @@ export const EscrowVault = () => {
 
   return (
     <div className={styles.wrapper}>
-      <h3 className={styles.title}>Lender escrow</h3>
+      <h3 className={styles.title}>
+        Escrow <Tooltip title="Escrow" />
+      </h3>
 
       <EscrowTabs
         tab={activeTab}
@@ -162,76 +162,17 @@ export const EscrowVault = () => {
       />
 
       <NumericStepInput
-        className={styles.numbericInput}
+        className={styles.numericInput}
         value={inputValue}
         onChange={setInputValue}
-        // className={styles.maxOfferInput}
-        // disabled={!connected}
-        // tooltipText="Your max offer, given sufficient liquidity in your offer. Actual loan amount taken can be less depending on the amount of SOL borrowers choose to borrow"
         postfix={getTokenUnit(tokenType)}
-        // step={inputStepByTokenType}
       />
 
       <div className={styles.actionWrapper}>
-        <Button
-          className={styles.actionButton}
-          onClick={onActionClick}
-          disabled={false}
-          size="medium"
-        >
+        <Button className={styles.actionButton} onClick={onActionClick} size="medium">
           {activeTab === 'wallet' ? 'Deposit' : 'Withdraw'}
         </Button>
       </div>
-    </div>
-  )
-}
-
-type EscrowTabsProps = {
-  walletBalance: number
-  escrowBalance: number
-  tab: 'wallet' | 'escrow'
-  setTab: (tab: 'wallet' | 'escrow') => void
-}
-const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, walletBalance }) => {
-  const onChange = () => {
-    if (tab === 'wallet') setTab('escrow')
-    else setTab('wallet')
-  }
-
-  return (
-    <div className={styles.tabs} onClick={onChange}>
-      <EscrowTab
-        label="Wallet balance"
-        balance={walletBalance}
-        isActive={tab === 'wallet'}
-        onClick={() => setTab('wallet')}
-      />
-      <div className={classNames(styles.arrow, { [styles.arrowIconRotated]: tab === 'escrow' })}>
-        <CaretRightOutlined className={styles.arrowIcon} />
-      </div>
-      <EscrowTab
-        label="Escrow balance"
-        balance={escrowBalance}
-        isActive={tab === 'escrow'}
-        onClick={() => setTab('escrow')}
-      />
-    </div>
-  )
-}
-
-type EscrowTabProps = {
-  label: string
-  balance: number
-  isActive?: boolean
-  onClick: () => void
-}
-const EscrowTab: FC<EscrowTabProps> = ({ label, balance, onClick, isActive }) => {
-  return (
-    <div className={classNames(styles.tab, { [styles.tabActive]: isActive })} onClick={onClick}>
-      <p className={styles.tabBalance}>
-        <DisplayValue value={balance} />
-      </p>
-      <p className={styles.tabLabel}>{label}</p>
     </div>
   )
 }
@@ -244,7 +185,7 @@ export const ClaimSection = () => {
 
   const { lenderVaultInfo, clusterStats } = useLenderVaultInfo()
 
-  const { totalClaimAmount } = lenderVaultInfo
+  const { totalClaimAmount, repaymentsAmount, interestRewardsAmount, rentRewards } = lenderVaultInfo
 
   const claimVault = async () => {
     if (totalClaimAmount <= 0 || !userVault || !clusterStats) return
@@ -302,8 +243,6 @@ export const ClaimSection = () => {
       })
     }
   }
-
-  const { repaymentsAmount, interestRewardsAmount, rentRewards } = lenderVaultInfo
 
   const tooltipContent = (
     <div className={styles.tooltipContent}>

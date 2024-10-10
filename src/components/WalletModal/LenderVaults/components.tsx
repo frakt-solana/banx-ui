@@ -1,9 +1,12 @@
 import { FC } from 'react'
 
+import { CaretRightOutlined } from '@ant-design/icons'
+import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { StatInfo } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
 import { useClusterStats } from '@banx/hooks'
@@ -13,7 +16,58 @@ import { CountdownUnits, formatCountdownUnits, formatValueByTokenType } from '@b
 
 import { useLenderVaultInfo } from './hooks'
 
-import styles from '../WalletModal.module.less'
+import styles from './LenderVaults.module.less'
+
+type EscrowTabsProps = {
+  walletBalance: number
+  escrowBalance: number
+  tab: 'wallet' | 'escrow'
+  setTab: (tab: 'wallet' | 'escrow') => void
+}
+export const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, walletBalance }) => {
+  const onChange = () => {
+    if (tab === 'wallet') setTab('escrow')
+    else setTab('wallet')
+  }
+
+  return (
+    <div className={styles.tabs} onClick={onChange}>
+      <EscrowTab
+        label="Wallet balance"
+        balance={walletBalance}
+        isActive={tab === 'wallet'}
+        onClick={() => setTab('wallet')}
+      />
+      <div className={classNames(styles.arrow, { [styles.rotated]: tab === 'escrow' })}>
+        <CaretRightOutlined />
+      </div>
+      <EscrowTab
+        label="Escrow balance"
+        balance={escrowBalance}
+        isActive={tab === 'escrow'}
+        onClick={() => setTab('escrow')}
+      />
+    </div>
+  )
+}
+
+type EscrowTabProps = {
+  label: string
+  balance: number
+  isActive?: boolean
+  onClick: () => void
+}
+
+const EscrowTab: FC<EscrowTabProps> = ({ label, balance, onClick, isActive }) => {
+  return (
+    <div className={classNames(styles.tab, { [styles.active]: isActive })} onClick={onClick}>
+      <p className={styles.tabBalance}>
+        <DisplayValue value={balance} />
+      </p>
+      <p className={styles.tabLabel}>{label}</p>
+    </div>
+  )
+}
 
 export const BanxSolEpochContent = () => {
   const { data: clusterStats } = useClusterStats()
