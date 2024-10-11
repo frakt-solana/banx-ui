@@ -22,6 +22,9 @@ interface ExpandedCardContentProps {
   loans: TokenLoan[]
 }
 
+const HEADER_ROW_HEIGHT = 26
+const ROW_HEIGHT = 38
+
 const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPubkey = walletPublicKey?.toBase58() || ''
@@ -112,17 +115,21 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
     }
   }, [onRowClick])
 
+  const tableHeight = useMemo(() => HEADER_ROW_HEIGHT + loans.length * ROW_HEIGHT, [loans])
+
   return (
     <>
       <FilterTableSection loans={loans} onChange={setCurrentOption} currentOption={currentOption} />
 
-      <Table
-        data={sortedLoans}
-        columns={columns}
-        rowParams={rowParams}
-        className={styles.table}
-        classNameTableWrapper={styles.tableWrapper}
-      />
+      <div style={{ height: tableHeight }}>
+        <Table
+          data={sortedLoans}
+          columns={columns}
+          rowParams={rowParams}
+          className={styles.table}
+          classNameTableWrapper={styles.tableWrapper}
+        />
+      </div>
 
       <Summary
         loans={sortedLoans}
