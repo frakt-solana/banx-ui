@@ -72,7 +72,7 @@ export const useBorrowOffers = (
     if (!borrowOffers) return []
 
     return borrowOffers.filter((offer) =>
-      new BN(offer.maxTokenToGet).lte(new BN(MAX_TOKEN_TO_GET_TRESHOLD)),
+      new BN(offer.maxTokenToGet).gte(new BN(MAX_TOKEN_TO_GET_TRESHOLD)),
     )
   }, [borrowOffers])
 
