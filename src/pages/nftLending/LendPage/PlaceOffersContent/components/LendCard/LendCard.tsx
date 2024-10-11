@@ -57,7 +57,7 @@ const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
     <div className={styles.mainInfoContainer}>
       <img src={market.collectionImage} className={styles.collectionImage} />
       <h4 className={styles.collectionName}>{collectionName}</h4>
-      {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
+      {tensorSlug && <TensorLink slug={tensorSlug} />}
       {isHot && (
         <Tooltip title="Collection is in huge demand waiting for lenders!">
           <Fire />

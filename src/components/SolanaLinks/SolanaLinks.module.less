@@ -3,12 +3,21 @@
   height: 100%;
 }
 
-.tensorLink {
+.tensorLink,
+.dexscreenerLink {
+  cursor: pointer;
+
   display: flex;
   align-items: center;
   justify-content: center;
 
   svg path {
-    fill: var(--content-primary);
+    fill: var(--content-secondary);
+  }
+
+  &:hover {
+    svg path {
+      fill: var(--content-primary);
+    }
   }
 }
