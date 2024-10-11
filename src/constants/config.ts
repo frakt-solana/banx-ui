@@ -7,7 +7,7 @@ import {
 
 export const IS_DEVELOPMENT = process.env.NODE_ENV !== 'production'
 
-export const BACKEND_BASE_URL = 'http://ec2-52-87-120-232.compute-1.amazonaws.com:3000'
+export const BACKEND_BASE_URL = 'https://api.banx.gg'
 
 export const FCM = {
   AUTH_DOMAIN: 'frakt-ee9cc.firebaseapp.com',
