@@ -4,6 +4,7 @@ import {
   claimPerpetualBondOfferInterest,
   claimPerpetualBondOfferRepayments,
   claimPerpetualBondOfferStakingRewards,
+  claimUserRentRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import {
   CreateTxnData,
@@ -74,8 +75,18 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     signersArray.push(...signers)
   }
 
-  if (rentRewards.gt(ZERO_BN)) {
-    //TODO: Add rent rewards ixn
+  if (rentRewards.gt(ZERO_BN) && isBanxSolTokenType(userVault.lendingTokenType)) {
+    const { instructions, signers } = await claimUserRentRewards({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      connection: walletAndConnection.connection,
+      accounts: {
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      sendTxn: sendTxnPlaceHolder,
+    })
+
+    instructionsArray.push(...instructions)
+    signersArray.push(...signers)
   }
 
   const totalLstYield = isBanxSolTokenType(lendingTokenType)
