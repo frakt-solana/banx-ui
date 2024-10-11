@@ -9,7 +9,6 @@ import {
   SeparateStatsLine,
 } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { TokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { Snowflake } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
@@ -26,11 +25,7 @@ const Header = () => {
   const totalLiquidity = sumBy(marketsPreview, (offer) => offer.offerTvl)
 
   return (
-    <PageHeaderBackdrop
-      title="Borrow"
-      titleBtn={<OnboardButton contentType="borrow" />}
-      tokenSwitcher={<TokenSwitcher title="Borrow" />}
-    >
+    <PageHeaderBackdrop title="Borrow" titleBtn={<OnboardButton contentType="borrow" />}>
       {connected && <AdditionalStat label="Your NFTs" value={nftsAmount} />}
 
       <AdditionalStat

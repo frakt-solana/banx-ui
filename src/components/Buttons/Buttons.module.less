@@ -184,55 +184,54 @@
   height: 32px;
   gap: 8px;
 }
-.connectedWalletInfo {
-  display: flex;
-  flex-direction: column;
-}
-.connectedWalletAddress {
-  font: var(--btn-text-md);
-
-  @media (max-width: 640px) {
-    display: none;
-  }
-}
-
-.connectedMobileWalletAddress {
-  display: none;
-
-  @media (max-width: 640px) {
-    font: var(--btn-text-sm);
-    display: flex;
-  }
-}
 
 // * BalanceContent * //
 .balanceContent {
   display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 86px;
+
+  @media (max-width: 640px) {
+    min-width: unset;
+  }
+}
+
+.balanceInfo {
+  display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
+
+  svg {
+    display: none;
+  }
+
+  @media (max-width: 640px) {
+    gap: 0;
+
+    svg {
+      display: unset;
+      height: 12px;
+      width: 12px;
+
+      path {
+        fill: var(--content-primary);
+      }
+    }
+  }
 }
 
-.verticalLine {
-  background: var(--content-primary);
-  width: 1px;
-  height: 12px;
+.balanceInfoLabel {
+  font: var(--important-text-sm);
 
   @media (max-width: 640px) {
     display: none;
   }
 }
-.balance {
+
+.balanceInfoValue {
   font: var(--body-text-sm);
 }
-
-.banxSolBalance {
-  font: var(--body-text-sm);
-
-  @media (max-width: 640px) {
-    display: none;
-  }
-}
-
 // * BalanceContent * //
 
 .connectedWalletIcon {
@@ -240,7 +239,7 @@
     fill: var(--content-primary);
   }
 
-  @media (max-width: 640px) {
+  @media (max-width: 960px) {
     display: none;
   }
 }

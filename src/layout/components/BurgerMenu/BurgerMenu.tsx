@@ -1,7 +1,11 @@
+import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+
+import { BanxNotificationsButton } from '@banx/components/BanxNotifications'
 
 import { Burger, BurgerClose } from '@banx/icons'
 
+import { PriorityFeesButton } from '../Header/components'
 import {
   EXTERNAL_LINKS,
   ExternalLinks,
@@ -15,6 +19,8 @@ import { useBurgerMenu } from './hooks'
 import styles from './BurgerMenu.module.less'
 
 const BurgerMenu = () => {
+  const { connected } = useWallet()
+
   const { isVisible, toggleVisibility } = useBurgerMenu()
 
   return (
@@ -28,7 +34,11 @@ const BurgerMenu = () => {
         <NavigationsLinks links={SECONDARY_NAVIGATION_LINKS} />
 
         <div className={styles.communityContainer}>
-          <ThemeSwitcher className={styles.themeSwitcher} />
+          <div className={styles.widgetContainer}>
+            <ThemeSwitcher />
+            {connected && <BanxNotificationsButton />}
+            {connected && <PriorityFeesButton />}
+          </div>
           <ExternalLinks links={EXTERNAL_LINKS} />
         </div>
       </div>
