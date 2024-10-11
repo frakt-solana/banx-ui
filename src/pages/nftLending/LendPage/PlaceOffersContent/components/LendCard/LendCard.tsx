@@ -114,10 +114,10 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpe
         classNamesProps={classNamesProps}
       />
       <StatInfo
-        label="In offers"
+        label="Size"
         value={<DisplayValue value={offerTvl} />}
         secondValue={`in ${activeOfferAmount} offers`}
-        tooltipText={TOOLTIP_TEXTS.IN_OFFERS}
+        tooltipText={TOOLTIP_TEXTS.SIZE}
         classNamesProps={classNamesProps}
       />
       <StatInfo

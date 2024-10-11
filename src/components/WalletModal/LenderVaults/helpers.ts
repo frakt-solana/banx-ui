@@ -4,62 +4,68 @@ import {
   calculateBanxSolStakingRewards,
   calculateCurrentInterestSolPure,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondingCurveType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain, sumBy } from 'lodash'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
-import { core } from '@banx/api/nft'
-import { isOfferStateClosed } from '@banx/utils'
+import { UserVault } from '@banx/api/shared'
+import { getTokenDecimals, getTokenTicker } from '@banx/utils'
 
-export const getLenderVaultInfo = (
-  offers: core.Offer[],
-  clusterStats: ClusterStats | undefined,
-) => {
+import { TabName } from './hooks'
+
+type GetLenderVaultInfoParams = {
+  userVault: UserVault | undefined
+  clusterStats: ClusterStats | undefined
+}
+export const getLenderVaultInfo = ({ userVault, clusterStats }: GetLenderVaultInfoParams) => {
   const { slot = 0, epochStartedAt = 0 } = clusterStats || {}
 
-  const closedOffers = offers.filter((offer) => isOfferStateClosed(offer.pairState))
+  const offerLiquidityAmount = userVault ? userVault.offerLiquidityAmount.toNumber() : 0
 
-  const totalAccruedInterest = sumBy(offers, (offer) => offer.concentrationIndex)
-  const totalRepaymets = sumBy(offers, (offer) => offer.bidCap)
+  const repaymentsAmount = userVault ? userVault.repaymentsAmount.toNumber() : 0
+  const interestRewardsAmount = userVault ? userVault.interestRewardsAmount.toNumber() : 0
+  const rentRewards = userVault ? userVault.rentRewards.toNumber() : 0
+  const totalLstYield =
+    userVault && userVault.lendingTokenType === LendingTokenType.BanxSol
+      ? calculateLstYield({ userVault, slot, epochStartedAt }).toNumber()
+      : 0
 
-  const totalClosedOffersValue = sumBy(
-    closedOffers,
-    (offer) => offer.fundsSolOrTokenBalance + offer.bidSettlement,
-  )
+  const totalClaimAmount = repaymentsAmount + interestRewardsAmount + rentRewards + totalLstYield
 
-  const totalLstYield = chain(offers)
-    .filter((offer) => offer.bondingCurve.bondingType !== BondingCurveType.LinearUsdc)
-    .sumBy((offer) => calculateLstYield({ offer, slot, epochStartedAt }).toNumber())
-    .value()
+  const totalLiquidityValue = userVault
+    ? userVault.offerLiquidityAmount.toNumber() + totalClaimAmount
+    : 0
 
-  const totalLiquidityValue = totalAccruedInterest + totalRepaymets + totalClosedOffersValue
-  const totalClaimableValue = totalLiquidityValue + totalLstYield
-
-  const totalFundsInCurrentEpoch = sumBy(offers, (offer) =>
-    calculateYieldInCurrentEpoch(offer, clusterStats),
-  )
-
-  const totalFundsInNextEpoch = sumBy(offers, (offer) =>
-    calculateYieldInNextEpoch(offer, clusterStats),
-  )
+  const banxSolYieldInCurrentEpoch = userVault
+    ? calculateYieldInCurrentEpoch(userVault, clusterStats)
+    : 0
+  const banxSolYieldInNextEpoch = userVault ? calculateYieldInNextEpoch(userVault, clusterStats) : 0
 
   return {
-    totalAccruedInterest,
-    totalRepaymets,
-    totalClosedOffersValue,
-    totalLiquidityValue,
+    offerLiquidityAmount,
+
+    repaymentsAmount,
+    interestRewardsAmount,
+    rentRewards,
     totalLstYield,
-    totalClaimableValue,
-    totalFundsInCurrentEpoch,
-    totalFundsInNextEpoch,
+
+    totalClaimAmount,
+
+    totalLiquidityValue,
+
+    banxSolYieldInCurrentEpoch,
+    banxSolYieldInNextEpoch,
   }
 }
 
-type CalculateLstYield = (props: { offer: core.Offer; slot: number; epochStartedAt: number }) => BN
-const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) => {
+type CalculateLstYield = (props: {
+  userVault: UserVault
+  slot: number
+  epochStartedAt: number
+}) => BN
+export const calculateLstYield: CalculateLstYield = ({ userVault, slot, epochStartedAt }) => {
   const totalYield = calculateBanxSolStakingRewards({
-    bondOffer: core.convertCoreOfferToBondOfferV3(offer),
+    userVault,
     nowSlot: new BN(slot),
     currentEpochStartAt: new BN(epochStartedAt),
   })
@@ -68,7 +74,7 @@ const calculateLstYield: CalculateLstYield = ({ offer, slot, epochStartedAt }) =
 }
 
 export const calculateYieldInCurrentEpoch = (
-  offer: core.Offer,
+  userVault: UserVault,
   clusterStats: ClusterStats | undefined,
 ) => {
   const {
@@ -78,12 +84,12 @@ export const calculateYieldInCurrentEpoch = (
     slotsInEpoch = 0,
   } = clusterStats || {}
 
-  const epochWhenOfferChanged = offer.lastCalculatedSlot / slotsInEpoch
+  const epochWhenOfferChanged = userVault.lastCalculatedSlot.toNumber() / slotsInEpoch
 
   const loanValue =
     epochWhenOfferChanged < epoch
-      ? offer.fundsInCurrentEpoch + offer.fundsInNextEpoch
-      : offer.fundsInCurrentEpoch
+      ? userVault.fundsInCurrentEpoch.add(userVault.fundsInNextEpoch).toNumber()
+      : userVault.fundsInCurrentEpoch.toNumber()
 
   const currentTimeInUnix = moment().unix()
   const epochEndedAt = currentTimeInUnix + epochApproxTimeRemaining
@@ -97,7 +103,7 @@ export const calculateYieldInCurrentEpoch = (
 }
 
 export const calculateYieldInNextEpoch = (
-  offer: core.Offer,
+  userVault: UserVault,
   clusterStats: ClusterStats | undefined,
 ) => {
   const { epochApproxTimeRemaining = 0, epochDuration = 0 } = clusterStats || {}
@@ -106,9 +112,55 @@ export const calculateYieldInNextEpoch = (
   const epochStartedAt = currentTimeInUnix + epochApproxTimeRemaining
 
   return calculateCurrentInterestSolPure({
-    loanValue: offer.fundsInCurrentEpoch + offer.fundsInNextEpoch,
+    loanValue: userVault.fundsInCurrentEpoch.add(userVault.fundsInNextEpoch).toNumber(),
     startTime: epochStartedAt,
     currentTime: epochStartedAt + epochDuration,
     rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
   })
 }
+
+interface GetInputErrorMessageProps {
+  inputValue: string
+
+  walletBalance: number
+  escrowBalance: number
+
+  activeTab: TabName
+  tokenType: LendingTokenType
+}
+export const getInputErrorMessage = ({
+  inputValue,
+  walletBalance,
+  escrowBalance,
+  activeTab,
+  tokenType,
+}: GetInputErrorMessageProps) => {
+  const marketTokenDecimals = getTokenDecimals(tokenType)
+
+  const inputValueToNumber = parseFloat(inputValue)
+
+  const isEmptyInputValue = isNaN(inputValueToNumber)
+  const isWalletBalanceInsufficient = inputValueToNumber > walletBalance / marketTokenDecimals
+  const isEscrowBalanceInsufficient = inputValueToNumber > escrowBalance / marketTokenDecimals
+
+  const errorConditions: Array<[boolean, string]> = [
+    [isEmptyInputValue, 'Please enter a value'],
+    [
+      isWalletBalanceInsufficient && activeTab === TabName.Wallet,
+      createInsufficientWalletBalanceMessage(tokenType),
+    ],
+    [
+      isEscrowBalanceInsufficient && activeTab === TabName.Escrow,
+      createInsufficientEscrowBalanceMessage(tokenType),
+    ],
+  ]
+
+  const errorMessage = errorConditions.find(([condition]) => condition)?.[1] ?? ''
+  return errorMessage
+}
+
+const createInsufficientWalletBalanceMessage = (tokenType: LendingTokenType) =>
+  `Not enough ${getTokenTicker(tokenType)} in wallet`
+
+const createInsufficientEscrowBalanceMessage = (tokenType: LendingTokenType) =>
+  `Not enough ${getTokenTicker(tokenType)} in escrow`

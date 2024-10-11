@@ -9,6 +9,7 @@ import {
   PairState,
   RedeemResult,
   RepayDestination,
+  UserVaultState,
 } from 'fbonds-core/lib/fbond-protocol/types'
 import { z } from 'zod'
 
@@ -149,4 +150,23 @@ export const FraktBondSchema = z.object({
   repaidOrLiquidatedAt: StringIntSchema,
   terminatedCounter: z.number(),
   hadoMarket: StringPublicKeySchema,
+})
+
+export const UserVaultSchema = z.object({
+  publicKey: SerializedPublicKeySchema,
+  userVaultState: z.nativeEnum(UserVaultState),
+  user: SerializedPublicKeySchema,
+  lendingTokenType: z.nativeEnum(LendingTokenType),
+  offerLiquidityAmount: SerializedBNSchema,
+  liquidityInLoansAmount: SerializedBNSchema,
+  repaymentsAmount: SerializedBNSchema,
+  interestRewardsAmount: SerializedBNSchema,
+  rentRewards: SerializedBNSchema,
+  fundsInCurrentEpoch: SerializedBNSchema,
+  fundsInNextEpoch: SerializedBNSchema,
+  lastCalculatedSlot: SerializedBNSchema,
+  lastCalculatedTimestamp: SerializedBNSchema,
+  rewardsToHarvest: SerializedBNSchema,
+  rewardsHarvested: SerializedBNSchema,
+  lastTransactedAt: SerializedBNSchema,
 })

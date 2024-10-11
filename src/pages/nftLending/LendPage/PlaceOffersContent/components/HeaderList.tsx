@@ -9,7 +9,7 @@ export const HeaderList = () => {
     { label: 'Floor', tooltipText: TOOLTIP_TEXTS.FLOOR },
     { label: 'Top offer', tooltipText: TOOLTIP_TEXTS.TOP_OFFER },
     { label: 'In loans', tooltipText: TOOLTIP_TEXTS.IN_LOANS },
-    { label: 'In offers', tooltipText: TOOLTIP_TEXTS.IN_OFFERS },
+    { label: 'Size', tooltipText: TOOLTIP_TEXTS.SIZE },
     { label: 'Max APR', tooltipText: TOOLTIP_TEXTS.MAX_APR },
   ]
 
