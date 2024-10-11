@@ -1,9 +1,12 @@
 import { FC } from 'react'
 
+import { CaretRightOutlined } from '@ant-design/icons'
+import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
 import { StatInfo } from '@banx/components/StatInfo'
+import { DisplayValue } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
 import { useClusterStats } from '@banx/hooks'
@@ -11,9 +14,60 @@ import { BanxSOL } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
 import { CountdownUnits, formatCountdownUnits, formatValueByTokenType } from '@banx/utils'
 
-import { useLenderVaultInfo } from './hooks'
+import { TabName, useLenderVaultInfo } from './hooks'
 
-import styles from '../WalletModal.module.less'
+import styles from './LenderVaults.module.less'
+
+type EscrowTabsProps = {
+  walletBalance: number
+  escrowBalance: number
+  tab: TabName
+  setTab: (tab: TabName) => void
+}
+export const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, walletBalance }) => {
+  const onChange = () => {
+    if (tab === TabName.Wallet) setTab(TabName.Escrow)
+    else setTab(TabName.Wallet)
+  }
+
+  return (
+    <div className={styles.tabs} onClick={onChange}>
+      <EscrowTab
+        label="Wallet balance"
+        balance={walletBalance}
+        isActive={tab === TabName.Wallet}
+        onClick={() => setTab(TabName.Wallet)}
+      />
+      <div className={classNames(styles.arrow, { [styles.rotated]: tab === TabName.Escrow })}>
+        <CaretRightOutlined />
+      </div>
+      <EscrowTab
+        label="Escrow balance"
+        balance={escrowBalance}
+        isActive={tab === TabName.Escrow}
+        onClick={() => setTab(TabName.Escrow)}
+      />
+    </div>
+  )
+}
+
+type EscrowTabProps = {
+  label: string
+  balance: number
+  isActive?: boolean
+  onClick: () => void
+}
+
+const EscrowTab: FC<EscrowTabProps> = ({ label, balance, onClick, isActive }) => {
+  return (
+    <div className={classNames(styles.tab, { [styles.active]: isActive })} onClick={onClick}>
+      <p className={styles.tabBalance}>
+        <DisplayValue value={balance} />
+      </p>
+      <p className={styles.tabLabel}>{label}</p>
+    </div>
+  )
+}
 
 export const BanxSolEpochContent = () => {
   const { data: clusterStats } = useClusterStats()
@@ -32,33 +86,27 @@ export const BanxSolEpochContent = () => {
     : 0
 
   return (
-    <div className={styles.epochContainer}>
-      <div className={styles.epochStats}>
-        <StatInfo
-          label="Epoch ends in"
-          tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
-          value={
-            <Timer expiredAt={expiredAt} formatCountdownUnits={customEpochFormatCountdownUnits} />
-          }
-          icon={BanxSOL}
-          flexType="row"
-        />
-        <StatInfo
-          label="Yield for this epoch"
-          tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
-          value={formattedTotalFundsInCurrentEpoch}
-          icon={BanxSOL}
-          flexType="row"
-        />
-        <StatInfo
-          label="Yield for next epoch"
-          tooltipText="Projected liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx throughout the next epoch (excluding taken loans)"
-          value={formattedTotalFundsInNextEpoch}
-          icon={BanxSOL}
-          flexType="row"
-        />
-      </div>
-    </div>
+    <>
+      <StatInfo
+        label="Epoch ends in"
+        value={
+          <Timer expiredAt={expiredAt} formatCountdownUnits={customEpochFormatCountdownUnits} />
+        }
+        flexType="row"
+      />
+      <StatInfo
+        label="Yield for this epoch"
+        value={formattedTotalFundsInCurrentEpoch}
+        icon={BanxSOL}
+        flexType="row"
+      />
+      <StatInfo
+        label="Yield for next epoch"
+        value={formattedTotalFundsInNextEpoch}
+        icon={BanxSOL}
+        flexType="row"
+      />
+    </>
   )
 }
 

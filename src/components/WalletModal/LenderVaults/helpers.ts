@@ -9,6 +9,9 @@ import moment from 'moment'
 
 import { ClusterStats } from '@banx/api/common'
 import { UserVault } from '@banx/api/shared'
+import { getTokenDecimals, getTokenTicker } from '@banx/utils'
+
+import { TabName } from './hooks'
 
 type GetLenderVaultInfoParams = {
   userVault: UserVault | undefined
@@ -115,3 +118,49 @@ export const calculateYieldInNextEpoch = (
     rateBasePoints: BANX_SOL_STAKING_YEILD_APR,
   })
 }
+
+interface GetInputErrorMessageProps {
+  inputValue: string
+
+  walletBalance: number
+  escrowBalance: number
+
+  activeTab: TabName
+  tokenType: LendingTokenType
+}
+export const getInputErrorMessage = ({
+  inputValue,
+  walletBalance,
+  escrowBalance,
+  activeTab,
+  tokenType,
+}: GetInputErrorMessageProps) => {
+  const marketTokenDecimals = getTokenDecimals(tokenType)
+
+  const inputValueToNumber = parseFloat(inputValue)
+
+  const isEmptyInputValue = isNaN(inputValueToNumber)
+  const isWalletBalanceInsufficient = inputValueToNumber > walletBalance / marketTokenDecimals
+  const isEscrowBalanceInsufficient = inputValueToNumber > escrowBalance / marketTokenDecimals
+
+  const errorConditions: Array<[boolean, string]> = [
+    [isEmptyInputValue, 'Please enter a value'],
+    [
+      isWalletBalanceInsufficient && activeTab === TabName.Wallet,
+      createInsufficientWalletBalanceMessage(tokenType),
+    ],
+    [
+      isEscrowBalanceInsufficient && activeTab === TabName.Escrow,
+      createInsufficientEscrowBalanceMessage(tokenType),
+    ],
+  ]
+
+  const errorMessage = errorConditions.find(([condition]) => condition)?.[1] ?? ''
+  return errorMessage
+}
+
+const createInsufficientWalletBalanceMessage = (tokenType: LendingTokenType) =>
+  `Not enough ${getTokenTicker(tokenType)} in wallet`
+
+const createInsufficientEscrowBalanceMessage = (tokenType: LendingTokenType) =>
+  `Not enough ${getTokenTicker(tokenType)} in escrow`

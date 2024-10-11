@@ -1,65 +1,21 @@
-// .wrapper {
-// }
-
+// * EscrowVault * //
 .title {
-  padding: 12px 0 0;
+  color: var(--content-primary);
   font: var(--title-md);
   text-transform: uppercase;
-  color: var(--content-primary);
-}
 
-.tabs {
-  padding: 10px 0;
-  display: grid;
-  grid-template-columns: 1fr 48px 1fr;
-  cursor: pointer;
-}
-
-.tab {
-  padding: 8px 16px;
-  border-radius: 6px;
-  cursor: pointer;
-  border: var(--border-less-primary);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.tabBalance {
-  font: var(--important-text-md);
-  margin-bottom: 2px;
-}
-.tabLabel {
-  color: var(--content-tertiary);
-  text-transform: uppercase;
-  font: var(--title-sm);
-  text-align: center;
-}
-
-.tabActive {
-  pointer-events: none;
-  background: var(--accent-primary-sub);
-  border-color: var(--accent-primary-sub);
-}
-
-.arrow {
   display: flex;
   align-items: center;
-  justify-content: center;
+  padding: 12px 0 0;
+  gap: 4px;
 }
 
-.arrowIconRotated {
-  transform: rotate(180deg);
-}
+.errorMessageContainer {
+  height: 14px;
 
-.arrowIcon svg {
-  fill: var(--accent-primary);
-  width: 18px;
-  height: 18px;
-}
-
-.numbericInput {
-  margin-bottom: 12px;
+  & > * {
+    font: var(--body-text-xs);
+  }
 }
 
 .actionWrapper {
@@ -71,30 +27,109 @@
 .actionButton {
   width: 100%;
 }
+// * EscrowVault * //
 
-//? ClaimSection
+// * EscrowTabs * //
+.tabs {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  padding: 10px 0;
+}
+
+.tab {
+  border: var(--border-less-primary);
+  border-radius: 6px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+
+  &.active {
+    pointer-events: none;
+    background: var(--accent-primary-sub);
+    border-color: var(--accent-primary-sub);
+  }
+}
+
+.tabBalance {
+  font: var(--important-text-md);
+  margin-bottom: 2px;
+}
+
+.tabLabel {
+  color: var(--content-tertiary);
+  text-transform: uppercase;
+  font: var(--title-sm);
+  text-align: center;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+
+  svg {
+    fill: var(--accent-primary);
+    width: 18px;
+    height: 18px;
+  }
+}
+// * EscrowTabs * //
+
+// * ClaimSection * //
 .claimSection {
-  padding: 8px 0;
+  padding-top: 8px;
 }
 
 .lenderValtStatsContainer {
+  border-top: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   width: 100%;
 
-  &.hiddenBorder {
-    border-top: 0;
+  &.epochContent {
+    flex-direction: column;
+
+    & > div {
+      margin-bottom: 8px;
+      gap: 4px;
+      align-items: unset;
+      justify-content: center;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
   }
 }
 
 .lenderVaultStats {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
 
   & > div {
-    gap: 0;
+    gap: 4px;
+
+    span {
+      display: flex;
+      align-items: center;
+    }
+
+    svg path {
+      fill: revert-layer;
+    }
   }
 }
+// * ClaimSection * //

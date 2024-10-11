@@ -5,7 +5,6 @@ import {
   claimPerpetualBondOfferRepayments,
   claimPerpetualBondOfferStakingRewards,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -18,8 +17,8 @@ import { BONDS } from '@banx/constants'
 import { banxSol } from '@banx/transactions'
 import { ZERO_BN, isBanxSolTokenType } from '@banx/utils'
 
-import { parseAccountInfoByPubkey } from '../../functions'
-import { sendTxnPlaceHolder } from '../../helpers'
+import { accountConverterBNAndPublicKey, parseAccountInfoByPubkey } from '../functions'
+import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateClaimLenderVaultTxnDataParams = {
   userVault: UserVault
@@ -36,42 +35,21 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
   walletAndConnection,
 ) => {
   const { userVault, clusterStats } = params
-
-  const repaymentsAmount = userVault.repaymentsAmount
-  const interestRewardsAmount = userVault.interestRewardsAmount
-  const rentRewards = userVault.rentRewards
-  const totalLstYield =
-    userVault.lendingTokenType === LendingTokenType.BanxSol
-      ? calculateBanxSolStakingRewards({
-          userVault: params.userVault,
-          nowSlot: new BN(clusterStats.slot),
-          currentEpochStartAt: new BN(clusterStats.epochStartedAt ?? 0),
-        })
-      : ZERO_BN
-
-  const totalClaimAmount = repaymentsAmount
-    .add(interestRewardsAmount)
-    .add(rentRewards)
-    .add(totalLstYield)
+  const { repaymentsAmount, interestRewardsAmount, rentRewards, lendingTokenType } = userVault
 
   const instructionsArray: web3.TransactionInstruction[] = []
   const signersArray: web3.Signer[] = []
 
-  // const accountsParams = {
-  //   bondOffer: new web3.PublicKey(offer.publicKey),
-  //   userPubkey: walletAndConnection.wallet.publicKey,
-  // }
-
   if (repaymentsAmount.gt(ZERO_BN)) {
     const { instructions, signers } = await claimPerpetualBondOfferRepayments({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      connection: walletAndConnection.connection,
       accounts: {
         userPubkey: walletAndConnection.wallet.publicKey,
       },
       args: {
-        lendingTokenType: userVault.lendingTokenType,
+        lendingTokenType,
       },
-      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      connection: walletAndConnection.connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
@@ -81,14 +59,14 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
 
   if (interestRewardsAmount.gt(ZERO_BN)) {
     const { instructions, signers } = await claimPerpetualBondOfferInterest({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      connection: walletAndConnection.connection,
       accounts: {
         userPubkey: walletAndConnection.wallet.publicKey,
       },
       args: {
-        lendingTokenType: userVault.lendingTokenType,
+        lendingTokenType,
       },
-      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      connection: walletAndConnection.connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
@@ -100,13 +78,26 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
     //TODO: Add rent rewards ixn
   }
 
-  if (isBanxSolTokenType(userVault.lendingTokenType) && totalLstYield.gt(ZERO_BN)) {
+  const totalLstYield = isBanxSolTokenType(lendingTokenType)
+    ? calculateBanxSolStakingRewards({
+        userVault: params.userVault,
+        nowSlot: new BN(clusterStats.slot),
+        currentEpochStartAt: new BN(clusterStats.epochStartedAt ?? 0),
+      })
+    : ZERO_BN
+
+  const totalClaimAmount = repaymentsAmount
+    .add(interestRewardsAmount)
+    .add(rentRewards)
+    .add(totalLstYield)
+
+  if (isBanxSolTokenType(lendingTokenType) && totalLstYield.gt(ZERO_BN)) {
     const { instructions, signers } = await claimPerpetualBondOfferStakingRewards({
+      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+      connection: walletAndConnection.connection,
       accounts: {
         userPubkey: walletAndConnection.wallet.publicKey,
       },
-      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      connection: walletAndConnection.connection,
       sendTxn: sendTxnPlaceHolder,
     })
 
@@ -141,7 +132,7 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
 export const parseClaimLenderVaultSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
-  const results = parseAccountInfoByPubkey(accountInfoByPubkey)
+  const results = parseAccountInfoByPubkey(accountInfoByPubkey, accountConverterBNAndPublicKey)
 
   return results?.['userVault']?.[0] as UserVault
 }
