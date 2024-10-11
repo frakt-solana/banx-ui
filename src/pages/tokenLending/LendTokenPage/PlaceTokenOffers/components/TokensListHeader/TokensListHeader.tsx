@@ -22,7 +22,7 @@ const TokensListHeader = () => {
           tooltipText="Liquidity that is locked in active loans"
         />
         <Stat
-          label="In offers"
+          label="Size"
           className={styles.additionalStat}
           tooltipText="Liquidity that is locked in active offers"
         />
