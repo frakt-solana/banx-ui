@@ -33,7 +33,7 @@ import {
 
 import { TooltipRow } from '../components'
 import { BanxSolEpochContent, EscrowTabs } from './components'
-import { useLenderVaultInfo, useUserVaultContent } from './hooks'
+import { TabName, useLenderVaultInfo, useUserVaultContent } from './hooks'
 
 import styles from './LenderVaults.module.less'
 
@@ -72,6 +72,8 @@ export const EscrowVault = () => {
       <div className={styles.errorMessageContainer}>
         {errorMessage && <InputErrorMessage message={errorMessage} />}
       </div>
+
+      {isBanxSolTokenType(tokenType) && activeTab === TabName.Escrow && <BanxSolEpochContent />}
 
       <div className={styles.actionWrapper}>
         <Button

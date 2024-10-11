@@ -45,19 +45,22 @@ interface UserInfoProps {
 export const UserInfo: FC<UserInfoProps> = ({ onChangeWallet, disconnect }) => {
   return (
     <div className={styles.userInfoContainer}>
-      <UserGeneralInfo />
-      <EscrowVault />
-      <ClaimSection />
-      <div className={styles.buttonsWrapper}>
-        <div className={styles.changeWalletButton} onClick={onChangeWallet}>
-          <ChangeWallet />
-          Change wallet
-        </div>
-        <div className={styles.signOutButton} onClick={disconnect}>
-          <SignOut />
-          Disconnect
+      <div className={styles.userInfoContent}>
+        <UserGeneralInfo />
+        <div className={styles.buttonsWrapper}>
+          <div className={styles.changeWalletButton} onClick={onChangeWallet}>
+            <ChangeWallet />
+            <span>Change wallet</span>
+          </div>
+          <div className={styles.signOutButton} onClick={disconnect}>
+            <SignOut />
+            <span>Disconnect</span>
+          </div>
         </div>
       </div>
+
+      <EscrowVault />
+      <ClaimSection />
     </div>
   )
 }

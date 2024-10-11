@@ -67,53 +67,12 @@
   width: 100%;
 }
 
-// * LenderVaultContent * //
-.lenderVaultContainer {
-  background: var(--bg-secondary);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: 8px -16px 0;
-}
-
-.epochContainer {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 16px;
-  gap: 12px;
-}
-
-.epochStats {
-  display: flex;
-  flex-direction: column;
-  white-space: nowrap;
-
-  & > div {
-    justify-content: flex-start;
-    gap: 4px;
-
-    span {
-      display: flex;
-      align-items: center;
-    }
-
-    svg path {
-      fill: revert-layer;
-    }
-  }
-}
-
-.claimableValue {
+.userInfoContent {
   display: flex;
   align-items: center;
-  gap: 2px;
-
-  svg path {
-    fill: revert-layer;
-  }
+  justify-content: space-between;
+  gap: 8px;
 }
-
-// * LenderVaultContent * //
 
 // * TooltipContent * //
 .tooltipContent {
@@ -150,9 +109,9 @@
 
 .buttonsWrapper {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  padding-top: 8px;
+  gap: 24px;
 }
 
 .changeWalletButton,
@@ -164,8 +123,13 @@
   gap: 2px;
   font: var(--btn-text-sm);
 
-  svg path {
-    fill: var(--content-primary);
+  svg {
+    height: 24px;
+    width: 24px;
+
+    path {
+      fill: var(--content-primary);
+    }
   }
 }
 

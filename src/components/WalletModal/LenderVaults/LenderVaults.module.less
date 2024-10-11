@@ -85,7 +85,7 @@
 
 // * ClaimSection * //
 .claimSection {
-  padding: 8px 0;
+  padding-top: 8px;
 }
 
 .lenderValtStatsContainer {
@@ -110,3 +110,36 @@
   }
 }
 // * ClaimSection * //
+
+// * BanxSolEpochContent * //
+.epochStats {
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  gap: 4px;
+
+  & > div {
+    gap: 4px;
+
+    span {
+      display: flex;
+      align-items: center;
+    }
+
+    svg path {
+      fill: revert-layer;
+    }
+  }
+}
+
+.claimableValue {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  svg path {
+    fill: revert-layer;
+  }
+}
+
+// * BanxSolEpochContent * //
