@@ -77,7 +77,7 @@ export const useUserVaultContent = () => {
         {
           amount,
           lendingTokenType: tokenType,
-          add: activeTab === 'wallet',
+          add: activeTab === TabName.Wallet,
         },
         walletAndConnection,
       )
@@ -97,7 +97,8 @@ export const useUserVaultContent = () => {
 
           if (confirmed.length) {
             enqueueSnackbar({
-              message: activeTab === 'wallet' ? 'Successfully deposited' : 'Successfully withdrawn',
+              message:
+                activeTab === TabName.Wallet ? 'Successfully deposited' : 'Successfully withdrawn',
               type: 'success',
             })
 

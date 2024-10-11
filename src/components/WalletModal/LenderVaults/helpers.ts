@@ -11,6 +11,8 @@ import { ClusterStats } from '@banx/api/common'
 import { UserVault } from '@banx/api/shared'
 import { getTokenDecimals, getTokenTicker } from '@banx/utils'
 
+import { TabName } from './hooks'
+
 type GetLenderVaultInfoParams = {
   userVault: UserVault | undefined
   clusterStats: ClusterStats | undefined
@@ -123,7 +125,7 @@ interface GetInputErrorMessageProps {
   walletBalance: number
   escrowBalance: number
 
-  activeTab: 'wallet' | 'escrow'
+  activeTab: TabName
   tokenType: LendingTokenType
 }
 export const getInputErrorMessage = ({
@@ -144,11 +146,11 @@ export const getInputErrorMessage = ({
   const errorConditions: Array<[boolean, string]> = [
     [isEmptyInputValue, 'Please enter a value'],
     [
-      isWalletBalanceInsufficient && activeTab === 'wallet',
+      isWalletBalanceInsufficient && activeTab === TabName.Wallet,
       createInsufficientWalletBalanceMessage(tokenType),
     ],
     [
-      isEscrowBalanceInsufficient && activeTab === 'escrow',
+      isEscrowBalanceInsufficient && activeTab === TabName.Escrow,
       createInsufficientEscrowBalanceMessage(tokenType),
     ],
   ]

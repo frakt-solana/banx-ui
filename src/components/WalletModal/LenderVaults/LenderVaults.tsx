@@ -82,7 +82,7 @@ export const EscrowVault = () => {
           size="medium"
           disabled={!!errorMessage || parseFloat(inputValue) === 0}
         >
-          {activeTab === 'wallet' ? 'Deposit' : 'Withdraw'}
+          {activeTab === TabName.Wallet ? 'Deposit' : 'Withdraw'}
         </Button>
       </div>
     </div>

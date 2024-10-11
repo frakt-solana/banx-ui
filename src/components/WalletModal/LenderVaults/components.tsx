@@ -38,7 +38,7 @@ export const EscrowTabs: FC<EscrowTabsProps> = ({ tab, setTab, escrowBalance, wa
         isActive={tab === TabName.Wallet}
         onClick={() => setTab(TabName.Wallet)}
       />
-      <div className={classNames(styles.arrow, { [styles.rotated]: tab === 'escrow' })}>
+      <div className={classNames(styles.arrow, { [styles.rotated]: tab === TabName.Escrow })}>
         <CaretRightOutlined />
       </div>
       <EscrowTab
