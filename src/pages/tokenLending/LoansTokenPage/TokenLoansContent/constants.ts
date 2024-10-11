@@ -11,9 +11,9 @@ export const TOOLTIP_TEXTS = {
 
 // * Sorting * //
 export const SORT_OPTIONS: SortOption<SortField>[] = [
-  { label: 'APR', value: [SortField.APR, 'desc'] },
+  { label: 'WAPR', value: [SortField.APR, 'desc'] },
   { label: 'Debt', value: [SortField.DEBT, 'desc'] },
-  { label: 'LTV', value: [SortField.LTV, 'desc'] },
+  { label: 'WLTV', value: [SortField.LTV, 'desc'] },
 ]
 
 export const SORT_VALUE_MAP: Record<SortField, (loan: LoansPreview) => number> = {
