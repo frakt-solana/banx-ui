@@ -17,12 +17,11 @@ import styles from './LendHeader.module.less'
 const Header = () => {
   const { marketsPreview } = useMarketsPreview()
 
-  const { loansTVL, offersTVL, totalLoans } = useMemo(() => {
+  const { loansTVL, totalLoans } = useMemo(() => {
     const sumByKey = (key: keyof core.MarketPreview) => sumBy(marketsPreview, key)
 
     return {
       loansTVL: sumByKey('loansTvl'),
-      offersTVL: sumByKey('offerTvl'),
       totalLoans: sumByKey('activeBondsAmount'),
     }
   }, [marketsPreview])
@@ -42,8 +41,6 @@ const Header = () => {
           </>
         }
       />
-
-      <AdditionalStat label="Offer TVL" value={<DisplayValue value={offersTVL} />} />
     </PageHeaderBackdrop>
   )
 }
