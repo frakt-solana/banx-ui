@@ -73,8 +73,6 @@ export const EscrowVault = () => {
         {errorMessage && <InputErrorMessage message={errorMessage} />}
       </div>
 
-      {isBanxSolTokenType(tokenType) && activeTab === TabName.Escrow && <BanxSolEpochContent />}
-
       <div className={styles.actionWrapper}>
         <Button
           className={styles.actionButton}
@@ -166,25 +164,28 @@ export const ClaimSection = () => {
     </div>
   )
 
+  const isBanxSol = userVault?.lendingTokenType === LendingTokenType.BanxSol
+
   return (
     <div className={styles.claimSection}>
       <div
         className={classNames(styles.lenderValtStatsContainer, {
-          [styles.hiddenBorder]: !isBanxSolTokenType(tokenType),
+          [styles.epochContent]: isBanxSol,
         })}
       >
         <div className={styles.lenderVaultStats}>
+          {isBanxSol && <BanxSolEpochContent />}
           <StatInfo
             label="Available to claim"
             tooltipText={tooltipContent}
             value={<DisplayValue value={totalClaimAmount} />}
+            flexType="row"
           />
         </div>
         <Button onClick={claimVault} disabled={!totalClaimAmount} size="medium">
           Claim
         </Button>
       </div>
-      {userVault?.lendingTokenType === LendingTokenType.BanxSol && <BanxSolEpochContent />}
     </div>
   )
 }

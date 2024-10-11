@@ -86,31 +86,27 @@ export const BanxSolEpochContent = () => {
     : 0
 
   return (
-    <div className={styles.epochStats}>
+    <>
       <StatInfo
         label="Epoch ends in"
-        tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
         value={
           <Timer expiredAt={expiredAt} formatCountdownUnits={customEpochFormatCountdownUnits} />
         }
-        icon={BanxSOL}
         flexType="row"
       />
       <StatInfo
         label="Yield for this epoch"
-        tooltipText="Liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx for the entire epoch (excluding taken loans)"
         value={formattedTotalFundsInCurrentEpoch}
         icon={BanxSOL}
         flexType="row"
       />
       <StatInfo
         label="Yield for next epoch"
-        tooltipText="Projected liquid staking profit, awarded as 6% APR, based on the $SOL you hold in Banx throughout the next epoch (excluding taken loans)"
         value={formattedTotalFundsInNextEpoch}
         icon={BanxSOL}
         flexType="row"
       />
-    </div>
+    </>
   )
 }
 

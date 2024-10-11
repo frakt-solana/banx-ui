@@ -89,34 +89,35 @@
 }
 
 .lenderValtStatsContainer {
+  border-top: 0;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-
   width: 100%;
 
-  &.hiddenBorder {
-    border-top: 0;
+  &.epochContent {
+    flex-direction: column;
+
+    & > div {
+      margin-bottom: 8px;
+      gap: 4px;
+      align-items: unset;
+      justify-content: center;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
   }
 }
 
 .lenderVaultStats {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 12px;
-
-  & > div {
-    gap: 0;
-  }
-}
-// * ClaimSection * //
-
-// * BanxSolEpochContent * //
-.epochStats {
-  display: flex;
-  flex-direction: column;
-  white-space: nowrap;
-  gap: 4px;
 
   & > div {
     gap: 4px;
@@ -131,15 +132,4 @@
     }
   }
 }
-
-.claimableValue {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-
-  svg path {
-    fill: revert-layer;
-  }
-}
-
-// * BanxSolEpochContent * //
+// * ClaimSection * //
