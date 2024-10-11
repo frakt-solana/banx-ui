@@ -3,9 +3,8 @@ import { FC } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 
 import { useWalletBalance } from '@banx/hooks'
-import { HorizontalDots, Wallet } from '@banx/icons'
+import { Escrow, HorizontalDots, Wallet } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
-import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
 import { useLenderVaultInfo, useWalletModal } from '../WalletModal'
@@ -27,16 +26,12 @@ export const WalletConnectButton = () => {
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
-      <div className={styles.connectedWalletInfo}>
-        <span className={styles.connectedWalletAddress}>{shortenAddress(walletPubkeyString)}</span>
-        <span className={styles.connectedMobileWalletAddress}>
-          {walletPubkeyString.slice(0, 4)}
-        </span>
-        <BalanceContent
-          walletBalance={walletBalance}
-          vaultBalance={lenderVaultInfo.offerLiquidityAmount}
-        />
-      </div>
+      <BalanceContent
+        walletPubkey={walletPubkeyString}
+        walletBalance={walletBalance}
+        vaultBalance={lenderVaultInfo.offerLiquidityAmount}
+      />
+
       <HorizontalDots className={styles.connectedWalletIcon} />
     </div>
   )
@@ -52,23 +47,30 @@ export const WalletConnectButton = () => {
 }
 
 interface BalanceContentProps {
+  walletPubkey: string
   walletBalance: number
   vaultBalance: number
 }
-const BalanceContent: FC<BalanceContentProps> = ({ walletBalance, vaultBalance }) => {
+
+const BalanceContent: FC<BalanceContentProps> = ({ walletPubkey, walletBalance, vaultBalance }) => {
   return (
     <div className={styles.balanceContent}>
-      <span className={styles.balance}>
-        <DisplayValue value={walletBalance} />
-      </span>
+      <div className={styles.balanceInfo}>
+        <span className={styles.balanceInfoLabel}>{walletPubkey.slice(0, 4)}:</span>
+        <Wallet />
+        <span className={styles.balanceInfoValue}>
+          <DisplayValue value={walletBalance} />
+        </span>
+      </div>
 
       {!!vaultBalance && (
-        <>
-          <div className={styles.verticalLine} />
-          <span className={styles.vaultBalance}>
+        <span className={styles.balanceInfo}>
+          <Escrow />
+          <span className={styles.balanceInfoLabel}>Escrow:</span>
+          <span className={styles.balanceInfoValue}>
             <DisplayValue value={vaultBalance} />
           </span>
-        </>
+        </span>
       )}
     </div>
   )
