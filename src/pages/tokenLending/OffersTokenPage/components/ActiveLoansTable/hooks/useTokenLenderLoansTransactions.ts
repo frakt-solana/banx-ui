@@ -92,7 +92,10 @@ export const useTokenLenderLoansTransactions = () => {
 
               updateOrAddLoan({
                 ...loan,
-                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
+                fraktBond: {
+                  ...fraktBond,
+                  hadoMarket: loan.fraktBond.hadoMarket,
+                },
                 bondTradeTransaction,
               })
               removeLoan(loan.publicKey, wallet.publicKey.toBase58())
@@ -149,7 +152,10 @@ export const useTokenLenderLoansTransactions = () => {
 
               updateOrAddLoan({
                 ...loan,
-                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
+                fraktBond: {
+                  ...fraktBond,
+                  hadoMarket: loan.fraktBond.hadoMarket,
+                },
                 bondTradeTransaction,
               })
             })
@@ -402,7 +408,7 @@ export const useTokenLenderLoansTransactions = () => {
                 ...loan,
                 fraktBond: {
                   ...loan.fraktBond,
-                  hadoMarket: params.loan.fraktBond.hadoMarket,
+                  hadoMarket: loan.fraktBond.hadoMarket,
                   lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
                 },
                 bondTradeTransaction,

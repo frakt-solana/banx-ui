@@ -52,7 +52,7 @@ const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
     <div className={styles.mainInfoContainer}>
       <img src={collectionImage} className={styles.collectionImage} />
       <h4 className={styles.collectionName}>{collectionName}</h4>
-      {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
+      {tensorSlug && <TensorLink slug={tensorSlug} />}
     </div>
   )
 }

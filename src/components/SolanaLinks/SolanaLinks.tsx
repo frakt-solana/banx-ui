@@ -2,8 +2,13 @@ import { FC } from 'react'
 
 import classNames from 'classnames'
 
-import { BASE_TENSOR_URL, SOLANAFM_URL, TENSOR_MARKET_URL } from '@banx/constants'
-import { SolanaFM, TensorFilled } from '@banx/icons'
+import {
+  BASE_DEXSCREENER_URL,
+  BASE_TENSOR_URL,
+  SOLANAFM_URL,
+  TENSOR_MARKET_URL,
+} from '@banx/constants'
+import { Dexscreener, SolanaFM, TensorFilled } from '@banx/icons'
 
 import { Button, ButtonProps } from '../Buttons'
 
@@ -41,6 +46,27 @@ export const TensorLink: FC<TensorLinkProps> = ({ slug, mint, className }) => {
       rel="noopener noreferrer"
     >
       <TensorFilled />
+    </a>
+  )
+}
+
+type DexscreenerLinkProps = {
+  mint: string
+  className?: string
+}
+
+export const DexscreenerLink: FC<DexscreenerLinkProps> = ({ mint, className }) => {
+  const urlPath = `${BASE_DEXSCREENER_URL}/solana/${mint}`
+
+  return (
+    <a
+      className={classNames(styles.dexscreenerLink, className)}
+      onClick={(event) => event.stopPropagation()}
+      target="_blank"
+      rel="noopener noreferrer"
+      href={urlPath}
+    >
+      <Dexscreener />
     </a>
   )
 }
