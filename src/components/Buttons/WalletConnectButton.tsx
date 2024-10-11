@@ -2,13 +2,12 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { useDiscordUser, useWalletBalance } from '@banx/hooks'
+import { useWalletBalance } from '@banx/hooks'
 import { HorizontalDots, Wallet } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
 import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
-import UserAvatar from '../UserAvatar'
 import { useLenderVaultInfo, useWalletModal } from '../WalletModal'
 import { Button } from './Button'
 
@@ -24,13 +23,10 @@ export const WalletConnectButton = () => {
 
   const walletBalance = useWalletBalance(tokenType, { isLive: true })
 
-  const { data: discordUserData } = useDiscordUser()
-
   const { lenderVaultInfo } = useLenderVaultInfo()
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
-      <UserAvatar imageUrl={discordUserData?.avatarUrl ?? undefined} />
       <div className={styles.connectedWalletInfo}>
         <span className={styles.connectedWalletAddress}>{shortenAddress(walletPubkeyString)}</span>
         <span className={styles.connectedMobileWalletAddress}>
@@ -69,7 +65,7 @@ const BalanceContent: FC<BalanceContentProps> = ({ walletBalance, vaultBalance }
       {!!vaultBalance && (
         <>
           <div className={styles.verticalLine} />
-          <span className={styles.banxSolBalance}>
+          <span className={styles.vaultBalance}>
             <DisplayValue value={vaultBalance} />
           </span>
         </>

@@ -5,22 +5,21 @@ import classNames from 'classnames'
 import { Button } from '@banx/components/Buttons'
 
 import { Bell } from '@banx/icons'
-import { useBurgerMenu } from '@banx/layout/components/BurgerMenu/hooks'
 
 import { useBanxNotificationsSider } from '../BanxNotificationsSider'
 import { BUTTON_ID } from '../constants'
 
 import styles from './BanxNotificationsButton.module.less'
 
-export const BanxNotificationsButton: FC = () => {
+interface BanxNotificationsButtonProps {
+  className?: string
+}
+
+export const BanxNotificationsButton: FC<BanxNotificationsButtonProps> = ({ className }) => {
   const { isVisible, toggleVisibility } = useBanxNotificationsSider()
-  const { setVisibility: setBurgerMenuVisibility } = useBurgerMenu()
 
   const onIconClick = () => {
     toggleVisibility()
-    if (!isVisible) {
-      setBurgerMenuVisibility(false)
-    }
   }
 
   return (
@@ -28,7 +27,7 @@ export const BanxNotificationsButton: FC = () => {
       type="circle"
       variant="tertiary"
       id={BUTTON_ID}
-      className={classNames(styles.button, { [styles.buttonActive]: isVisible })}
+      className={classNames(styles.button, { [styles.buttonActive]: isVisible }, className)}
       onClick={onIconClick}
     >
       <Bell />

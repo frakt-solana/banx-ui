@@ -32,8 +32,8 @@ export const Header = () => {
       </div>
 
       <div className={styles.widgetContainer}>
-        {connected && <BanxNotificationsButton />}
-        {connected && <PriorityFeesButton />}
+        {connected && <BanxNotificationsButton className={styles.hiddenBanxNotificationsButton} />}
+        {connected && <PriorityFeesButton className={styles.hiddenPriorityFeesButton} />}
         <ThemeSwitcher className={styles.hiddenThemeSwitcher} />
         <WalletConnectButton />
       </div>
