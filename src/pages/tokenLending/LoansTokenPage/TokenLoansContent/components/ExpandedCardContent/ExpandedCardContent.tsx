@@ -24,6 +24,7 @@ interface ExpandedCardContentProps {
 
 const HEADER_ROW_HEIGHT = 26
 const ROW_HEIGHT = 38
+const MAX_TABLE_HEIGHT = 240
 
 const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
   const { publicKey: walletPublicKey } = useWallet()
@@ -115,7 +116,10 @@ const ExpandedCardContent: FC<ExpandedCardContentProps> = ({ loans }) => {
     }
   }, [onRowClick])
 
-  const tableHeight = useMemo(() => HEADER_ROW_HEIGHT + loans.length * ROW_HEIGHT, [loans])
+  const tableHeight = useMemo(
+    () => Math.min(HEADER_ROW_HEIGHT + loans.length * ROW_HEIGHT, MAX_TABLE_HEIGHT),
+    [loans],
+  )
 
   return (
     <>
