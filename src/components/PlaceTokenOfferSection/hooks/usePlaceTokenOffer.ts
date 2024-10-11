@@ -2,6 +2,8 @@ import { useEffect, useMemo } from 'react'
 
 import { BN } from 'fbonds-core'
 
+import { useUserVault } from '@banx/components/WalletModal'
+
 import { useWalletBalance } from '@banx/hooks'
 import { useTokenType } from '@banx/store/common'
 import { ZERO_BN, getTokenDecimals, stringToBN } from '@banx/utils'
@@ -15,6 +17,7 @@ import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) => {
   const { tokenType } = useTokenType()
   const walletBalance = useWalletBalance(tokenType)
+  const { userVault } = useUserVault()
 
   const { offer, market, updateOrAddOffer } = useTokenMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, setSyntheticOffer } = useTokenOffer(offerPubkey, marketPubkey)
@@ -80,6 +83,7 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
 
   const offerErrorMessage = getErrorMessage({
     walletBalance,
+    escrowBalance: userVault?.offerLiquidityAmount.toNumber() || 0,
     syntheticOffer,
     offerSize,
     tokenType,

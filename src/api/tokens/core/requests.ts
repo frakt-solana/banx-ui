@@ -146,33 +146,24 @@ export const fetchTokenLenderLoans: FetchTokenLenderLoans = async ({
 type FetchBorrowOffers = (props: {
   market: string
   bondingCurveType: BondingCurveType
-  ltvLimit: number //? base points
-  collateralsAmount: string
+  ltvLimit: number | undefined //? base points
   excludeWallet?: string
-  disableMultiBorrow: boolean
 }) => Promise<BorrowOffer[] | undefined>
 export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
-  const {
-    market,
-    bondingCurveType,
-    ltvLimit,
-    collateralsAmount,
-    excludeWallet,
-    disableMultiBorrow,
-  } = props
+  const { market, bondingCurveType, ltvLimit, excludeWallet } = props
 
   const queryParams = new URLSearchParams({
     market: String(market),
     bondingCurveType: String(bondingCurveType),
-    ltvLimit: String(ltvLimit),
-    collateralsAmount: String(collateralsAmount),
     excludeWallet: String(excludeWallet),
-    disableMultiBorrow: String(disableMultiBorrow),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
+  if (ltvLimit) {
+    queryParams.append('ltvLimit', String(ltvLimit))
+  }
 
   const { data } = await axios.get<{ data: BorrowOffer[] }>(
-    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v4?${queryParams?.toString()}`,
+    `${BACKEND_BASE_URL}/lending/spl/borrow-token-v5?${queryParams?.toString()}`,
   )
 
   return await parseResponseSafe<BorrowOffer[]>(data?.data, BorrowOfferSchema.array())

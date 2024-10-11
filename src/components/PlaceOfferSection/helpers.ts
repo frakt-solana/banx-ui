@@ -51,6 +51,7 @@ export const getUpdatedBondOffer: GetUpdatedBondOffer = ({
 type GetErrorMessage = (props: {
   syntheticOffer: SyntheticOffer
   walletBalance: number
+  escrowBalance: number
   offerSize: number
   loanValue: number
   loansAmount: number
@@ -61,9 +62,9 @@ type GetErrorMessage = (props: {
 
 const ERROR_MESSAGES = {
   INSUFFICIENT_BALANCE: {
-    [LendingTokenType.NativeSol]: 'Not enough SOL in wallet',
-    [LendingTokenType.Usdc]: 'Not enough USDC in wallet',
-    [LendingTokenType.BanxSol]: 'Not enough SOL in wallet',
+    [LendingTokenType.NativeSol]: 'Not enough SOL',
+    [LendingTokenType.Usdc]: 'Not enough USDC',
+    [LendingTokenType.BanxSol]: 'Not enough SOL',
   },
   INVALID_OFFER: 'Offer imbalance. Increase Max Offer, or reduce Delta and/or Number of Offers',
   EMPTY_LOANS_AMOUNT: 'Please enter a valid number of loans. The number of loans cannot be empty',
@@ -71,6 +72,7 @@ const ERROR_MESSAGES = {
 
 export const getErrorMessage: GetErrorMessage = ({
   walletBalance,
+  escrowBalance,
   offerSize,
   loanValue,
   loansAmount,
@@ -87,7 +89,7 @@ export const getErrorMessage: GetErrorMessage = ({
     tokenType,
   })
 
-  const totalFundsAvailable = initialOfferSize + walletBalance
+  const totalFundsAvailable = initialOfferSize + walletBalance + escrowBalance
 
   const isOfferInvalid = deltaValue && hasFormChanges ? deltaValue * loansAmount > loanValue : false
   const isBalanceInsufficient = !!walletBalance && offerSize > totalFundsAvailable

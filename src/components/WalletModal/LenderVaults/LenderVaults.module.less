@@ -1,0 +1,135 @@
+// * EscrowVault * //
+.title {
+  color: var(--content-primary);
+  font: var(--title-md);
+  text-transform: uppercase;
+
+  display: flex;
+  align-items: center;
+  padding: 12px 0 0;
+  gap: 4px;
+}
+
+.errorMessageContainer {
+  height: 14px;
+
+  & > * {
+    font: var(--body-text-xs);
+  }
+}
+
+.actionWrapper {
+  margin: 0 -16px;
+  border-bottom: 0.5px dashed var(--bg-border);
+  padding: 8px 16px 12px;
+}
+
+.actionButton {
+  width: 100%;
+}
+// * EscrowVault * //
+
+// * EscrowTabs * //
+.tabs {
+  cursor: pointer;
+  display: grid;
+  grid-template-columns: 1fr 48px 1fr;
+  padding: 10px 0;
+}
+
+.tab {
+  border: var(--border-less-primary);
+  border-radius: 6px;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+
+  &.active {
+    pointer-events: none;
+    background: var(--additional-green-secondary);
+    border-color: var(--additional-green-secondary);
+  }
+}
+
+.tabBalance {
+  font: var(--important-text-md);
+  margin-bottom: 2px;
+}
+
+.tabLabel {
+  color: var(--content-tertiary);
+  text-transform: uppercase;
+  font: var(--title-sm);
+  text-align: center;
+}
+
+.arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &.rotated {
+    transform: rotate(180deg);
+  }
+
+  svg {
+    fill: var(--accent-primary);
+    width: 18px;
+    height: 18px;
+  }
+}
+// * EscrowTabs * //
+
+// * ClaimSection * //
+.claimSection {
+  padding-top: 8px;
+}
+
+.lenderValtStatsContainer {
+  border-top: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+
+  &.epochContent {
+    flex-direction: column;
+
+    & > div {
+      margin-bottom: 8px;
+      gap: 4px;
+      align-items: unset;
+      justify-content: center;
+      flex-direction: column;
+      width: 100%;
+    }
+
+    button {
+      width: 100%;
+    }
+  }
+}
+
+.lenderVaultStats {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & > div {
+    gap: 4px;
+
+    span {
+      display: flex;
+      align-items: center;
+    }
+
+    svg path {
+      fill: revert-layer;
+    }
+  }
+}
+// * ClaimSection * //

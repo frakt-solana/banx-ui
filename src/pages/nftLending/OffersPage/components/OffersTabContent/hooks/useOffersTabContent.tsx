@@ -23,7 +23,7 @@ export const useOffersContent = () => {
 
   const { tokenType } = useTokenType()
 
-  const { offers, isLoading, updateOrAddOffer, marketsPreview } = useUserOffers({
+  const { offers, isLoading, marketsPreview } = useUserOffers({
     refetchInterval: 30 * 1000,
   })
 
@@ -95,9 +95,7 @@ export const useOffersContent = () => {
   const showEmptyList = (!filteredClosedOffers.length && !isLoading) || !connected
 
   return {
-    offers,
     offersToDisplay: sortedOffers,
-    updateOrAddOffer,
     isLoading,
 
     marketsPreview,

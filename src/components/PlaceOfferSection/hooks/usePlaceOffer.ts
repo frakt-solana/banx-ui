@@ -2,6 +2,8 @@ import { useEffect, useMemo } from 'react'
 
 import { chain } from 'lodash'
 
+import { useUserVault } from '@banx/components/WalletModal'
+
 import { core } from '@banx/api/nft'
 import { useWalletBalance } from '@banx/hooks'
 import { useTokenType } from '@banx/store/common'
@@ -60,6 +62,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   const { tokenType } = useTokenType()
 
   const walletBalance = useWalletBalance(tokenType)
+  const { userVault } = useUserVault()
 
   const { offer, market, updateOrAddOffer } = useMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, removeSyntheticOffer, setSyntheticOffer } = useSyntheticOffer(
@@ -124,6 +127,7 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
   const offerErrorMessage = getErrorMessage({
     syntheticOffer,
     walletBalance,
+    escrowBalance: userVault?.offerLiquidityAmount.toNumber() || 0,
     offerSize,
     loanValue,
     loansAmount,
