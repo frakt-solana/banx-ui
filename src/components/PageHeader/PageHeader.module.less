@@ -30,10 +30,11 @@
 .title {
   font: var(--title-3xl);
   text-transform: uppercase;
+  white-space: nowrap;
 
-  // @media (max-width: 960px) {
-  //   display: none;
-  // }
+  @media (max-width: 960px) {
+    font: var(--title-2xl);
+  }
 }
 
 .content {
