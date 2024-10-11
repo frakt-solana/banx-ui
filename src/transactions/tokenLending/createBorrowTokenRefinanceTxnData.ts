@@ -71,6 +71,7 @@ const getIxnsAndSigners = async (
 
   const accounts = {
     fbond: new web3.PublicKey(fraktBond.publicKey),
+    newLender: new web3.PublicKey(offer.assetReceiver),
     userPubkey: wallet.publicKey,
     hadoMarket: new web3.PublicKey(offer.hadoMarket),
     protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),

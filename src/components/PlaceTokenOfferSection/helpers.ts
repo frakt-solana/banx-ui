@@ -8,6 +8,7 @@ import { getTokenTicker, stringToBN } from '@banx/utils'
 
 type GetErrorMessage = (props: {
   walletBalance: number
+  escrowBalance: number
   syntheticOffer: SyntheticTokenOffer
   offerSize: number
   tokenType: LendingTokenType
@@ -15,11 +16,12 @@ type GetErrorMessage = (props: {
 
 export const getErrorMessage: GetErrorMessage = ({
   walletBalance,
+  escrowBalance,
   syntheticOffer,
   offerSize,
   tokenType,
 }) => {
-  const totalFundsAvailable = syntheticOffer.offerSize + walletBalance
+  const totalFundsAvailable = syntheticOffer.offerSize + walletBalance + escrowBalance
 
   const isBalanceInsufficient = offerSize > totalFundsAvailable
 
@@ -45,7 +47,7 @@ export const getAprErrorMessage = (apr: number) => {
 }
 
 const createInsufficientBalanceErrorMessage = (tokenType: LendingTokenType) => {
-  return `Not enough ${getTokenTicker(tokenType)} in wallet`
+  return `Not enough ${getTokenTicker(tokenType)}`
 }
 
 const createTooLowAprErrorMessage = (aprRate: number) => {

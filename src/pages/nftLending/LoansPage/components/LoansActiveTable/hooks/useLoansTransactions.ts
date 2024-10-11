@@ -86,7 +86,11 @@ export const useLoansTransactions = () => {
               const optimisticLoan: core.Loan = {
                 publicKey: fraktBond.publicKey,
                 //? Needs to prevent BE data overlap in optimistics logic
-                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                fraktBond: {
+                  ...fraktBond,
+                  hadoMarket: params.loan.fraktBond.hadoMarket,
+                  lastTransactedAt: moment().unix(),
+                },
                 bondTradeTransaction: bondTradeTransaction,
                 nft: params.loan.nft,
               }
@@ -158,7 +162,11 @@ export const useLoansTransactions = () => {
               const optimisticLoan: core.Loan = {
                 publicKey: fraktBond.publicKey,
                 //? Needs to prevent BE data overlap in optimistics logic
-                fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                fraktBond: {
+                  ...fraktBond,
+                  hadoMarket: params.loan.fraktBond.hadoMarket,
+                  lastTransactedAt: moment().unix(),
+                },
                 bondTradeTransaction: bondTradeTransaction,
                 nft: params.loan.nft,
               }
@@ -228,7 +236,11 @@ export const useLoansTransactions = () => {
                 const optimisticLoan: core.Loan = {
                   publicKey: fraktBond.publicKey,
                   //? Needs to prevent BE data overlap in optimistics logic
-                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                  fraktBond: {
+                    ...fraktBond,
+                    hadoMarket: params.loan.fraktBond.hadoMarket,
+                    lastTransactedAt: moment().unix(),
+                  },
                   bondTradeTransaction: bondTradeTransaction,
                   nft: params.loan.nft,
                 }
@@ -315,7 +327,11 @@ export const useLoansTransactions = () => {
                 const optimisticLoan: core.Loan = {
                   publicKey: fraktBond.publicKey,
                   //? Needs to prevent BE data overlap in optimistics logic
-                  fraktBond: { ...fraktBond, lastTransactedAt: moment().unix() },
+                  fraktBond: {
+                    ...fraktBond,
+                    hadoMarket: params.loan.fraktBond.hadoMarket,
+                    lastTransactedAt: moment().unix(),
+                  },
                   bondTradeTransaction: bondTradeTransaction,
                   nft: params.loan.nft,
                 }
