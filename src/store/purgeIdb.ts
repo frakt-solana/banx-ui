@@ -5,8 +5,6 @@ const SDK_VERSION = sdkPackage.version
 const BANX_SDK_VERSION_KEY = '@banx.sdkVersion'
 
 export const purgeIdb = async () => {
-  // eslint-disable-next-line no-console
-  console.log(SDK_VERSION, 'SDK_VERSION')
   try {
     const storedSdkVersion = await get<string>(BANX_SDK_VERSION_KEY)
 
