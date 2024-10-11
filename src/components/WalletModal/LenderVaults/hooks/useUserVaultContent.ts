@@ -24,6 +24,7 @@ import {
   enqueueSnackbar,
   enqueueTransactionsSent,
   enqueueWaitingConfirmation,
+  formatTrailingZeros,
   getTokenDecimals,
   stringToBN,
 } from '@banx/utils'
@@ -50,10 +51,18 @@ export const useUserVaultContent = () => {
 
   const tokenDecimals = getTokenDecimals(tokenType)
 
-  const formatBalance = (balance: number) => (balance / tokenDecimals).toString()
+  const updateInputValue = (balance: number, shouldRound: boolean) => {
+    const formattedBalance = balance / tokenDecimals
+
+    const formattedBalanceStr = shouldRound
+      ? (Math.floor(formattedBalance * 100) / 100).toFixed(2)
+      : formattedBalance.toString()
+
+    setInputValue(formatTrailingZeros(formattedBalanceStr))
+  }
 
   useEffect(() => {
-    setInputValue(formatBalance(walletBalance))
+    updateInputValue(walletBalance, true)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -61,8 +70,9 @@ export const useUserVaultContent = () => {
     setActiveTab(nextTab)
 
     const balance = nextTab === TabName.Wallet ? walletBalance : escrowBalance
+    const shouldRound = nextTab === TabName.Wallet
 
-    setInputValue(formatBalance(balance))
+    updateInputValue(balance, shouldRound)
   }
 
   const update = async (amount: BN) => {
