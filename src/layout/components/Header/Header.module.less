@@ -87,7 +87,17 @@
   }
 }
 
-.tokenSwitcher {
+.switchers {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    gap: 4px;
+  }
+}
+
+.modeSwitcher {
   margin-left: 60px;
 
   @media screen and (max-width: 960px) {
@@ -99,18 +109,10 @@
   }
 }
 
-.priorityFeeLevel {
-  @media screen and (max-width: 640px) {
-    display: none;
-  }
-}
-
 .priorityFeeButton {
-  @media screen and (max-width: 640px) {
-    padding: unset !important;
-    min-height: 32px;
-    min-width: 32px;
-  }
+  padding: unset !important;
+  min-height: 32px;
+  min-width: 32px;
 }
 
 .hiddenThemeSwitcher {

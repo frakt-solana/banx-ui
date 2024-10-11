@@ -32,7 +32,6 @@ export const BanxNotificationsButton: FC = () => {
       onClick={onIconClick}
     >
       <Bell />
-      <span className={styles.buttonText}>Notifications</span>
     </Button>
   )
 }

@@ -5,7 +5,6 @@ import { sumBy } from 'lodash'
 import { OnboardButton } from '@banx/components/Buttons'
 import { AdditionalStat, PageHeaderBackdrop } from '@banx/components/PageHeader'
 import { DisplayValue } from '@banx/components/TableComponents'
-import { TokenSwitcher } from '@banx/components/TokenSwitcher'
 
 import { formatNumbersWithCommas } from '@banx/utils'
 
@@ -25,11 +24,7 @@ const LendHeader = () => {
   }, [marketsPreview])
 
   return (
-    <PageHeaderBackdrop
-      title="Lend"
-      titleBtn={<OnboardButton contentType="lend" />}
-      tokenSwitcher={<TokenSwitcher title="Lend" />}
-    >
+    <PageHeaderBackdrop title="Lend" titleBtn={<OnboardButton contentType="lend" />}>
       <AdditionalStat
         label="Loan TVL"
         value={

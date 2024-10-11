@@ -16,18 +16,12 @@ export interface Option<T> {
 }
 
 export interface TokenDropdownProps<T> {
-  title: string
   option: Option<T>
   options: Option<T>[]
   onChangeToken: (tokenType: T) => void
 }
 
-export const TokenDropdown = <T,>({
-  option,
-  onChangeToken,
-  options,
-  title,
-}: TokenDropdownProps<T>) => {
+export const TokenDropdown = <T,>({ option, onChangeToken, options }: TokenDropdownProps<T>) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
 
   const dropdownRef = useRef(null)
@@ -39,12 +33,7 @@ export const TokenDropdown = <T,>({
 
   return (
     <div ref={dropdownRef}>
-      <TokenDropdownButton
-        title={title}
-        option={option}
-        onClick={toggleDropdown}
-        isOpen={isDropdownOpen}
-      />
+      <TokenDropdownButton option={option} onClick={toggleDropdown} isOpen={isDropdownOpen} />
 
       {isDropdownOpen && (
         <div className={styles.dropdown}>
@@ -87,16 +76,10 @@ const TokenDropdownItem = <T,>({ option, isActive, onClick }: TokenDropdownItemP
 interface TokenDropdownButtonProps<T> {
   onClick: () => void
   isOpen: boolean
-  title: string
   option: Option<T>
 }
 
-const TokenDropdownButton = <T,>({
-  title,
-  option,
-  onClick,
-  isOpen,
-}: TokenDropdownButtonProps<T>) => {
+const TokenDropdownButton = <T,>({ option, onClick, isOpen }: TokenDropdownButtonProps<T>) => {
   const { icon, label } = option
 
   return (
@@ -106,7 +89,6 @@ const TokenDropdownButton = <T,>({
       className={classNames(styles.dropdownButton, { [styles.isOpen]: isOpen })}
       onClick={onClick}
     >
-      <span>{title}</span>
       {icon}
       <span>{label}</span>
       <ChevronDown className={classNames(styles.chevronIcon, { [styles.rotate]: isOpen })} />

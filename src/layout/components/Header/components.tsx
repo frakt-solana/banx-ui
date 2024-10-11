@@ -6,14 +6,13 @@ import { PriorityFeesModal } from '@banx/components/modals'
 
 import { Cup, Settings } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { getHumanReadablePriorityLevel, useModal, usePriorityFees } from '@banx/store/common'
+import { useModal } from '@banx/store/common'
 
 import { isActivePath } from '../Navbar/helpers'
 
 import styles from './Header.module.less'
 
 export const PriorityFeesButton = () => {
-  const { priorityLevel } = usePriorityFees()
   const { open, close } = useModal()
 
   const onClickHandler = () => {
@@ -28,9 +27,6 @@ export const PriorityFeesButton = () => {
       className={styles.priorityFeeButton}
     >
       <Settings />
-      <span className={styles.priorityFeeLevel}>
-        {getHumanReadablePriorityLevel(priorityLevel)}
-      </span>
     </Button>
   )
 }
