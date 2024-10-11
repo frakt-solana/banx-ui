@@ -80,7 +80,7 @@ const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, coll
 
   const onRowClick = useCallback(
     (offer: BorrowOffer) => {
-      if (!findOfferInSelection(offer.publicKey) && restCollateralsAmount.isZero()) return
+      if (!findOfferInSelection(offer.id) && restCollateralsAmount.isZero()) return
 
       const updatedOffer = getUpdatedBorrowOffers({
         collateralsAmount: restCollateralsAmount,

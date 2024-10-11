@@ -2,29 +2,30 @@ import { FC } from 'react'
 
 import { BN, web3 } from 'fbonds-core'
 import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
-import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
-import { ZERO_BN, adjustTokenAmountWithUpfrontFee } from '@banx/utils'
+import { BorrowOffer } from '@banx/api/tokens'
+import { ZERO_BN, adjustTokenAmountWithUpfrontFee, getTokenDecimals } from '@banx/utils'
 
 import styles from './OrderBook.module.less'
 
 interface BorrowCellProps {
   offer: BorrowOffer
   selectedOffer: BorrowOffer | null
-  collateral: CollateralToken | undefined
   restCollateralsAmount: BN
+  tokenType: LendingTokenType
 }
 
 export const BorrowCell: FC<BorrowCellProps> = ({
   offer,
   selectedOffer,
-  collateral,
   restCollateralsAmount,
+  tokenType,
 }) => {
-  const collateralDecimals = collateral?.collateral.decimals || 0
-  const collateralMultiplier = Math.pow(10, collateralDecimals)
+  const tokenDecimals = Math.log10(getTokenDecimals(tokenType))
+  const collateralMultiplier = Math.pow(10, tokenDecimals)
 
   const ltvPercent = parseFloat(offer.ltv) / 100
 

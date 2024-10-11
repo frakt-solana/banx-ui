@@ -6,9 +6,9 @@ import { BorrowOffer } from '@banx/api/tokens'
 interface SelectedOffersState {
   selection: BorrowOffer[]
   set: (selection: BorrowOffer[]) => void
-  find: (offerPubkey: string) => BorrowOffer | null
+  find: (id: string) => BorrowOffer | null
   add: (offer: BorrowOffer) => void
-  remove: (offerPubkey: string) => void
+  remove: (id: string) => void
   toggle: (offer: BorrowOffer) => void
   clear: () => void
 }
@@ -22,8 +22,8 @@ export const useSelectedOffers = create<SelectedOffersState>((set, get) => ({
       }),
     )
   },
-  find: (offerPubkey) => {
-    return get().selection.find((offer) => offer.publicKey === offerPubkey) ?? null
+  find: (offerId) => {
+    return get().selection.find((offer) => offer.id === offerId) ?? null
   },
   add: (offer) => {
     set(
@@ -32,10 +32,10 @@ export const useSelectedOffers = create<SelectedOffersState>((set, get) => ({
       }),
     )
   },
-  remove: (offerPubkey) => {
+  remove: (offerId) => {
     set(
       produce((state: SelectedOffersState) => {
-        state.selection = state.selection.filter((offer) => offer.publicKey !== offerPubkey)
+        state.selection = state.selection.filter((offer) => offer.id !== offerId)
       }),
     )
   },
@@ -48,8 +48,8 @@ export const useSelectedOffers = create<SelectedOffersState>((set, get) => ({
   },
   toggle: (offer) => {
     const { find, add, remove } = get()
-    const isOfferInSelection = !!find(offer.publicKey)
+    const isOfferInSelection = !!find(offer.id)
 
-    isOfferInSelection ? remove(offer.publicKey) : add(offer)
+    isOfferInSelection ? remove(offer.id) : add(offer)
   },
 }))

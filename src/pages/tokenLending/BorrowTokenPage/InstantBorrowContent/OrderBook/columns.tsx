@@ -14,7 +14,7 @@ import styles from './OrderBook.module.less'
 
 type GetTableColumns = (props: {
   onSelectAll: () => void
-  findOfferInSelection: (offerPubkey: string) => BorrowOffer | null
+  findOfferInSelection: (offerId: string) => BorrowOffer | null
   toggleOfferInSelection: (offer: BorrowOffer) => void
   hasSelectedOffers: boolean
   restCollateralsAmount: BN
@@ -29,6 +29,7 @@ export const getTableColumns: GetTableColumns = ({
   hasSelectedOffers,
   restCollateralsAmount,
   collateral,
+  tokenType,
 }) => {
   const columns: ColumnType<BorrowOffer>[] = [
     {
@@ -44,7 +45,7 @@ export const getTableColumns: GetTableColumns = ({
         </div>
       ),
       render: (offer) => {
-        const selectedOffer = findOfferInSelection(offer.publicKey)
+        const selectedOffer = findOfferInSelection(offer.id)
 
         return (
           <div className={styles.checkboxRow}>
@@ -56,8 +57,8 @@ export const getTableColumns: GetTableColumns = ({
             <BorrowCell
               offer={offer}
               selectedOffer={selectedOffer}
-              collateral={collateral}
               restCollateralsAmount={restCollateralsAmount}
+              tokenType={tokenType}
             />
           </div>
         )
