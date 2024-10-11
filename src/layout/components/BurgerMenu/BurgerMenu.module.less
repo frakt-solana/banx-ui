@@ -40,6 +40,12 @@
   }
 }
 
+.widgetContainer {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .communityContainer {
   position: fixed;
   bottom: 24px;
@@ -67,7 +73,7 @@
   @media screen and (max-width: 960px) {
     display: flex;
     justify-content: center;
-    margin-left: 24px;
+    margin-left: 16px;
   }
 
   @media (max-width: 640px) {
@@ -77,11 +83,5 @@
       height: 24px;
       width: 24px;
     }
-  }
-}
-
-.themeSwitcher {
-  @media (min-width: 641px) {
-    display: none;
   }
 }

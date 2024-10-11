@@ -1,5 +1,3 @@
-import { FC } from 'react'
-
 import classNames from 'classnames'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
@@ -13,11 +11,7 @@ import { TOKEN_OPTIONS } from './constants'
 
 import styles from './TokenSwitcher.module.less'
 
-interface TokenSwitcherProps {
-  title: string
-}
-
-export const TokenSwitcher: FC<TokenSwitcherProps> = ({ title }) => {
+export const TokenSwitcher = () => {
   const { tokenType, setTokenType } = useTokenType()
 
   const { width } = useWindowSize()
@@ -34,7 +28,6 @@ export const TokenSwitcher: FC<TokenSwitcherProps> = ({ title }) => {
   if (isTable)
     return (
       <TokenDropdown
-        title={title}
         options={TOKEN_OPTIONS}
         option={TOKEN_OPTIONS.find((option) => option.key === tokenType) ?? TOKEN_OPTIONS[0]}
         onChangeToken={setTokenType}
