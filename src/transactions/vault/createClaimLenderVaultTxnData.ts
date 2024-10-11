@@ -97,11 +97,6 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
       })
     : ZERO_BN
 
-  const totalClaimAmount = repaymentsAmount
-    .add(interestRewardsAmount)
-    .add(rentRewards)
-    .add(totalLstYield)
-
   if (isBanxSolTokenType(lendingTokenType) && totalLstYield.gt(ZERO_BN)) {
     const { instructions, signers } = await claimPerpetualBondOfferStakingRewards({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
@@ -118,12 +113,17 @@ export const createClaimLenderVaultTxnData: CreateClaimLenderVaultTxnData = asyn
 
   const accounts = [userVault.publicKey]
 
-  if (isBanxSolTokenType(userVault.lendingTokenType) && totalClaimAmount.gt(ZERO_BN)) {
+  //? rentRewards is regular SOL. No need to swap
+  const banxSolClaimAmount = isBanxSolTokenType(lendingTokenType)
+    ? repaymentsAmount.add(interestRewardsAmount).add(totalLstYield)
+    : ZERO_BN
+
+  if (banxSolClaimAmount.gt(ZERO_BN)) {
     return await banxSol.combineWithSellBanxSolInstructions(
       {
         params,
         accounts,
-        inputAmount: totalClaimAmount,
+        inputAmount: banxSolClaimAmount,
         instructions: instructionsArray,
         signers: signersArray,
       },
