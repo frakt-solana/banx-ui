@@ -53,7 +53,8 @@ export const EscrowVault = () => {
   return (
     <div className={styles.wrapper}>
       <h3 className={styles.title}>
-        Escrow <Tooltip title="Escrow" />
+        Escrow
+        <Tooltip title="With escrow, lenders can make an unlimited number of offers, as long as each offer doesn’t exceed the escrow balance" />
       </h3>
 
       <EscrowTabs
