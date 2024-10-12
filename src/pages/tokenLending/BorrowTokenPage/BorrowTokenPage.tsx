@@ -52,6 +52,5 @@ const BORROW_TABS: Tab[] = [
   {
     label: 'List loans',
     value: BorrowTokenTabName.LIST,
-    disabled: true,
   },
 ]

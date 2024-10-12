@@ -1,9 +1,16 @@
+// * ListLoansContent * //
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 24px;
+  width: 100%;
+}
+
 .content {
   border: var(--border-primary);
   border-radius: 12px;
 
   padding: 24px;
-
   max-width: 392px;
   width: 100%;
 
@@ -15,7 +22,7 @@
 }
 
 .collateralInput {
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 }
 
 .borrowInput {
@@ -33,30 +40,37 @@
   flex-direction: column;
 }
 
-.lenderSeesMessage {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font: var(--body-text-sm);
-  height: 14px;
-  white-space: nowrap;
-
-  @media (max-width: 640px) {
-    font: var(--body-text-xs);
-  }
+.actionButton {
+  width: 100%;
 }
+// * ListLoansContent * //
 
 // * Summary * //
 .summary {
-  border-color: var(--bg-border);
-  border-style: dotted;
-  border-width: 1px 0 1px;
-
   display: flex;
   flex-direction: column;
   padding: 12px 24px 12px;
   margin: 0 -24px 0;
   gap: 8px;
+
+  position: relative;
+
+  &:before {
+    content: '';
+    background: repeating-linear-gradient(
+      to right,
+      var(--bg-border) 0,
+      var(--bg-border) 10px,
+      transparent 10px,
+      transparent 15px
+    );
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 1px;
+    width: 100%;
+  }
 
   @media (max-width: 640px) {
     padding: 8px 16px 8px;
@@ -76,7 +90,17 @@
 }
 // * Summary * //
 
-.borrowButton {
-  margin-top: 16px;
-  width: 100%;
+// * LenderAprMessage * //
+.lenderAprMessage {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--body-text-sm);
+  height: 14px;
+  white-space: nowrap;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-xs);
+  }
 }
+// * LenderAprMessage * //

@@ -1,7 +1,6 @@
 import { FC } from 'react'
 
 import { Slider, SliderProps } from '@banx/components/Slider'
-import { DisplayValue } from '@banx/components/TableComponents'
 
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
@@ -13,16 +12,9 @@ interface LoanValueSliderProps extends SliderProps {
   value: number
   onChange: (value: number) => void
   label: string
-  marketPrice?: number
 }
 
-export const LoanValueSlider: FC<LoanValueSliderProps> = ({
-  label,
-  value,
-  marketPrice,
-  onChange,
-  ...props
-}) => {
+export const LoanValueSlider: FC<LoanValueSliderProps> = ({ label, value, onChange, ...props }) => {
   const colorClassNameByValue = {
     25: styles.maxLtvSliderGreen,
     50: styles.maxLtvSliderYellow,
@@ -42,15 +34,6 @@ export const LoanValueSlider: FC<LoanValueSliderProps> = ({
             {value}%
           </span>
         </p>
-
-        {marketPrice && (
-          <p className={styles.marketPriceLabel}>
-            Market price:{' '}
-            <span className={styles.marketPriceValue}>
-              <DisplayValue value={value} />
-            </span>
-          </p>
-        )}
       </div>
 
       <Slider

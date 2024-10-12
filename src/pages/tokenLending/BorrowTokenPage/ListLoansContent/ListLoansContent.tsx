@@ -1,18 +1,19 @@
 import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { PROTOCOL_FEE_TOKEN } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { Button } from '@banx/components/Buttons'
-import { StatInfo } from '@banx/components/StatInfo'
+import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { NumericStepInput } from '@banx/components/inputs'
 
 import { DAYS_IN_YEAR } from '@banx/constants'
+import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
-import { LoanValueSlider, Separator } from '../components'
+import { Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import { BORROW_TOKENS_LIST } from '../constants'
-import { MAX_APR_VALUE, useListLoansContent } from './hooks'
+import { useListLoansContent } from './hooks'
 
 import styles from './ListLoansContent.module.less'
 
@@ -20,6 +21,9 @@ const ListLoansContent = () => {
   const { connected } = useWallet()
 
   const {
+    collateralsList,
+    borrowTokensList,
+
     borrowToken,
     setBorrowToken,
     borrowInputValue,
@@ -30,107 +34,136 @@ const ListLoansContent = () => {
     collateralInputValue,
     setCollateralInputValue,
 
-    sliderValue,
     inputAprValue,
     inputFreezeValue,
 
-    setSliderValue,
     handleChangeFreezeValue,
     handleChangeAprValue,
 
-    lenderSeesAprValue,
+    lenderAprValue,
+
+    errorMessage,
+
+    ltvPercent,
+    upfrontFee,
+    weeklyFee,
   } = useListLoansContent()
 
+  const displayMessage = errorMessage || (!connected ? 'Connect wallet' : 'List request')
+
   return (
-    <div className={styles.content}>
-      <InputTokenSelect
-        label="Collateralize"
-        value={collateralInputValue}
-        onChange={setCollateralInputValue}
-        selectedToken={collateralToken}
-        onChangeToken={setCollateralToken}
-        tokensList={[]}
-        className={styles.collateralInput}
-      />
+    <div className={styles.container}>
+      <div className={styles.content}>
+        <InputTokenSelect
+          label="Your collateral"
+          value={collateralInputValue}
+          onChange={setCollateralInputValue}
+          selectedToken={collateralToken}
+          onChangeToken={setCollateralToken}
+          tokensList={collateralsList}
+          className={styles.collateralInput}
+        />
 
-      <Separator />
+        <Separator />
 
-      <InputTokenSelect
-        label="To borrow"
-        value={borrowInputValue}
-        onChange={setBorrowlInputValue}
-        selectedToken={borrowToken}
-        onChangeToken={setBorrowToken}
-        tokensList={BORROW_TOKENS_LIST}
-      />
+        <InputTokenSelect
+          label="To borrow"
+          value={borrowInputValue}
+          onChange={setBorrowlInputValue}
+          selectedToken={borrowToken}
+          onChangeToken={setBorrowToken}
+          tokensList={borrowTokensList}
+          className={styles.borrowInput}
+        />
 
-      <LoanValueSlider label="LTV" value={sliderValue} onChange={setSliderValue} marketPrice={50} />
+        <div className={styles.fields}>
+          <div className={styles.aprFieldWrapper}>
+            <NumericStepInput
+              label="Apr"
+              value={inputAprValue}
+              onChange={handleChangeAprValue}
+              disabled={!connected}
+              placeholder="0"
+              postfix="%"
+              step={1}
+            />
 
-      <div className={styles.fields}>
-        <div className={styles.aprFieldWrapper}>
+            <LenderAprMessage apr={lenderAprValue} />
+          </div>
+
           <NumericStepInput
-            label="Apr"
-            value={inputAprValue}
-            onChange={handleChangeAprValue}
+            label="Freeze"
+            value={inputFreezeValue}
+            onChange={handleChangeFreezeValue}
             disabled={!connected}
             placeholder="0"
-            postfix="%"
-            max={MAX_APR_VALUE}
+            postfix="d"
+            max={DAYS_IN_YEAR}
+            tooltipText="Period during which loan can't be terminated"
             step={1}
           />
-          <p className={styles.lenderSeesMessage}>
-            {!!lenderSeesAprValue && <>Lender sees: {createPercentValueJSX(lenderSeesAprValue)}</>}
-          </p>
         </div>
 
-        <NumericStepInput
-          label="Freeze"
-          value={inputFreezeValue}
-          onChange={handleChangeFreezeValue}
-          disabled={!connected}
-          placeholder="0"
-          postfix="d"
-          max={DAYS_IN_YEAR}
-          tooltipText="Period during which loan can't be terminated"
-          step={1}
-        />
-      </div>
+        <Summary ltv={ltvPercent} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
 
-      <Summary weeklyFee={0.05} upfrontFee={0.001} />
-      <Button disabled={!connected} className={styles.borrowButton}>
-        {!connected ? 'Connect wallet to list request' : 'List request'}
-      </Button>
+        <Button className={styles.actionButton} disabled={!connected || !!errorMessage}>
+          {displayMessage}
+        </Button>
+      </div>
     </div>
   )
 }
 
 export default ListLoansContent
 interface SummaryProps {
+  ltv: number
   weeklyFee: number
   upfrontFee: number
 }
 
-export const Summary: FC<SummaryProps> = ({ weeklyFee, upfrontFee }) => {
+const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyFee }) => {
   const statClassNames = {
     value: styles.fixedStatValue,
   }
 
+  const formattedLtv = ltv.toFixed(0)
+
   return (
     <div className={styles.summary}>
       <StatInfo
-        label="Upfront fee"
-        value={<DisplayValue value={upfrontFee} />}
-        tooltipText="1% upfront fee charged on the loan principal amount, paid when loan is funded"
+        label="LTV"
+        value={formattedLtv}
         classNamesProps={statClassNames}
+        valueType={VALUES_TYPES.PERCENT}
+        valueStyles={{ color: ltv ? getColorByPercent(ltv, HealthColorIncreasing) : '' }}
+        tooltipText="loan-to-value ratio across loans"
+        flexType="row"
+      />
+      <StatInfo
+        label="Upfront fee"
+        value={upfrontFee}
+        classNamesProps={statClassNames}
+        tooltipText={`${
+          PROTOCOL_FEE_TOKEN / 100
+        }% upfront fee charged on the loan principal amount, paid when loan is funded`}
+        valueType={VALUES_TYPES.PERCENT}
         flexType="row"
       />
       <StatInfo
         label="Weekly fee"
-        value={weeklyFee}
-        tooltipText="Weekly fee"
+        value={<DisplayValue value={weeklyFee} />}
         classNamesProps={statClassNames}
+        tooltipText="Weekly interest on your loan. Interest is added to your debt balance"
         flexType="row"
       />
     </div>
+  )
+}
+
+const LenderAprMessage: FC<{ apr: number | null }> = ({ apr }) => {
+  return (
+    <p className={styles.lenderAprMessage}>
+      {!!apr && <>Lender sees: {createPercentValueJSX(apr)}</>}
+    </p>
   )
 }

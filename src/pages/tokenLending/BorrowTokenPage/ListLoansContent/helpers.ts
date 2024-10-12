@@ -1,0 +1,92 @@
+import {
+  BASE_POINTS,
+  MAX_APR_SPL,
+  MIN_APR_SPL,
+  PROTOCOL_FEE_TOKEN,
+} from 'fbonds-core/lib/fbond-protocol/constants'
+import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import moment from 'moment'
+
+import { CollateralToken } from '@banx/api/tokens'
+import { DAYS_IN_YEAR, ONE_WEEK_IN_SECONDS } from '@banx/constants'
+import { getTokenDecimals } from '@banx/utils'
+
+interface GetSummaryProps {
+  collateralAmount: number
+  borrowAmount: number
+  apr: number
+
+  collateralToken: CollateralToken | undefined
+  tokenType: LendingTokenType
+}
+
+export const getSummaryInfo = ({
+  collateralAmount,
+  borrowAmount,
+  apr,
+  collateralToken,
+  tokenType,
+}: GetSummaryProps) => {
+  const marketTokenDecimals = getTokenDecimals(tokenType)
+
+  const collateralPrice = collateralToken?.collateralPrice || 0
+  const adjustedBorrowAmount = borrowAmount * marketTokenDecimals
+
+  const ltvRatio = adjustedBorrowAmount / collateralAmount
+  const ltvPercent = (ltvRatio / collateralPrice) * 100 || 0
+
+  const upfrontFee = (borrowAmount * PROTOCOL_FEE_TOKEN) / BASE_POINTS || 0
+
+  const currentTimeInSeconds = moment().unix()
+  const weeklyFee = calculateCurrentInterestSolPure({
+    loanValue: adjustedBorrowAmount,
+    startTime: currentTimeInSeconds,
+    currentTime: currentTimeInSeconds + ONE_WEEK_IN_SECONDS,
+    rateBasePoints: apr * 100,
+  })
+
+  return {
+    ltvPercent,
+    upfrontFee,
+    weeklyFee,
+  }
+}
+
+interface GetInputErrorMessageProps {
+  collateralAmount: number
+  borrowAmount: number
+  freezeValue: number
+  apr: number
+}
+
+export const getInputErrorMessage = ({
+  collateralAmount,
+  borrowAmount,
+  freezeValue,
+  apr,
+}: GetInputErrorMessageProps) => {
+  const MIN_APR = MIN_APR_SPL / 100
+  const MAX_APR = MAX_APR_SPL / 100
+
+  const isCollateralEmpty = isNaN(collateralAmount)
+  const isBorrowAmountEmpty = isNaN(borrowAmount)
+  const isAprEmpty = isNaN(apr)
+
+  const isAprTooLow = apr <= MIN_APR
+  const isAprTooHigh = apr > MAX_APR
+
+  const isFreezeValueTooHigh = freezeValue > DAYS_IN_YEAR
+
+  const errorConditions = [
+    [isCollateralEmpty && isBorrowAmountEmpty, 'Please enter a value'],
+    [isCollateralEmpty, 'Please enter a value for collateral amount'],
+    [isBorrowAmountEmpty, 'Please enter a value for borrow amount'],
+    [isAprEmpty, 'Please enter a value for APR'],
+    [isFreezeValueTooHigh, `Max freeze period is ${DAYS_IN_YEAR} days`],
+    [isAprTooLow, `APR too low (min: ${MIN_APR}%)`],
+    [isAprTooHigh, `APR too high (max: ${MAX_APR}%)`],
+  ]
+
+  return errorConditions.find(([condition]) => condition)?.[1] ?? ''
+}
