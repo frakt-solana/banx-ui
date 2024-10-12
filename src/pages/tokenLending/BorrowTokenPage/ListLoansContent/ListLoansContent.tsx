@@ -24,6 +24,8 @@ const ListLoansContent = () => {
     collateralsList,
     borrowTokensList,
 
+    listLoan,
+
     borrowToken,
     setBorrowToken,
     borrowInputValue,
@@ -106,7 +108,11 @@ const ListLoansContent = () => {
 
         <Summary ltv={ltvPercent} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
 
-        <Button className={styles.actionButton} disabled={!connected || !!errorMessage}>
+        <Button
+          onClick={listLoan}
+          className={styles.actionButton}
+          disabled={!connected || !!errorMessage}
+        >
           {displayMessage}
         </Button>
       </div>
