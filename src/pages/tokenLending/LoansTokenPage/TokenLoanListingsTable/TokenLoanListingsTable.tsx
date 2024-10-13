@@ -2,25 +2,28 @@ import { useCallback, useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
+import EmptyList from '@banx/components/EmptyList'
 import Table from '@banx/components/Table'
 
 import { TokenLoan } from '@banx/api/tokens'
 import { ViewState, useTableView, useTokenType } from '@banx/store/common'
 
+import { Summary } from './Summary'
 import { getTableColumns } from './columns'
-import { useUserTokenLoanListings } from './hooks'
+import { useTokenLoanListingsContent } from './hooks/useTokenLoanListingsContent'
 import { useSelectTokenLoans } from './loansState'
 
 import styles from './TokenLoanListingsTable.module.less'
 
 const TokenLoanListingsTable = () => {
-  const { loans, isLoading } = useUserTokenLoanListings()
-
   const { publicKey } = useWallet()
   const walletPubkey = publicKey?.toBase58() || ''
 
   const { tokenType } = useTokenType()
   const { viewState } = useTableView()
+
+  const { loans, loading, showSummary, showEmptyList, emptyListParams, sortViewParams } =
+    useTokenLoanListingsContent()
 
   const {
     selection,
@@ -73,6 +76,8 @@ const TokenLoanListingsTable = () => {
     isCardView: viewState === ViewState.CARD,
   })
 
+  if (showEmptyList) return <EmptyList className={styles.emptyList} {...emptyListParams} />
+
   return (
     <div className={styles.tableRoot}>
       <Table
@@ -80,9 +85,14 @@ const TokenLoanListingsTable = () => {
         columns={columns}
         rowParams={rowParams}
         className={styles.table}
-        loading={isLoading}
+        loading={loading}
+        sortViewParams={sortViewParams}
         showCard
       />
+
+      {showSummary && (
+        <Summary loans={loans} selectedLoans={walletSelectedLoans} setSelection={setSelection} />
+      )}
     </div>
   )
 }
