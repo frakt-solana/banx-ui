@@ -8,7 +8,6 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import { NumericStepInput } from '@banx/components/inputs'
 
-import { DAYS_IN_YEAR } from '@banx/constants'
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import { Separator } from '../components'
@@ -21,31 +20,23 @@ const ListLoansContent = () => {
   const { connected } = useWallet()
 
   const {
+    listLoan,
     collateralsList,
     borrowTokensList,
-
-    listLoan,
-
     borrowToken,
     setBorrowToken,
     borrowInputValue,
     setBorrowlInputValue,
-
     collateralToken,
     setCollateralToken,
     collateralInputValue,
     setCollateralInputValue,
-
     inputAprValue,
+    setInputAprValue,
     inputFreezeValue,
-
-    handleChangeFreezeValue,
-    handleChangeAprValue,
-
-    lenderAprValue,
-
+    setInputFreezeValue,
     errorMessage,
-
+    lenderAprValue,
     ltvPercent,
     upfrontFee,
     weeklyFee,
@@ -83,8 +74,9 @@ const ListLoansContent = () => {
             <NumericStepInput
               label="Apr"
               value={inputAprValue}
-              onChange={handleChangeAprValue}
+              onChange={setInputAprValue}
               disabled={!connected}
+              integerOnly
               placeholder="0"
               postfix="%"
               step={1}
@@ -96,11 +88,10 @@ const ListLoansContent = () => {
           <NumericStepInput
             label="Freeze"
             value={inputFreezeValue}
-            onChange={handleChangeFreezeValue}
+            onChange={setInputFreezeValue}
             disabled={!connected}
             placeholder="0"
             postfix="d"
-            max={DAYS_IN_YEAR}
             tooltipText="Period during which loan can't be terminated"
             step={1}
           />
@@ -166,9 +157,13 @@ const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyFee }) => {
 }
 
 const LenderAprMessage: FC<{ apr: number | null }> = ({ apr }) => {
+  const showAprMessage = apr !== null && !isNaN(apr)
+
   return (
-    <p className={styles.lenderAprMessage}>
-      {!!apr && <>Lender sees: {createPercentValueJSX(apr)}</>}
-    </p>
+    <div className={styles.lenderAprMessageWrapper}>
+      {showAprMessage && (
+        <span className={styles.lenderAprMessage}>Lender sees: {createPercentValueJSX(apr)}</span>
+      )}
+    </div>
   )
 }

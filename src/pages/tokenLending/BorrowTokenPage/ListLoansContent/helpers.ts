@@ -78,7 +78,7 @@ export const getInputErrorMessage = ({
 
   const isFreezeValueTooHigh = freezeDuration > DAYS_IN_YEAR
 
-  const errorConditions = [
+  const errorConditions: Array<[boolean, string]> = [
     [isCollateralEmpty && isBorrowAmountEmpty, 'Please enter a value'],
     [isCollateralEmpty, 'Please enter a value for collateral amount'],
     [isBorrowAmountEmpty, 'Please enter a value for borrow amount'],
@@ -88,5 +88,9 @@ export const getInputErrorMessage = ({
     [isAprTooHigh, `APR too high (max: ${MAX_APR}%)`],
   ]
 
-  return errorConditions.find(([condition]) => condition)?.[1] ?? ''
+  const errorMessage = errorConditions.find(([condition]) => condition)?.[1] ?? ''
+
+  const hasAprErrorMessage = isAprTooLow || isAprTooHigh
+
+  return { errorMessage, hasAprErrorMessage }
 }

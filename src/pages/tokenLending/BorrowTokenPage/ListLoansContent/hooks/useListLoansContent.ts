@@ -52,15 +52,10 @@ export const useListLoansContent = () => {
     setBorrowToken(selectedBorrowToken)
   }, [borrowTokensList, tokenType, collateralToken, collateralToSet])
 
-  const handleChangeFreezeValue = (value: string) => {
-    return setInputFreezeValue(value)
+  const handleBorrowTokenChange = (token: BorrowToken) => {
+    setBorrowToken(token)
+    setTokenType(token.lendingTokenType)
   }
-
-  const handleChangeAprValue = (value: string) => {
-    return setInputAprValue(value)
-  }
-
-  const lenderAprValue = Math.round(parseFloat(inputAprValue) / 100)
 
   const { ltvPercent, upfrontFee, weeklyFee } = getSummaryInfo({
     collateralAmount: parseFloat(collateralInputValue),
@@ -70,7 +65,7 @@ export const useListLoansContent = () => {
     tokenType,
   })
 
-  const errorMessage = getInputErrorMessage({
+  const { errorMessage, hasAprErrorMessage } = getInputErrorMessage({
     collateralAmount: parseFloat(collateralInputValue),
     borrowAmount: parseFloat(borrowInputValue),
     freezeDuration: parseFloat(inputFreezeValue),
@@ -85,14 +80,16 @@ export const useListLoansContent = () => {
     collateralToken,
   })
 
+  const lenderAprValue = !hasAprErrorMessage ? parseFloat(inputAprValue) : null
+
   return {
+    listLoan,
+
     collateralsList,
     borrowTokensList,
 
-    listLoan,
-
     borrowToken,
-    setBorrowToken,
+    setBorrowToken: handleBorrowTokenChange,
     borrowInputValue,
     setBorrowlInputValue,
 
@@ -102,14 +99,14 @@ export const useListLoansContent = () => {
     setCollateralInputValue,
 
     inputAprValue,
+    setInputAprValue,
+
     inputFreezeValue,
-
-    handleChangeFreezeValue,
-    handleChangeAprValue,
-
-    lenderAprValue,
+    setInputFreezeValue,
 
     errorMessage,
+
+    lenderAprValue,
 
     ltvPercent,
     upfrontFee,
