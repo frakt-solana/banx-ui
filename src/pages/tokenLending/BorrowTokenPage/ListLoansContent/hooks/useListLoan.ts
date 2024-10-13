@@ -19,7 +19,7 @@ import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken } from '@banx/store'
 import { AssetMode, useModal, useTokenType } from '@banx/store/common'
-import { useTokenLoansOptimistic } from '@banx/store/token'
+import { useTokenLoanListingsOptimistic } from '@banx/store/token'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -63,7 +63,7 @@ export const useListLoan: UseListLoan = ({
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { open: openModal, close: closeModal } = useModal()
 
-  const { add: addLoansOptimistic } = useTokenLoansOptimistic()
+  const { add: addLoansOptimistic } = useTokenLoanListingsOptimistic()
   const { setTab: setLoanTab } = useTokenLoansTabs()
 
   const onBorrowSuccess = (loansAmount = 1) => {
