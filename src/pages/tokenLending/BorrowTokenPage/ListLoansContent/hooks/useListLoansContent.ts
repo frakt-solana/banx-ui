@@ -3,12 +3,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
 
-import { DEFAULT_COLLATERAL_MINT } from '../../InstantBorrowContent/hooks/constants'
-import {
-  useBorrowTokensList,
-  useCollateralsList,
-} from '../../InstantBorrowContent/hooks/useCollateralsList'
-import { BorrowToken } from '../../constants'
+import { BorrowToken, DEFAULT_COLLATERAL_MINT } from '../../constants'
+import { useBorrowTokensList, useCollateralsList } from '../../hooks'
 import { getInputErrorMessage, getSummaryInfo } from '../helpers'
 import { useListLoan } from './useListLoan'
 

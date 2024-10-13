@@ -6,12 +6,11 @@ import { CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
 import { adjustTokenAmountWithUpfrontFee, bnToHuman, stringToBN, sumBNs } from '@banx/utils'
 
-import { BorrowToken } from '../../constants'
+import { BorrowToken, DEFAULT_COLLATERAL_MINT } from '../../constants'
+import { useBorrowTokensList, useCollateralsList } from '../../hooks'
 import { getErrorMessage } from '../helpers'
-import { DEFAULT_COLLATERAL_MINT } from './constants'
 import { useBorrowOffers } from './useBorrowOffers'
 import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
-import { useBorrowTokensList, useCollateralsList } from './useCollateralsList'
 
 export const useInstantBorrowContent = () => {
   const { tokenType, setTokenType } = useTokenType()

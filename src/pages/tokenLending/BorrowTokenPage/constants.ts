@@ -2,6 +2,9 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import { core } from '@banx/api/tokens'
 
+//? Default collateral mint (BANX token)
+export const DEFAULT_COLLATERAL_MINT = 'BANXbTpN8U2cU41FjPxe2Ti37PiT5cCxLUKDQZuJeMMR'
+
 export interface BorrowToken {
   collateral: core.TokenMeta
   lendingTokenType: LendingTokenType
