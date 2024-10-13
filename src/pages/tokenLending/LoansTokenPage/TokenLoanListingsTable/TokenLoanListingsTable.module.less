@@ -1,0 +1,65 @@
+// * TokenLoanListingsTable *//
+.tableRoot {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden;
+}
+
+.table {
+  min-width: 914px;
+
+  tr > td,
+  tr > th {
+    &:last-child {
+      width: 144px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    min-width: 772px;
+
+    tr > td,
+    tr > th {
+      width: 96px;
+
+      &:first-child {
+        width: 168px;
+      }
+    }
+  }
+}
+
+.searchSelect {
+  max-width: 296px;
+}
+// * TokenLoanListingsTable *//
+
+// * TableCells * //
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px !important;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.delistButton {
+  background-color: var(--additional-red-primary-sub) !important;
+  color: var(--content-primary) !important;
+  width: 96px;
+
+  &:hover {
+    border: 1px solid var(--additional-red-primary);
+  }
+
+  &:disabled {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--content-secondary) !important;
+  }
+}
+// * TableCells * //
