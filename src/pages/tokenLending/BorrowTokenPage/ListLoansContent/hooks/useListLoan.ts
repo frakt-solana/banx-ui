@@ -1,11 +1,24 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
+import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
+
+import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
+import {
+  SubscribeNotificationsModal,
+  createRequestLoanSubscribeNotificationsContent,
+  createRequestLoanSubscribeNotificationsTitle,
+} from '@banx/components/modals'
 
 import { CollateralToken, TokenLoan } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { useTokenType } from '@banx/store/common'
+import { TokenLoansTabsName } from '@banx/pages/tokenLending/LoansTokenPage/LoansTokenPage'
+import { useTokenLoansTabs } from '@banx/pages/tokenLending/LoansTokenPage/hooks'
+import { getDialectAccessToken } from '@banx/providers'
+import { PATHS } from '@banx/router'
+import { buildUrlWithModeAndToken } from '@banx/store'
+import { AssetMode, useModal, useTokenType } from '@banx/store/common'
 import { useTokenLoansOptimistic } from '@banx/store/token'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -43,9 +56,37 @@ export const useListLoan: UseListLoan = ({
 }) => {
   const wallet = useWallet()
   const { connection } = useConnection()
+
+  const navigate = useNavigate()
   const { tokenType } = useTokenType()
 
+  const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
+  const { open: openModal, close: closeModal } = useModal()
+
   const { add: addLoansOptimistic } = useTokenLoansOptimistic()
+  const { setTab: setLoanTab } = useTokenLoansTabs()
+
+  const onBorrowSuccess = (loansAmount = 1) => {
+    const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
+    if (!isUserSubscribedToNotifications) {
+      openModal(SubscribeNotificationsModal, {
+        title: createRequestLoanSubscribeNotificationsTitle(loansAmount),
+        message: createRequestLoanSubscribeNotificationsContent(!isUserSubscribedToNotifications),
+        onActionClick: !isUserSubscribedToNotifications
+          ? () => {
+              closeModal()
+              setBanxNotificationsSiderVisibility(true)
+            }
+          : undefined,
+        onCancel: closeModal,
+      })
+    }
+  }
+
+  const goToLoansPage = () => {
+    setLoanTab(TokenLoansTabsName.LISTINGS)
+    navigate(buildUrlWithModeAndToken(PATHS.LOANS, AssetMode.Token, tokenType))
+  }
 
   const listLoan = async () => {
     if (!collateralToken) return
@@ -103,6 +144,8 @@ export const useListLoan: UseListLoan = ({
               })
 
               addLoansOptimistic([optimisticLoan], wallet.publicKey!.toBase58())
+              goToLoansPage()
+              onBorrowSuccess()
             }
 
             if (failed.length) {

@@ -13,7 +13,7 @@ import { useTokenType } from '@banx/store/common'
 import { isLoanNewer, isOptimisticLoanExpired, useTokenLoansOptimistic } from '@banx/store/token'
 import { isTokenLoanRepaid, isTokenLoanTerminating } from '@banx/utils'
 
-import { LoansTokenTabsName } from './LoansTokenPage'
+import { TokenLoansTabsName } from './LoansTokenPage'
 
 export const USE_WALLET_TOKEN_LOANS_AND_OFFERS_QUERY_KEY = 'walletTokenLoansAndOffers'
 
@@ -107,11 +107,11 @@ export const useWalletTokenLoansAndOffers = () => {
 }
 
 type LoansTokenTabsState = {
-  tab: LoansTokenTabsName | null
-  setTab: (tab: LoansTokenTabsName | null) => void
+  tab: TokenLoansTabsName | null
+  setTab: (tab: TokenLoansTabsName | null) => void
 }
 
-export const useLoansTokenTabs = create<LoansTokenTabsState>((set) => ({
+export const useTokenLoansTabs = create<LoansTokenTabsState>((set) => ({
   tab: null,
   setTab: (tab) => set({ tab }),
 }))
