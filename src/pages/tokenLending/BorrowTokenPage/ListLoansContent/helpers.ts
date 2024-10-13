@@ -36,7 +36,7 @@ export const getSummaryInfo = ({
   const ltvRatio = adjustedBorrowAmount / collateralAmount
   const ltvPercent = (ltvRatio / collateralPrice) * 100 || 0
 
-  const upfrontFee = (borrowAmount * PROTOCOL_FEE_TOKEN) / BASE_POINTS || 0
+  const upfrontFee = (adjustedBorrowAmount * PROTOCOL_FEE_TOKEN) / BASE_POINTS || 0
 
   const currentTimeInSeconds = moment().unix()
   const weeklyFee = calculateCurrentInterestSolPure({
@@ -56,14 +56,14 @@ export const getSummaryInfo = ({
 interface GetInputErrorMessageProps {
   collateralAmount: number
   borrowAmount: number
-  freezeValue: number
+  freezeDuration: number
   apr: number
 }
 
 export const getInputErrorMessage = ({
   collateralAmount,
   borrowAmount,
-  freezeValue,
+  freezeDuration,
   apr,
 }: GetInputErrorMessageProps) => {
   const MIN_APR = MIN_APR_SPL / 100
@@ -76,7 +76,7 @@ export const getInputErrorMessage = ({
   const isAprTooLow = apr <= MIN_APR
   const isAprTooHigh = apr > MAX_APR
 
-  const isFreezeValueTooHigh = freezeValue > DAYS_IN_YEAR
+  const isFreezeValueTooHigh = freezeDuration > DAYS_IN_YEAR
 
   const errorConditions = [
     [isCollateralEmpty && isBorrowAmountEmpty, 'Please enter a value'],

@@ -1,0 +1,155 @@
+import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { uniqueId } from 'lodash'
+import moment from 'moment'
+import { TxnExecutor } from 'solana-transactions-executor'
+
+import { CollateralToken, TokenLoan } from '@banx/api/tokens'
+import { SECONDS_IN_DAY } from '@banx/constants'
+import { useTokenType } from '@banx/store/common'
+import { useTokenLoansOptimistic } from '@banx/store/token'
+import {
+  TXN_EXECUTOR_DEFAULT_OPTIONS,
+  createExecutorWalletAndConnection,
+  defaultTxnErrorHandler,
+} from '@banx/transactions'
+import {
+  CreateTokenListTxnDataParams,
+  createTokenListTxnData,
+  parseListTokenSimulatedAccounts,
+} from '@banx/transactions/tokenLending'
+import {
+  destroySnackbar,
+  enqueueConfirmationError,
+  enqueueSnackbar,
+  enqueueTransactionSent,
+  enqueueWaitingConfirmation,
+  getTokenDecimals,
+} from '@banx/utils'
+
+type UseListLoan = (params: {
+  collateralToken: CollateralToken | undefined
+  collateralAmount: number
+  borrowAmount: number
+  freezeDuration: number
+  apr: number
+}) => () => Promise<void>
+
+export const useListLoan: UseListLoan = ({
+  collateralToken,
+  collateralAmount,
+  borrowAmount,
+  freezeDuration,
+  apr,
+}) => {
+  const wallet = useWallet()
+  const { connection } = useConnection()
+  const { tokenType } = useTokenType()
+
+  const { add: addLoansOptimistic } = useTokenLoansOptimistic()
+
+  const listLoan = async () => {
+    if (!collateralToken) return
+
+    const loadingSnackbarId = uniqueId()
+
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const marketTokenDecimals = getTokenDecimals(tokenType)
+      const collateralTokenDecimals = collateralToken.collateral.decimals
+
+      const aprRate = apr * 100
+      const freezeDurationInSeconds = freezeDuration * SECONDS_IN_DAY
+
+      const txnData = await createTokenListTxnData(
+        {
+          collateral: collateralToken,
+          borrowAmount: borrowAmount * marketTokenDecimals,
+          collateralAmount: collateralAmount * collateralTokenDecimals,
+          freezeValue: freezeDurationInSeconds,
+          aprRate,
+          tokenType,
+        },
+        walletAndConnection,
+      )
+
+      await new TxnExecutor<CreateTokenListTxnDataParams>(walletAndConnection, {
+        ...TXN_EXECUTOR_DEFAULT_OPTIONS,
+      })
+        .addTxnData(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          return confirmed.forEach(({ accountInfoByPubkey, signature, params }) => {
+            enqueueSnackbar({
+              message: 'Loan successfully listed',
+              type: 'success',
+              solanaExplorerPath: `tx/${signature}`,
+            })
+
+            if (accountInfoByPubkey) {
+              const accounts = parseListTokenSimulatedAccounts(accountInfoByPubkey)
+
+              const optimisticLoan = createOptimisticLoan({
+                newFraktBond: accounts.fraktBond,
+                newBondTradeTransaction: accounts.bondTradeTransaction,
+                collateral: params.collateral,
+              })
+
+              addLoansOptimistic([optimisticLoan], wallet.publicKey!.toBase58())
+            }
+
+            if (failed.length) {
+              return failed.forEach(({ signature, reason }) =>
+                enqueueConfirmationError(signature, reason),
+              )
+            }
+          })
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        walletPubkey: wallet.publicKey!.toBase58(),
+        transactionName: 'ListTokenLoan',
+      })
+    }
+  }
+
+  return listLoan
+}
+
+type CreateOptimisticLoan = (params: {
+  collateral: CollateralToken
+  newFraktBond: TokenLoan['fraktBond']
+  newBondTradeTransaction: TokenLoan['bondTradeTransaction']
+}) => TokenLoan
+
+const createOptimisticLoan: CreateOptimisticLoan = ({
+  collateral,
+  newFraktBond,
+  newBondTradeTransaction,
+}) => {
+  const optimisticLoan = {
+    publicKey: newFraktBond.publicKey,
+    collateral: collateral.collateral,
+    collateralPrice: collateral.collateralPrice,
+    bondTradeTransaction: newBondTradeTransaction,
+    fraktBond: {
+      ...newFraktBond,
+      hadoMarket: collateral.marketPubkey,
+      lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
+    },
+  }
+
+  return optimisticLoan
+}

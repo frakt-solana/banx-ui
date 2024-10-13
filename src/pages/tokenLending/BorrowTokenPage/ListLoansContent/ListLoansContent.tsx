@@ -147,12 +147,11 @@ const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyFee }) => {
       />
       <StatInfo
         label="Upfront fee"
-        value={upfrontFee}
+        value={<DisplayValue value={upfrontFee} />}
         classNamesProps={statClassNames}
         tooltipText={`${
           PROTOCOL_FEE_TOKEN / 100
         }% upfront fee charged on the loan principal amount, paid when loan is funded`}
-        valueType={VALUES_TYPES.PERCENT}
         flexType="row"
       />
       <StatInfo
