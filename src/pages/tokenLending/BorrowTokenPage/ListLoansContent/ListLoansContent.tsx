@@ -10,7 +10,6 @@ import { NumericStepInput } from '@banx/components/inputs'
 
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
-import { Separator } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
 import { useListLoansContent } from './hooks'
 
@@ -55,9 +54,9 @@ const ListLoansContent = () => {
           onChangeToken={setCollateralToken}
           tokensList={collateralsList}
           className={styles.collateralInput}
+          maxValue={collateralToken?.amountInWallet}
+          showControls={connected}
         />
-
-        <Separator />
 
         <InputTokenSelect
           label="To borrow"

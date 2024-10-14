@@ -70,6 +70,7 @@ export const useListLoansContent = () => {
     borrowAmount: parseFloat(borrowInputValue),
     freezeDuration: parseFloat(inputFreezeValue),
     apr: parseFloat(inputAprValue),
+    collateralToken,
   })
 
   const listLoan = useListLoan({

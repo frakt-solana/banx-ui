@@ -54,6 +54,7 @@ export const getSummaryInfo = ({
 }
 
 interface GetInputErrorMessageProps {
+  collateralToken: CollateralToken | undefined
   collateralAmount: number
   borrowAmount: number
   freezeDuration: number
@@ -61,6 +62,7 @@ interface GetInputErrorMessageProps {
 }
 
 export const getInputErrorMessage = ({
+  collateralToken,
   collateralAmount,
   borrowAmount,
   freezeDuration,
@@ -68,6 +70,8 @@ export const getInputErrorMessage = ({
 }: GetInputErrorMessageProps) => {
   const MIN_APR = MIN_APR_SPL / 100
   const MAX_APR = MAX_APR_SPL / 100
+
+  const isCollateralInsufficient = isBalanceInsufficient(collateralToken, collateralAmount)
 
   const isCollateralEmpty = isNaN(collateralAmount)
   const isBorrowAmountEmpty = isNaN(borrowAmount)
@@ -79,6 +83,7 @@ export const getInputErrorMessage = ({
   const isFreezeValueTooHigh = freezeDuration > DAYS_IN_YEAR
 
   const errorConditions: Array<[boolean, string]> = [
+    [isCollateralInsufficient, `Not enough ${collateralToken?.collateral.ticker ?? ''}`],
     [isCollateralEmpty && isBorrowAmountEmpty, 'Please enter a value'],
     [isCollateralEmpty, 'Please enter a value for collateral amount'],
     [isBorrowAmountEmpty, 'Please enter a value for borrow amount'],
@@ -93,4 +98,16 @@ export const getInputErrorMessage = ({
   const hasAprErrorMessage = isAprTooLow || isAprTooHigh
 
   return { errorMessage, hasAprErrorMessage }
+}
+
+export const isBalanceInsufficient = (
+  collateralToken: CollateralToken | undefined,
+  collateralAmount: number,
+): boolean => {
+  if (!collateralToken) return true
+
+  const collateralBalance =
+    collateralToken.amountInWallet / Math.pow(10, collateralToken.collateral.decimals)
+
+  return collateralAmount > collateralBalance
 }
