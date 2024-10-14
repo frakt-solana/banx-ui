@@ -86,8 +86,6 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
       connection: walletAndConnection.connection,
     })
 
-    const oldOfferSize = calculateIdleFundsInOffer(offer)
-
     const updatedOffer = optimisticUpdateBondOfferBonding({
       bondOffer: core.convertCoreOfferToBondOfferV3(offer),
       newLoanValue: new BN(loanValue),
@@ -100,14 +98,14 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     //? Optimistic offer is broken
     const updatedOfferSize = calculateIdleFundsInOffer(core.convertBondOfferV3ToCore(updatedOffer))
 
-    const diff = updatedOfferSize.sub(oldOfferSize).sub(banxSolBalance).sub(escrowBalance)
+    const diff = updatedOfferSize.sub(banxSolBalance).sub(escrowBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions(
         {
           params,
           accounts,
-          inputAmount: diff.abs(),
+          inputAmount: diff,
           instructions,
           signers,
           lookupTables,
