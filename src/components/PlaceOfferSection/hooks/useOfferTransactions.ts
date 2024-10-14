@@ -4,6 +4,8 @@ import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
+import { useUserVault } from '@banx/components/WalletModal'
+
 import { core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store/common'
 import {
@@ -52,6 +54,7 @@ export const useOfferTransactions = ({
   const wallet = useWallet()
   const { connection } = useConnection()
   const { tokenType } = useTokenType()
+  const { userVault } = useUserVault()
 
   const onCreateOffer = async () => {
     const loadingSnackbarId = uniqueId()
@@ -141,6 +144,7 @@ export const useOfferTransactions = ({
           loansAmount,
           deltaValue,
           tokenType,
+          escrowBalance: userVault?.offerLiquidityAmount,
         },
         walletAndConnection,
       )
