@@ -1,15 +1,16 @@
+import sdkPackage from 'fbonds-core/package.json'
 import { clear, get, set } from 'idb-keyval'
-import moment from 'moment'
 
-const BANX_LAST_IDB_PURGE_TIMESTAMP = '@banx.lastIdbPurgeTimestampV2'
+const SDK_VERSION = sdkPackage.version
+const BANX_SDK_VERSION_KEY = '@banx.sdkVersion'
 
 export const purgeIdb = async () => {
   try {
-    const purgeDate = await get<number>(BANX_LAST_IDB_PURGE_TIMESTAMP)
+    const storedSdkVersion = await get<string>(BANX_SDK_VERSION_KEY)
 
-    if (!purgeDate) {
-      clear()
-      await set(BANX_LAST_IDB_PURGE_TIMESTAMP, moment().unix())
+    if (storedSdkVersion !== SDK_VERSION) {
+      await clear()
+      await set(BANX_SDK_VERSION_KEY, SDK_VERSION)
     }
   } catch (error) {
     console.error('Error trying to purge idb')

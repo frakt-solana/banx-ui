@@ -1,0 +1,242 @@
+// * Table *//
+.tableWrapper {
+  background-color: var(--bg-tertiary);
+  height: 100%;
+}
+
+.table {
+  min-width: 768px;
+
+  tr > td,
+  tr > th {
+    padding: 4px !important;
+
+    &:first-child {
+      padding-left: 24px !important;
+    }
+
+    &:last-child {
+      padding-right: 24px !important;
+      width: 220px;
+    }
+  }
+
+  tr > td {
+    height: 38px;
+  }
+}
+// * Table *//
+
+// * ActiveTableRow *//
+.terminated {
+  background: var(--additional-lava-secondary) !important;
+}
+
+.repaymentCallActive {
+  background: var(--additional-yellow-secondary) !important;
+}
+// * ActiveTableRow *//
+
+// * Summary *//
+.summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 24px;
+
+  @media (max-width: 1120px) {
+    flex-direction: column;
+    padding: 16px;
+    gap: 8px;
+  }
+}
+
+.summaryMainStat {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  min-width: 160px;
+
+  @media (max-width: 1120px) {
+    display: none;
+  }
+
+  p:first-child {
+    font: var(--important-text-3xl);
+  }
+
+  p:last-child {
+    color: var(--content-secondary);
+    font: var(--title-sm);
+    text-transform: uppercase;
+    max-width: 100px;
+  }
+}
+
+.summaryAdditionalStats {
+  display: flex;
+  justify-content: space-around;
+  gap: 24px;
+  width: 100%;
+
+  @media (max-width: 640px) {
+    justify-content: unset;
+    margin-right: -16px;
+    padding-right: 16px;
+    gap: 8px;
+    overflow: auto hidden;
+    width: calc(100% + 16px);
+  }
+}
+
+.summaryAdditionalStat {
+  align-items: flex-end;
+  gap: unset;
+
+  @media (max-width: 1120px) {
+    align-items: center;
+    white-space: nowrap;
+    width: 100%;
+  }
+}
+
+.summaryHiddenStat {
+  display: none;
+
+  @media (max-width: 1120px) {
+    display: flex;
+  }
+}
+
+.summaryControls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  @media (max-width: 1120px) {
+    width: 100%;
+  }
+
+  @media (max-width: 640px) {
+    gap: 8px;
+  }
+}
+
+.summarySliderContainer {
+  @media (max-width: 1120px) {
+    order: 2;
+    flex-direction: row-reverse;
+  }
+
+  @media (max-width: 640px) {
+    min-width: 164px;
+  }
+}
+
+.summarySlider {
+  padding-bottom: 18px;
+}
+
+.summaryActionButton {
+  min-width: 176px;
+
+  @media (max-width: 1120px) {
+    min-width: unset;
+    width: 100%;
+
+    span {
+      display: none;
+    }
+  }
+}
+// * Summary *//
+
+// * filterTableSection *//
+.filterTableSection {
+  padding: 0 24px 12px;
+
+  @media (max-width: 640px) {
+    padding: 0 16px 12px;
+  }
+}
+
+.radioButton {
+  label {
+    padding: 4px 12px;
+    font: var(--body-text-sm);
+  }
+}
+// * filterTableSection *//
+
+// * Cells *//
+.headerCellText {
+  font: var(--title-xs);
+}
+
+.bodyCellText {
+  font: var(--body-text-sm);
+}
+
+.checkboxCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
+}
+
+.collateralTokenAmount {
+  color: var(--content-secondary);
+  font: var(--important-text-md);
+}
+
+.actionsButtons {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  width: 100%;
+
+  button {
+    width: 100%;
+  }
+}
+
+.statusCell {
+  display: flex;
+  flex-direction: column-reverse;
+  white-space: nowrap;
+  align-items: flex-end;
+}
+
+.statusCellTimeText,
+.statusCellTimeText span {
+  font: var(--body-text-xs);
+}
+// * Cells *//
+
+// * TooltipContent * //
+.tooltipContent {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 200px;
+}
+.tooltipRowLabel {
+  color: var(--content-secondary);
+  font: var(--title-xs);
+  text-transform: uppercase;
+}
+
+.tooltipRowValue {
+  font: var(--body-text-sm);
+}
+// * TooltipContent * //

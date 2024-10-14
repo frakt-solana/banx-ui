@@ -88,9 +88,33 @@
   @media (max-width: 640px) {
     font: var(--title-xs);
   }
+
+  &.alignLeft {
+    justify-content: flex-start;
+  }
+
+  &.sortable {
+    cursor: pointer;
+  }
 }
-.headerCellLeft {
-  justify-content: flex-start;
+
+.sortIcon {
+  display: flex;
+  flex-direction: column;
+}
+
+.arrowIcon {
+  svg {
+    fill: var(--content-primary);
+    height: 7px;
+    width: 7px;
+  }
+
+  &.active {
+    svg {
+      fill: var(--content-secondary);
+    }
+  }
 }
 
 .activityTime {

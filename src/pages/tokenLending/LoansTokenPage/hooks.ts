@@ -2,22 +2,20 @@ import { useEffect, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
-import { map } from 'lodash'
-import moment from 'moment'
+import { chain, map, maxBy } from 'lodash'
 import { create } from 'zustand'
 
-import { stats } from '@banx/api/nft'
+import { AssetType, stats } from '@banx/api/nft'
 import { core } from '@banx/api/tokens'
-import { SECONDS_IN_72_HOURS } from '@banx/constants'
 import { useTokenType } from '@banx/store/common'
 import { isLoanNewer, isOptimisticLoanExpired, useTokenLoansOptimistic } from '@banx/store/token'
-import { isTokenLoanRepaid, isTokenLoanTerminating } from '@banx/utils'
+import { isTokenLoanLiquidated, isTokenLoanRepaid } from '@banx/utils'
 
 import { TokenLoansTabsName } from './LoansTokenPage'
 
 export const USE_WALLET_TOKEN_LOANS_AND_OFFERS_QUERY_KEY = 'walletTokenLoansAndOffers'
 
-export const useWalletTokenLoansAndOffers = () => {
+export const useWalletTokenLoans = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const publicKeyString = walletPublicKey?.toBase58() || ''
 
@@ -73,35 +71,26 @@ export const useWalletTokenLoansAndOffers = () => {
 
     const optimisticLoansPubkeys = walletOptimisticLoans.map(({ loan }) => loan.publicKey)
 
-    const dataFiltered = (data?.loans || []).filter(
+    const nonOptimisticLoans = (data?.loans || []).filter(
       ({ publicKey }) => !optimisticLoansPubkeys.includes(publicKey),
     )
+    const combinedActiveLoans = [
+      ...nonOptimisticLoans,
+      ...walletOptimisticLoans.map(({ loan }) => loan),
+    ]
 
-    //TODO: Should we add filter same pubkeys by freshness?
-    const combinedLoans = [...dataFiltered, ...map(walletOptimisticLoans, ({ loan }) => loan)]
-    const loans = combinedLoans.filter((loan) => !isTokenLoanRepaid(loan))
-
-    return loans
+    //? Filter out repaid loans and liquidated loans
+    return chain(combinedActiveLoans)
+      .groupBy((loan) => loan.publicKey)
+      .map((groupedLoans) => maxBy(groupedLoans, (loan) => loan.fraktBond.lastTransactedAt))
+      .compact()
+      .filter((loan) => !isTokenLoanRepaid(loan))
+      .filter((loan) => !isTokenLoanLiquidated(loan))
+      .value()
   }, [data, walletOptimisticLoans])
 
-  const filteredLiquidatedLoans = useMemo(() => {
-    return loans.filter((loan) => {
-      const { fraktBond } = loan
-
-      const isTerminatingStatus = isTokenLoanTerminating(loan)
-
-      if (isTerminatingStatus) {
-        const currentTimeInSeconds = moment().unix()
-        const expiredAt = fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
-        return currentTimeInSeconds < expiredAt
-      }
-
-      return loan
-    })
-  }, [loans])
-
   return {
-    loans: filteredLiquidatedLoans,
+    loans,
     isLoading,
   }
 }
@@ -128,7 +117,7 @@ export const useUserTokenLoansStats = () => {
       stats.fetchUserLoansStats({
         walletPubkey: publicKeyString,
         marketType: tokenType,
-        tokenType: 'spl',
+        tokenType: AssetType.SPL,
       }),
     {
       enabled: !!publicKeyString,

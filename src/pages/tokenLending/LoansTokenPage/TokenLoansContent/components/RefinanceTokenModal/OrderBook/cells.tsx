@@ -25,7 +25,7 @@ import {
   getTokenUnit,
 } from '@banx/utils'
 
-import { calculateTokensToGet } from '../../../helpers'
+import { calculateTokensToGet } from '../helpers'
 
 import styles from './OrderBook.module.less'
 
@@ -128,7 +128,7 @@ export const ActionCell: FC<ActionCellProps> = ({ loan, offer, tokenType, refina
         [styles.negative]: isNegativeDifference,
       })}
     >
-      Renew
+      Rollover
       <p className={styles.differenceValue}>
         {showSing && sign}
         {createDisplayValueJSX(displayValue.toString(), tokenUnit)}
