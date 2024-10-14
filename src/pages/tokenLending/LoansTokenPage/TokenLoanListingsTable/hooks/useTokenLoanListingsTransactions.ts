@@ -1,4 +1,5 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { BondTradeTransactionV2State } from 'fbonds-core/lib/fbond-protocol/types'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
@@ -67,16 +68,7 @@ export const useTokenLoanListingsTransactions = () => {
               solanaExplorerPath: `tx/${signature}`,
             })
 
-            const { loan } = params
-
-            const optimisticLoan = {
-              ...loan,
-              fraktBond: {
-                ...loan.fraktBond,
-                lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
-              },
-            }
-
+            const optimisticLoan = createOptimisticLoan(params.loan)
             updateLoansOptimistic([optimisticLoan], wallet.publicKey!.toBase58())
             clearSelection()
           })
@@ -122,16 +114,7 @@ export const useTokenLoanListingsTransactions = () => {
             enqueueSnackbar({ message: 'Loans delisted successfully', type: 'success' })
 
             confirmed.forEach(({ params }) => {
-              const { loan } = params
-
-              const optimisticLoan = {
-                ...loan,
-                fraktBond: {
-                  ...loan.fraktBond,
-                  lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
-                },
-              }
-
+              const optimisticLoan = createOptimisticLoan(params.loan)
               updateLoansOptimistic([optimisticLoan], wallet.publicKey!.toBase58())
             })
 
@@ -159,4 +142,24 @@ export const useTokenLoanListingsTransactions = () => {
   }
 
   return { delist, delistAll }
+}
+
+const createOptimisticLoan = (loan: TokenLoan): TokenLoan => {
+  const currentTimeInSeconds = moment().unix()
+
+  const optimisticLoan = {
+    ...loan,
+    bondTradeTransaction: {
+      ...loan.bondTradeTransaction,
+      //? Set not active state to filter out loan from list
+      bondTradeTransactionState: BondTradeTransactionV2State.NotActive,
+    },
+    fraktBond: {
+      ...loan.fraktBond,
+      //? Needs to prevent BE data overlap in optimistics logic
+      lastTransactedAt: currentTimeInSeconds,
+    },
+  }
+
+  return optimisticLoan
 }

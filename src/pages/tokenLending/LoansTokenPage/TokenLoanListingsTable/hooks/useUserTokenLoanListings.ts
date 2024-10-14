@@ -11,6 +11,7 @@ import {
   isOptimisticLoanExpired,
   useTokenLoanListingsOptimistic,
 } from '@banx/store/token'
+import { isTokenLoanListed } from '@banx/utils'
 
 export const USE_USER_TOKEN_LOAN_LISTINGS_QUERY_KEY = 'userTokenLoanListings'
 
@@ -78,6 +79,7 @@ export const useUserTokenLoanListings = () => {
       .groupBy((loan) => loan.publicKey)
       .map((groupedLoans) => maxBy(groupedLoans, (loan) => loan.fraktBond.lastTransactedAt))
       .compact()
+      .filter((loan) => isTokenLoanListed(loan))
       .value()
   }, [data, walletOptimisticLoans])
 
