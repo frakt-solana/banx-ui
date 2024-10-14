@@ -71,12 +71,6 @@ const getIxnsAndSignersByListingType = async ({
   const { nft, tokenType: lendingTokenType, loanValue, aprRate, freeze } = params
 
   if (type === ListingType.StakedBanx) {
-    const ruleSet = await fetchRuleset({
-      nftMint: nft.mint,
-      connection,
-      marketPubkey: nft.loan.marketPubkey,
-    })
-
     const {
       instructions,
       signers,
@@ -84,11 +78,9 @@ const getIxnsAndSignersByListingType = async ({
     } = await createPerpetualListingStakedBanx({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
-        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         hadoMarket: new web3.PublicKey(nft.loan.marketPubkey),
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(nft.mint),
-        fraktMarket: new web3.PublicKey(nft.loan.fraktMarket),
         banxStake: new web3.PublicKey(nft.loan.banxStake || ''),
       },
       args: {
@@ -98,7 +90,6 @@ const getIxnsAndSignersByListingType = async ({
         lendingTokenType,
         terminationFreeze: new BN(freeze),
         upfrontFeeBasePoints: BONDS.PROTOCOL_FEE,
-        ruleSet,
       },
       connection,
       sendTxn: sendTxnPlaceHolder,
@@ -126,11 +117,9 @@ const getIxnsAndSignersByListingType = async ({
     } = await createPerpetualListingCnft({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
-        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         hadoMarket: new web3.PublicKey(nft.loan.marketPubkey),
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(nft.mint),
-        fraktMarket: new web3.PublicKey(nft.loan.fraktMarket),
         tree: new web3.PublicKey(nft.nft.compression.tree),
         whitelistEntry: new web3.PublicKey(nft.nft.compression.whitelistEntry),
       },
@@ -164,7 +153,6 @@ const getIxnsAndSignersByListingType = async ({
     } = await createPerpetualListingCore({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
-        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         hadoMarket: new web3.PublicKey(nft.loan.marketPubkey),
         userPubkey: wallet.publicKey,
         nftAsset: new web3.PublicKey(nft.mint),
@@ -202,7 +190,6 @@ const getIxnsAndSignersByListingType = async ({
       hadoMarket: new web3.PublicKey(nft.loan.marketPubkey),
       userPubkey: wallet.publicKey,
       nftMint: new web3.PublicKey(nft.mint),
-      fraktMarket: new web3.PublicKey(nft.loan.fraktMarket),
     },
     args: {
       amountToGetBorrower: new BN(loanValue),

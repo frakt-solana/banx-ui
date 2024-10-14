@@ -54,11 +54,9 @@ export const createTokenListTxnData: CreateListTxnData = async (params, walletAn
   } = await createPerpetualListingSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
-      protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       hadoMarket: new web3.PublicKey(collateral.marketPubkey),
       userPubkey: wallet.publicKey,
       collateralMint: new web3.PublicKey(collateral.collateral.mint),
-      fraktMarket: new web3.PublicKey(collateral.marketPubkey),
     },
     args: {
       amountToGetBorrower: new BN(borrowAmount),
