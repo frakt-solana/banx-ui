@@ -11,6 +11,7 @@ import {
 import { core } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
+import { ZERO_BN, getTokenDecimals } from '@banx/utils'
 
 import { parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
@@ -19,7 +20,7 @@ export type CreateTokenListTxnDataParams = {
   collateral: CollateralToken
 
   borrowAmount: number
-  collateralAmount: number
+  collateralAmount: number //? normal number f.e 200, 300
   aprRate: number
   freezeValue: number
 
@@ -36,9 +37,15 @@ export const createTokenListTxnData: CreateListTxnData = async (params, walletAn
 
   const { aprRate, borrowAmount, collateralAmount, collateral, freezeValue, tokenType } = params
 
-  const collateralsPerToken = Math.floor(
-    (borrowAmount / collateralAmount) * collateral.collateral.decimals,
-  )
+  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
+
+  const collateralTokenDecimalsMultiplier = Math.pow(10, collateral.collateral.decimals)
+  const marketTokenDecimalsMultiplier = Math.pow(10, marketTokenDecimals)
+
+  const collateralsPerToken =
+    (collateralAmount / borrowAmount) *
+    collateralTokenDecimalsMultiplier *
+    marketTokenDecimalsMultiplier
 
   const {
     instructions,
@@ -57,7 +64,7 @@ export const createTokenListTxnData: CreateListTxnData = async (params, walletAn
       amountToGetBorrower: new BN(borrowAmount),
       collateralsPerToken: new BN(collateralsPerToken),
       terminationFreeze: new BN(freezeValue),
-      amountToSend: new BN(collateralAmount),
+      amountToSend: ZERO_BN,
       aprRate: new BN(aprRate),
 
       upfrontFeeBasePoints: BONDS.PROTOCOL_FEE,

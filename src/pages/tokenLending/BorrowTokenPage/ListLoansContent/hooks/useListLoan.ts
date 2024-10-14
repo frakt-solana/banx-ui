@@ -7,8 +7,8 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import {
   SubscribeNotificationsModal,
-  createRequestLoanSubscribeNotificationsContent,
-  createRequestLoanSubscribeNotificationsTitle,
+  createLoanListingSubscribeNotificationsContent,
+  createLoanListingSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
 import { CollateralToken, TokenLoan } from '@banx/api/tokens'
@@ -70,8 +70,8 @@ export const useListLoan: UseListLoan = ({
     const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
     if (!isUserSubscribedToNotifications) {
       openModal(SubscribeNotificationsModal, {
-        title: createRequestLoanSubscribeNotificationsTitle(loansAmount),
-        message: createRequestLoanSubscribeNotificationsContent(!isUserSubscribedToNotifications),
+        title: createLoanListingSubscribeNotificationsTitle(loansAmount),
+        message: createLoanListingSubscribeNotificationsContent(!isUserSubscribedToNotifications),
         onActionClick: !isUserSubscribedToNotifications
           ? () => {
               closeModal()
@@ -97,7 +97,6 @@ export const useListLoan: UseListLoan = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const marketTokenDecimals = getTokenDecimals(tokenType)
-      const collateralTokenDecimals = collateralToken.collateral.decimals
 
       const aprRate = apr * 100
       const freezeDurationInSeconds = freezeDuration * SECONDS_IN_DAY
@@ -106,7 +105,7 @@ export const useListLoan: UseListLoan = ({
         {
           collateral: collateralToken,
           borrowAmount: borrowAmount * marketTokenDecimals,
-          collateralAmount: collateralAmount * collateralTokenDecimals,
+          collateralAmount: collateralAmount,
           freezeValue: freezeDurationInSeconds,
           aprRate,
           tokenType,

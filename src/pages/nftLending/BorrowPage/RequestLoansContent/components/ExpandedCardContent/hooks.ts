@@ -9,8 +9,8 @@ import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { MAX_BORROWER_APR_VALUE, MIN_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import {
   SubscribeNotificationsModal,
-  createRequestLoanSubscribeNotificationsContent,
-  createRequestLoanSubscribeNotificationsTitle,
+  createLoanListingSubscribeNotificationsContent,
+  createLoanListingSubscribeNotificationsTitle,
 } from '@banx/components/modals'
 
 import { core } from '@banx/api/nft'
@@ -198,8 +198,8 @@ const useRequestLoansTransaction = (props: {
     const isUserSubscribedToNotifications = !!getDialectAccessToken(wallet.publicKey?.toBase58())
     if (!isUserSubscribedToNotifications) {
       openModal(SubscribeNotificationsModal, {
-        title: createRequestLoanSubscribeNotificationsTitle(loansAmount),
-        message: createRequestLoanSubscribeNotificationsContent(!isUserSubscribedToNotifications),
+        title: createLoanListingSubscribeNotificationsTitle(loansAmount),
+        message: createLoanListingSubscribeNotificationsContent(!isUserSubscribedToNotifications),
         onActionClick: !isUserSubscribedToNotifications
           ? () => {
               closeModal()
