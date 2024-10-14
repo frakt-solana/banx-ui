@@ -11,6 +11,7 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 
 import { TokenLoan } from '@banx/api/tokens'
 
+import { useTokenLoanListingsTransactions } from './hooks'
 import { LoanOptimistic } from './loansState'
 
 import styles from './TokenLoanListingsTable.module.less'
@@ -28,7 +29,7 @@ export const Summary: FC<SummaryProps> = ({
 }) => {
   const { publicKey: walletPublicKey } = useWallet()
 
-  const delistAll = () => {}
+  const { delistAll } = useTokenLoanListingsTransactions()
 
   const selectedLoans = useMemo(() => {
     return rawSelectedLoans.map(({ loan }) => loan)

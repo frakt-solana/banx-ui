@@ -12,6 +12,8 @@ import {
   isTokenLoanFrozen,
 } from '@banx/utils'
 
+import { useTokenLoanListingsTransactions } from './hooks'
+
 import styles from './TokenLoanListingsTable.module.less'
 
 export const LTVCell: FC<{ loan: TokenLoan }> = ({ loan }) => {
@@ -47,8 +49,7 @@ interface ActionsCellProps {
 }
 
 export const ActionsCell: FC<ActionsCellProps> = ({ loan, disabled, isCardView }) => {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-  const delist = (loan: TokenLoan) => {}
+  const { delist } = useTokenLoanListingsTransactions()
 
   const onButtonClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     delist(loan)

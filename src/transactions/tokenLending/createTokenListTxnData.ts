@@ -8,7 +8,7 @@ import {
   WalletAndConnection,
 } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/nft'
+import { BondTradeTransaction, FraktBond } from '@banx/api/nft'
 import { CollateralToken } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
 import { ZERO_BN, getTokenDecimals } from '@banx/utils'
@@ -46,6 +46,28 @@ export const createTokenListTxnData: CreateListTxnData = async (params, walletAn
     (collateralAmount / borrowAmount) *
     collateralTokenDecimalsMultiplier *
     marketTokenDecimalsMultiplier
+
+  // console.log({
+  //   programId: BONDS.PROGRAM_PUBKEY,
+  //   accounts: {
+  //     hadoMarket: collateral.marketPubkey,
+  //     userPubkey: wallet.publicKey.toBase58(),
+  //     collateralMint: collateral.collateral.mint,
+  //   },
+  //   args: {
+  //     amountToGetBorrower: borrowAmount,
+  //     collateralsPerToken: collateralsPerToken,
+  //     terminationFreeze: freezeValue,
+  //     amountToSend: 0,
+  //     aprRate: aprRate,
+
+  //     upfrontFeeBasePoints: BONDS.PROTOCOL_FEE,
+  //     isBorrowerListing: true,
+  //     lendingTokenType: tokenType,
+  //   },
+  //   connection,
+  //   sendTxn: sendTxnPlaceHolder,
+  // })
 
   const {
     instructions,
@@ -90,7 +112,7 @@ export const parseListTokenSimulatedAccounts = (
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)
 
   return {
-    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as core.BondTradeTransaction,
-    fraktBond: results?.['fraktBond']?.[0] as core.FraktBond,
+    bondTradeTransaction: results?.['bondTradeTransactionV3']?.[0] as BondTradeTransaction,
+    fraktBond: results?.['fraktBond']?.[0] as FraktBond,
   }
 }
