@@ -28,6 +28,8 @@ export type CreateUpdateBondingOfferTxnDataParams = {
   tokenType: LendingTokenType
   collateralsPerToken?: BN
   tokenLendingApr?: number
+
+  escrowBalance: BN | undefined
 }
 
 type CreateUpdateBondingOfferTxnData = (
@@ -47,6 +49,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     tokenType,
     tokenLendingApr = 0,
     collateralsPerToken = ZERO_BN,
+    escrowBalance = ZERO_BN,
   } = params
 
   const {
@@ -97,7 +100,7 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     //? Optimistic offer is broken
     const updatedOfferSize = calculateIdleFundsInOffer(core.convertBondOfferV3ToCore(updatedOffer))
 
-    const diff = updatedOfferSize.sub(oldOfferSize).sub(banxSolBalance)
+    const diff = updatedOfferSize.sub(oldOfferSize).sub(banxSolBalance).sub(escrowBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions(
