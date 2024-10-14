@@ -1,6 +1,9 @@
 import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { createPerpetualListingSpl } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import {
+  createPerpetualListingSpl,
+  getFullLoanBodyFromBorrowerSendedAmount,
+} from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
@@ -37,37 +40,16 @@ export const createTokenListTxnData: CreateListTxnData = async (params, walletAn
 
   const { aprRate, borrowAmount, collateralAmount, collateral, freezeValue, tokenType } = params
 
-  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
+  const marketDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e6 => 6
+  const collateralDecimals = collateral.collateral.decimals
 
-  const collateralTokenDecimalsMultiplier = Math.pow(10, collateral.collateral.decimals)
-  const marketTokenDecimalsMultiplier = Math.pow(10, marketTokenDecimals)
+  const fullLoanAmount = getFullLoanBodyFromBorrowerSendedAmount({
+    borrowerSendedAmount: borrowAmount,
+    upfrontFeeBasePoints: BONDS.PROTOCOL_FEE_TOKEN,
+  })
 
-  const collateralsPerToken =
-    (collateralAmount / borrowAmount) *
-    collateralTokenDecimalsMultiplier *
-    marketTokenDecimalsMultiplier
-
-  // console.log({
-  //   programId: BONDS.PROGRAM_PUBKEY,
-  //   accounts: {
-  //     hadoMarket: collateral.marketPubkey,
-  //     userPubkey: wallet.publicKey.toBase58(),
-  //     collateralMint: collateral.collateral.mint,
-  //   },
-  //   args: {
-  //     amountToGetBorrower: borrowAmount,
-  //     collateralsPerToken: collateralsPerToken,
-  //     terminationFreeze: freezeValue,
-  //     amountToSend: 0,
-  //     aprRate: aprRate,
-
-  //     upfrontFeeBasePoints: BONDS.PROTOCOL_FEE,
-  //     isBorrowerListing: true,
-  //     lendingTokenType: tokenType,
-  //   },
-  //   connection,
-  //   sendTxn: sendTxnPlaceHolder,
-  // })
+  const collateralsPerTokenFactor = Math.pow(10, collateralDecimals) * Math.pow(10, marketDecimals)
+  const collateralsPerToken = (collateralAmount / fullLoanAmount) * collateralsPerTokenFactor
 
   const {
     instructions,
@@ -86,8 +68,7 @@ export const createTokenListTxnData: CreateListTxnData = async (params, walletAn
       terminationFreeze: new BN(freezeValue),
       amountToSend: ZERO_BN,
       aprRate: new BN(aprRate),
-
-      upfrontFeeBasePoints: BONDS.PROTOCOL_FEE,
+      upfrontFeeBasePoints: BONDS.PROTOCOL_FEE_TOKEN,
       isBorrowerListing: true,
       lendingTokenType: tokenType,
     },
@@ -106,7 +87,7 @@ export const createTokenListTxnData: CreateListTxnData = async (params, walletAn
   }
 }
 
-export const parseListTokenSimulatedAccounts = (
+export const parseTokenListSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)

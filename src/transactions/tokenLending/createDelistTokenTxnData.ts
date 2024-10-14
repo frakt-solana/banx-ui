@@ -25,19 +25,6 @@ export const createDelistTokenTxnData: CreateDelistTokenTxnData = async (
 
   const { loan } = params
 
-  // console.log({
-  //   programId: BONDS.PROGRAM_PUBKEY,
-  //   accounts: {
-  //     userPubkey: wallet.publicKey.toBase58(),
-  //     collateralMint: loan.collateral.mint,
-  //     fraktBond: loan.fraktBond.publicKey,
-  //     bondOffer: loan.bondTradeTransaction.bondOffer,
-  //     oldBondTradeTransaction: loan.bondTradeTransaction.publicKey,
-  //   },
-  //   connection,
-  //   sendTxn: sendTxnPlaceHolder,
-  // })
-
   const { instructions, signers } = await removePerpetualListingSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {

@@ -28,7 +28,7 @@ import {
 import {
   CreateTokenListTxnDataParams,
   createTokenListTxnData,
-  parseListTokenSimulatedAccounts,
+  parseTokenListSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
   destroySnackbar,
@@ -134,7 +134,7 @@ export const useListLoan: UseListLoan = ({
             })
 
             if (accountInfoByPubkey) {
-              const accounts = parseListTokenSimulatedAccounts(accountInfoByPubkey)
+              const accounts = parseTokenListSimulatedAccounts(accountInfoByPubkey)
 
               const optimisticLoan = createOptimisticLoan({
                 newFraktBond: accounts.fraktBond,
