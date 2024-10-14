@@ -7353,10 +7353,10 @@ faye-websocket@0.11.4, faye-websocket@^0.11.3:
   dependencies:
     websocket-driver ">=0.5.1"
 
-fbonds-core@0.6.31:
-  version "0.6.31"
-  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.6.31.tgz#3c4e7d3706ba8eccf5567c7450bfdfbe56dd0b7b"
-  integrity sha512-5bGpF8WYW0Xm4fhjjdRtS5swCnFz2Y6GbdxkHIpEh9BpxwFi+G0sFgQnbir+LiXYFe0M6E+GoR4eJ+3DkpYu4Q==
+fbonds-core@0.6.41:
+  version "0.6.41"
+  resolved "https://registry.yarnpkg.com/fbonds-core/-/fbonds-core-0.6.41.tgz#d48dfc9a4bf30096083e726172b3674ca6d403d6"
+  integrity sha512-e2OaQcV9EwF+YeODpcvmO35c2oA4/tDjby+ys6yNiS1wYfP9o/GKpifyIoj9q+7TLZtlEfmoUOoHpfZ/Uzwolw==
   dependencies:
     "@coral-xyz/anchor" "^0.30.1"
     "@metaplex-foundation/mpl-token-metadata" "^2.8.1"
@@ -7366,6 +7366,7 @@ fbonds-core@0.6.31:
     axios "^1.4.0"
     bs58 "^4.0.1"
     lodash "^4.17.21"
+    solana-transactions-parser "^2.0.1"
 
 figures@^3.0.0:
   version "3.2.0"
@@ -11931,7 +11932,7 @@ solana-transactions-executor@6.0.0:
     bs58 "^5.0.0"
     lodash "^4.17.21"
 
-solana-transactions-parser@2.0.1:
+solana-transactions-parser@2.0.1, solana-transactions-parser@^2.0.1:
   version "2.0.1"
   resolved "https://registry.yarnpkg.com/solana-transactions-parser/-/solana-transactions-parser-2.0.1.tgz#8033ef8108dad6e5be53351ccf4db8c421d71d3f"
   integrity sha512-zE+NGmmOty1yYphbMGXJagP3OQNOYd15XVyZLXp/8R4tzA9ImAHqm7fI0opoISXTEBJLhZGaK4d2LNgKNMduWA==

@@ -134,7 +134,11 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({ ...loan, fraktBond, bondTradeTransaction })
+              updateOrAddLoan({
+                ...loan,
+                fraktBond: { ...fraktBond, hadoMarket: params.loan.fraktBond.hadoMarket },
+                bondTradeTransaction,
+              })
               removeLoan(loan.publicKey, wallet.publicKey.toBase58())
               close()
             }
@@ -351,12 +355,14 @@ export const RepaymentCallContent: FC<RepaymentCallContentProps> = ({ loan, clos
               })
 
               const { loan } = params
+
               const bondTradeTransaction = parseRepaymentCallSimulatedAccounts(accountInfoByPubkey)
 
               const optimisticLoan: core.Loan = {
                 ...loan,
                 fraktBond: {
                   ...loan.fraktBond,
+                  hadoMarket: params.loan.fraktBond.hadoMarket,
                   lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
                 },
                 bondTradeTransaction,

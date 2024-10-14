@@ -57,7 +57,7 @@ const MarketMainInfo: FC<{ market: core.MarketPreview }> = ({ market }) => {
     <div className={styles.mainInfoContainer}>
       <img src={market.collectionImage} className={styles.collectionImage} />
       <h4 className={styles.collectionName}>{collectionName}</h4>
-      {tensorSlug && <TensorLink className={styles.tensorLink} slug={tensorSlug} />}
+      {tensorSlug && <TensorLink slug={tensorSlug} />}
       {isHot && (
         <Tooltip title="Collection is in huge demand waiting for lenders!">
           <Fire />
@@ -114,10 +114,10 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isCardOpe
         classNamesProps={classNamesProps}
       />
       <StatInfo
-        label="In offers"
+        label="Size"
         value={<DisplayValue value={offerTvl} />}
         secondValue={`in ${activeOfferAmount} offers`}
-        tooltipText={TOOLTIP_TEXTS.IN_OFFERS}
+        tooltipText={TOOLTIP_TEXTS.SIZE}
         classNamesProps={classNamesProps}
       />
       <StatInfo

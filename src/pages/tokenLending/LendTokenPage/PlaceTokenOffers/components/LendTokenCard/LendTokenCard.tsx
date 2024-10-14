@@ -3,6 +3,7 @@ import { FC } from 'react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
+import { DexscreenerLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
@@ -48,6 +49,7 @@ const MarketMainInfo: FC<{ market: core.TokenMarketPreview }> = ({ market }) => 
   <div className={styles.mainInfoContainer}>
     <img src={market.collateral.logoUrl} className={styles.collateralImage} />
     <h4 className={styles.collateralName}>{market.collateral.ticker}</h4>
+    <DexscreenerLink mint={market.collateral.mint} />
   </div>
 )
 
@@ -97,7 +99,7 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ market, isOpen })
         classNamesProps={classNamesProps}
       />
       <StatInfo
-        label="In offers"
+        label="Size"
         value={<DisplayValue value={offersTvl} />}
         secondValue={`${activeOffersAmount} offers`}
         tooltipText="Liquidity that is locked in active offers"

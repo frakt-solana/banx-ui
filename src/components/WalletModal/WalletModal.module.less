@@ -10,7 +10,7 @@
   top: 0;
   right: 0;
   padding: 16px;
-  width: 312px;
+  width: 375px;
   z-index: 100;
 
   @media (max-width: 767px) {
@@ -67,76 +67,12 @@
   width: 100%;
 }
 
-// * LenderVaultContent * //
-.lenderVaultContainer {
-  background: var(--bg-secondary);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin: 8px -16px 0;
-}
-
-.epochContainer {
-  display: flex;
-  flex-direction: column;
-  padding: 8px 16px;
-  gap: 12px;
-}
-
-.epochStats {
-  display: flex;
-  flex-direction: column;
-  white-space: nowrap;
-
-  & > div {
-    justify-content: flex-start;
-    gap: 4px;
-
-    span {
-      display: flex;
-      align-items: center;
-    }
-
-    svg path {
-      fill: revert-layer;
-    }
-  }
-}
-
-.lenderValtStatsContainer {
-  border-top: 1px dotted var(--bg-border);
+.userInfoContent {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
-  width: 100%;
-
-  &.hiddenBorder {
-    border-top: 0;
-  }
+  gap: 8px;
 }
-
-.lenderVaultStats {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  & > div {
-    gap: 0;
-  }
-}
-
-.claimableValue {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-
-  svg path {
-    fill: revert-layer;
-  }
-}
-
-// * LenderVaultContent * //
 
 // * TooltipContent * //
 .tooltipContent {
@@ -173,9 +109,9 @@
 
 .buttonsWrapper {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
-  padding-top: 8px;
+  gap: 24px;
 }
 
 .changeWalletButton,
@@ -187,8 +123,13 @@
   gap: 2px;
   font: var(--btn-text-sm);
 
-  svg path {
-    fill: var(--content-primary);
+  svg {
+    height: 24px;
+    width: 24px;
+
+    path {
+      fill: var(--content-primary);
+    }
   }
 }
 
@@ -257,45 +198,3 @@
   width: 14px;
   height: 14px;
 }
-
-// * BalanceContent * //
-.balanceContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-left: auto;
-}
-
-.balanceLabel {
-  color: var(--content-secondary);
-  font: var(--title-xs);
-  text-align: center;
-  text-transform: uppercase;
-  max-width: 88px;
-}
-
-.balanceContent {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-
-  & > div {
-    gap: 0;
-  }
-}
-
-.verticalLine {
-  background: var(--content-primary);
-  width: 1px;
-  height: 12px;
-}
-.balanceValue {
-  display: flex;
-  align-items: center;
-  font: var(--important-text-md);
-
-  svg path {
-    fill: revert-layer;
-  }
-}
-// * BalanceContent * //

@@ -2,13 +2,11 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 
-import { useDiscordUser, useWalletBalance } from '@banx/hooks'
-import { HorizontalDots, Wallet } from '@banx/icons'
+import { useWalletBalance } from '@banx/hooks'
+import { Escrow, HorizontalDots, Wallet } from '@banx/icons'
 import { useTokenType } from '@banx/store/common'
-import { shortenAddress } from '@banx/utils'
 
 import { DisplayValue } from '../TableComponents'
-import UserAvatar from '../UserAvatar'
 import { useLenderVaultInfo, useWalletModal } from '../WalletModal'
 import { Button } from './Button'
 
@@ -24,23 +22,16 @@ export const WalletConnectButton = () => {
 
   const walletBalance = useWalletBalance(tokenType, { isLive: true })
 
-  const { data: discordUserData } = useDiscordUser()
-
   const { lenderVaultInfo } = useLenderVaultInfo()
 
   const ConnectedButton = () => (
     <div className={styles.connectedButton} onClick={toggleVisibility}>
-      <UserAvatar imageUrl={discordUserData?.avatarUrl ?? undefined} />
-      <div className={styles.connectedWalletInfo}>
-        <span className={styles.connectedWalletAddress}>{shortenAddress(walletPubkeyString)}</span>
-        <span className={styles.connectedMobileWalletAddress}>
-          {walletPubkeyString.slice(0, 4)}
-        </span>
-        <BalanceContent
-          walletBalance={walletBalance}
-          vaultBalance={lenderVaultInfo.totalClaimableValue}
-        />
-      </div>
+      <BalanceContent
+        walletPubkey={walletPubkeyString}
+        walletBalance={walletBalance}
+        vaultBalance={lenderVaultInfo.offerLiquidityAmount}
+      />
+
       <HorizontalDots className={styles.connectedWalletIcon} />
     </div>
   )
@@ -56,23 +47,30 @@ export const WalletConnectButton = () => {
 }
 
 interface BalanceContentProps {
+  walletPubkey: string
   walletBalance: number
   vaultBalance: number
 }
-const BalanceContent: FC<BalanceContentProps> = ({ walletBalance, vaultBalance }) => {
+
+const BalanceContent: FC<BalanceContentProps> = ({ walletPubkey, walletBalance, vaultBalance }) => {
   return (
     <div className={styles.balanceContent}>
-      <span className={styles.balance}>
-        <DisplayValue value={walletBalance} />
-      </span>
+      <div className={styles.balanceInfo}>
+        <span className={styles.balanceInfoLabel}>{walletPubkey.slice(0, 4)}:</span>
+        <Wallet />
+        <span className={styles.balanceInfoValue}>
+          <DisplayValue value={walletBalance} />
+        </span>
+      </div>
 
       {!!vaultBalance && (
-        <>
-          <div className={styles.verticalLine} />
-          <span className={styles.banxSolBalance}>
+        <span className={styles.balanceInfo}>
+          <Escrow />
+          <span className={styles.balanceInfoLabel}>Escrow:</span>
+          <span className={styles.balanceInfoValue}>
             <DisplayValue value={vaultBalance} />
           </span>
-        </>
+        </span>
       )}
     </div>
   )

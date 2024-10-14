@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
+import { BN } from 'fbonds-core'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 
@@ -12,6 +13,7 @@ import { getTokenDecimals, stringToBN } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
 import { getUpdatedBorrowOffers } from '../OrderBook/helpers'
+import { MAX_TOKEN_TO_GET_TRESHOLD } from './constants'
 import { useSelectedOffers } from './useSelectedOffers'
 
 export const useBorrowOffers = (
@@ -36,7 +38,6 @@ export const useBorrowOffers = (
     {
       collateralToken,
       borrowToken,
-      debouncedCollateralsAmount,
       debouncedLtvSliderValue,
       walletPubkeyString,
     },
@@ -45,7 +46,6 @@ export const useBorrowOffers = (
   const fetchBorrowOffers = () => {
     const marketPubkey = collateralToken?.marketPubkey || ''
     const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
-    const collateralsAmount = stringToBN(debouncedCollateralsAmount, marketTokenDecimals)
 
     const ltvLimit = debouncedLtvSliderValue * 100 //? base points 50% => 5000
 
@@ -53,9 +53,7 @@ export const useBorrowOffers = (
       market: marketPubkey,
       bondingCurveType,
       ltvLimit,
-      collateralsAmount: collateralsAmount.toString(),
       excludeWallet: walletPubkeyString || PUBKEY_PLACEHOLDER,
-      disableMultiBorrow: false,
     })
   }
 
@@ -69,17 +67,28 @@ export const useBorrowOffers = (
     setLtvSlider(value)
   }
 
+  //? Filter out offers with maxTokenToGet < MAX_TOKEN_TO_GET_TRESHOLD
+  const filteredOffers = useMemo(() => {
+    if (!borrowOffers) return []
+
+    return borrowOffers.filter((offer) =>
+      new BN(offer.maxTokenToGet).gte(new BN(MAX_TOKEN_TO_GET_TRESHOLD)),
+    )
+  }, [borrowOffers])
+
   const { selection: offersInCart, set: setOffers, clear: clearOffers } = useSelectedOffers()
 
   useEffect(() => {
-    if (borrowOffers) {
-      const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
-      const collateralsAmount = stringToBN(inputCollateralsAmount, marketTokenDecimals)
+    if (filteredOffers) {
+      const collateralsAmount = stringToBN(
+        inputCollateralsAmount,
+        collateralToken?.collateral.decimals || 0,
+      )
 
       const updatedOffers = getUpdatedBorrowOffers({
         collateralsAmount,
-        offers: borrowOffers,
-        tokenDecimals: collateralTokenDecimals,
+        offers: filteredOffers,
+        tokenDecimals: marketTokenDecimals,
       })
 
       setOffers(updatedOffers)
@@ -89,7 +98,7 @@ export const useBorrowOffers = (
   }, [
     inputCollateralsAmount,
     collateralToken,
-    borrowOffers,
+    filteredOffers,
     setOffers,
     walletPubkeyString,
     marketTokenDecimals,
@@ -97,7 +106,7 @@ export const useBorrowOffers = (
   ])
 
   return {
-    data: borrowOffers ?? [],
+    data: filteredOffers ?? [],
     isLoading,
 
     offersInCart,

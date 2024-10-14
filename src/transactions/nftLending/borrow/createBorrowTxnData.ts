@@ -113,6 +113,7 @@ const getTxnDataByBorrowType = async ({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         userPubkey: walletAndConnection.wallet.publicKey,
+        lender: new web3.PublicKey(offer.assetReceiver),
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         bondOffer: new web3.PublicKey(offer.publicKey),
         nftAsset: new web3.PublicKey(nft.nft.mint),
@@ -157,6 +158,7 @@ const getTxnDataByBorrowType = async ({
         perpetualBorrowParamsAndAccounts: [
           {
             amountOfSolToGet: Math.floor(loanValue),
+            lender: new web3.PublicKey(offer.assetReceiver),
             tokenMint: new web3.PublicKey(nft.mint),
             bondOfferV2: new web3.PublicKey(offer.publicKey),
             hadoMarket: new web3.PublicKey(offer.hadoMarket),
@@ -198,6 +200,7 @@ const getTxnDataByBorrowType = async ({
 
       accounts: {
         userPubkey: walletAndConnection.wallet.publicKey,
+        lender: new web3.PublicKey(offer.assetReceiver),
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         nftMint: new web3.PublicKey(nft.mint),
         bondOfferV2: new web3.PublicKey(offer.publicKey),
@@ -246,6 +249,7 @@ const getTxnDataByBorrowType = async ({
       perpetualBorrowParamsAndAccounts: [
         {
           amountOfSolToGet: new BN(Math.floor(loanValue)),
+          lender: new web3.PublicKey(offer.assetReceiver),
           ruleSet: ruleSet,
           tokenMint: new web3.PublicKey(nft.mint),
           bondOfferV2: new web3.PublicKey(offer.publicKey),

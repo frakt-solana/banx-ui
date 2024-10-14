@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-import { NFTSchema, RaritySchema } from './schemas'
+import { NFTSchema, RaritySchema, UserVaultSchema } from './schemas'
 
 export enum TokenStandard {
   CORE = 'MplCoreAsset',
@@ -41,3 +41,5 @@ export type MutationResponse = {
   message?: string
   success: boolean
 }
+
+export type UserVault = z.infer<typeof UserVaultSchema>

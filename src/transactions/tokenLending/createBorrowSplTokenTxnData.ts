@@ -45,6 +45,7 @@ export const createBorrowSplTokenTxnData: CreateBorrowTokenTxnData = async (
   } = await borrowPerpetualSpl({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
+      lender: new web3.PublicKey(offer.assetReceiver),
       userPubkey: walletAndConnection.wallet.publicKey,
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       bondOffer: offer.publicKey,

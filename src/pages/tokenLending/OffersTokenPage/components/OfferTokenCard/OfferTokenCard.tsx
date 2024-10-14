@@ -4,6 +4,7 @@ import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
 import { calculateLtvPercent } from '@banx/components/PlaceTokenOfferSection'
+import { DexscreenerLink } from '@banx/components/SolanaLinks'
 import { StatInfo } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 import Tooltip from '@banx/components/Tooltip'
@@ -75,6 +76,7 @@ const MarketMainInfo: FC<{ offerPreview: core.TokenOfferPreview }> = ({ offerPre
     <div className={styles.mainInfoContainer}>
       <img src={collateral.logoUrl} className={styles.collateralImage} />
       <h4 className={styles.collateralName}>{collateral.ticker}</h4>
+      <DexscreenerLink mint={offerPreview.tokenMarketPreview.collateral.mint} />
     </div>
   )
 }
@@ -145,9 +147,9 @@ const MarketAdditionalInfo: FC<MarketAdditionalInfoProps> = ({ offerPreview, isO
         classNamesProps={classNamesProps}
       />
       <StatInfo
-        label="In offer"
+        label="Size"
         value={<DisplayValue value={offerSize} />}
-        tooltipText="Liquidity that is locked in offer"
+        tooltipText="The total amount you are willing to lend at the proposed offer price"
         classNamesProps={classNamesProps}
       />
       <StatInfo

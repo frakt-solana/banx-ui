@@ -16,15 +16,7 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 12px;
-
-  @media (max-width: 640px) {
-    gap: 4px;
-  }
-
-  a {
-    text-decoration: none;
-  }
+  gap: 24px;
 }
 
 .rewardsButtonWrapper {
@@ -64,7 +56,7 @@
 }
 
 .logoWrapper {
-  height: 32px;
+  height: 30px;
   display: flex;
   align-items: center;
 
@@ -83,11 +75,23 @@
 
     .logoMobile {
       display: flex;
+      height: 30px;
+      width: 30px;
     }
   }
 }
 
-.tokenSwitcher {
+.switchers {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  @media (max-width: 640px) {
+    gap: 4px;
+  }
+}
+
+.modeSwitcher {
   margin-left: 60px;
 
   @media screen and (max-width: 960px) {
@@ -99,22 +103,16 @@
   }
 }
 
-.priorityFeeLevel {
-  @media screen and (max-width: 640px) {
-    display: none;
-  }
-}
-
 .priorityFeeButton {
-  @media screen and (max-width: 640px) {
-    padding: unset !important;
-    min-height: 32px;
-    min-width: 32px;
-  }
+  padding: unset !important;
+  min-height: 32px;
+  min-width: 32px;
 }
 
-.hiddenThemeSwitcher {
-  @media (max-width: 640px) {
+.hiddenThemeSwitcher,
+.hiddenPriorityFeesButton,
+.hiddenBanxNotificationsButton {
+  @media (max-width: 960px) {
     display: none;
   }
 }

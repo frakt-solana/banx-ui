@@ -168,7 +168,7 @@ const getIxnsAndSignersByBorrowType = async (
         oldBondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
         userPubkey: wallet.publicKey,
         bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-        lender: new web3.PublicKey(bondTradeTransaction.user),
+        oldLender: new web3.PublicKey(bondTradeTransaction.user),
         fbond: new web3.PublicKey(fraktBond.publicKey),
         tree: new web3.PublicKey(nft.compression.tree),
         protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),

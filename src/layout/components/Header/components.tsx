@@ -1,3 +1,5 @@
+import { FC } from 'react'
+
 import classNames from 'classnames'
 import { NavLink } from 'react-router-dom'
 
@@ -6,14 +8,17 @@ import { PriorityFeesModal } from '@banx/components/modals'
 
 import { Cup, Settings } from '@banx/icons'
 import { PATHS } from '@banx/router'
-import { getHumanReadablePriorityLevel, useModal, usePriorityFees } from '@banx/store/common'
+import { useModal } from '@banx/store/common'
 
 import { isActivePath } from '../Navbar/helpers'
 
 import styles from './Header.module.less'
 
-export const PriorityFeesButton = () => {
-  const { priorityLevel } = usePriorityFees()
+interface PriorityFeesButtonProps {
+  className?: string
+}
+
+export const PriorityFeesButton: FC<PriorityFeesButtonProps> = ({ className }) => {
   const { open, close } = useModal()
 
   const onClickHandler = () => {
@@ -25,12 +30,9 @@ export const PriorityFeesButton = () => {
       type="circle"
       variant="tertiary"
       onClick={onClickHandler}
-      className={styles.priorityFeeButton}
+      className={classNames(styles.priorityFeeButton, className)}
     >
       <Settings />
-      <span className={styles.priorityFeeLevel}>
-        {getHumanReadablePriorityLevel(priorityLevel)}
-      </span>
     </Button>
   )
 }

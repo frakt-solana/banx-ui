@@ -8,7 +8,7 @@ import { Modal } from '@banx/components/modals/BaseModal'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
-import { formatValueByTokenType, getTokenDecimals, getTokenUnit } from '@banx/utils'
+import { formatValueByTokenType, getTokenUnit } from '@banx/utils'
 
 import { getSummaryInfo } from './helpers'
 
@@ -31,13 +31,13 @@ const WarningModal: FC<WarningModalProps> = ({ offers, onSubmit, onCancel, colla
 
   const { tokenType } = useTokenType()
 
-  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e6, 1e9
   const tokenUnit = getTokenUnit(tokenType)
 
   const formattedTotalAmountToGet = formatValueByTokenType(totalAmountToGet, tokenType)
   const formattedWeeklyFee = formatValueByTokenType(weeklyFee, tokenType)
 
-  const formattedCollateralsValue = formatNumber(totalCollateralsAmount / marketTokenDecimals)
+  const collateralDecimals = 10 ** (collateral?.collateral.decimals || 0)
+  const formattedCollateralsValue = formatNumber(totalCollateralsAmount / collateralDecimals)
   const formattedAprValue = (weightedApr / 100).toFixed(0)
 
   return (

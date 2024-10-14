@@ -46,22 +46,22 @@ const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, coll
     if (hasSelectedOffers) return clearSelection()
 
     const collateralTokenDecimals = collateral?.collateral.decimals || 0
-    const collateralsAmount = stringToBN(requiredCollateralsAmount, marketTokenDecimals)
+    const collateralsAmount = stringToBN(requiredCollateralsAmount, collateralTokenDecimals)
 
     const updatedOffers = getUpdatedBorrowOffers({
       collateralsAmount,
       offers,
-      tokenDecimals: collateralTokenDecimals,
+      tokenDecimals: marketTokenDecimals,
     })
 
     setSelection(updatedOffers)
   }, [
-    collateral,
-    offers,
     hasSelectedOffers,
-    marketTokenDecimals,
-    requiredCollateralsAmount,
     clearSelection,
+    collateral?.collateral.decimals,
+    requiredCollateralsAmount,
+    offers,
+    marketTokenDecimals,
     setSelection,
   ])
 
@@ -70,26 +70,27 @@ const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, coll
       selection.map((offer) => new BN(offer.maxCollateralToReceive)),
     )
 
-    const collateralsAmount = stringToBN(requiredCollateralsAmount, marketTokenDecimals)
+    const collateralsAmount = stringToBN(
+      requiredCollateralsAmount,
+      collateral?.collateral.decimals || 0,
+    )
 
     return BN.max(collateralsAmount.sub(collateralsAmountInCart), ZERO_BN)
-  }, [requiredCollateralsAmount, marketTokenDecimals, selection])
+  }, [selection, requiredCollateralsAmount, collateral?.collateral.decimals])
 
   const onRowClick = useCallback(
     (offer: BorrowOffer) => {
-      if (!findOfferInSelection(offer.publicKey) && restCollateralsAmount.isZero()) return
-
-      const collateralTokenDecimals = collateral?.collateral.decimals || 0
+      if (!findOfferInSelection(offer.id) && restCollateralsAmount.isZero()) return
 
       const updatedOffer = getUpdatedBorrowOffers({
         collateralsAmount: restCollateralsAmount,
         offers: [offer],
-        tokenDecimals: collateralTokenDecimals,
+        tokenDecimals: marketTokenDecimals,
       })[0]
 
       return toggleOfferInSelection(updatedOffer)
     },
-    [collateral, findOfferInSelection, restCollateralsAmount, toggleOfferInSelection],
+    [findOfferInSelection, marketTokenDecimals, restCollateralsAmount, toggleOfferInSelection],
   )
 
   const columns = getTableColumns({

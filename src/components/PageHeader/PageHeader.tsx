@@ -9,21 +9,18 @@ import styles from './PageHeader.module.less'
 interface PageHeaderProps {
   title: string
   titleBtn?: JSX.Element
-  tokenSwitcher?: JSX.Element
   className?: string
 }
 
 export const PageHeaderBackdrop: FC<PropsWithChildren<PageHeaderProps>> = ({
   title,
   titleBtn,
-  tokenSwitcher,
   className,
   children,
 }) => (
   <div className={classNames(styles.container, className)}>
     <div className={styles.titleWrapper}>
       <h2 className={styles.title}>{title}</h2>
-      {tokenSwitcher}
       {titleBtn}
     </div>
 
