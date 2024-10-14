@@ -73,7 +73,7 @@ export const getInputErrorMessage = ({
   const isBorrowAmountEmpty = isNaN(borrowAmount)
   const isAprEmpty = isNaN(apr)
 
-  const isAprTooLow = apr <= MIN_APR
+  const isAprTooLow = apr < MIN_APR
   const isAprTooHigh = apr > MAX_APR
 
   const isFreezeValueTooHigh = freezeDuration > DAYS_IN_YEAR

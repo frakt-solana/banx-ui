@@ -16,7 +16,7 @@ export const LoansTokenPage = () => {
 
   const { value: currentTabValue, ...tabsProps } = useTabs({
     tabs: LOANS_TABS,
-    defaultValue: storeTab ?? TokenLoanListingsTabName.LOANS,
+    defaultValue: storeTab ?? TokenLoansTabName.LOANS,
   })
 
   //? Used hook to reset store when the component is unmounted
@@ -32,16 +32,16 @@ export const LoansTokenPage = () => {
     <div className={styles.pageWrapper}>
       <LoansHeader loans={loans} />
       <Tabs value={currentTabValue} {...tabsProps} />
-      {currentTabValue === TokenLoanListingsTabName.LOANS && (
+      {currentTabValue === TokenLoansTabName.LOANS && (
         <TokenLoansContent loans={loans} isLoading={isLoading} />
       )}
-      {currentTabValue === TokenLoanListingsTabName.LISTINGS && <TokenLoanListingsTable />}
-      {currentTabValue === TokenLoanListingsTabName.HISTORY && <BorrowerTokenActivityTable />}
+      {currentTabValue === TokenLoansTabName.LISTINGS && <TokenLoanListingsTable />}
+      {currentTabValue === TokenLoansTabName.HISTORY && <BorrowerTokenActivityTable />}
     </div>
   )
 }
 
-export enum TokenLoanListingsTabName {
+export enum TokenLoansTabName {
   LOANS = 'loans',
   LISTINGS = 'listings',
   HISTORY = 'history',
@@ -50,14 +50,14 @@ export enum TokenLoanListingsTabName {
 const LOANS_TABS: Tab[] = [
   {
     label: 'Loans',
-    value: TokenLoanListingsTabName.LOANS,
+    value: TokenLoansTabName.LOANS,
   },
   {
     label: 'Listings',
-    value: TokenLoanListingsTabName.LISTINGS,
+    value: TokenLoansTabName.LISTINGS,
   },
   {
     label: 'History',
-    value: TokenLoanListingsTabName.HISTORY,
+    value: TokenLoansTabName.HISTORY,
   },
 ]

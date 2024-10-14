@@ -87,7 +87,7 @@ export const createListTokenTxnData: CreateListTxnData = async (params, walletAn
   }
 }
 
-export const parseTokenListSimulatedAccounts = (
+export const parseListTokenSimulatedAccounts = (
   accountInfoByPubkey: SimulatedAccountInfoByPubkey,
 ) => {
   const results = parseAccountInfoByPubkey(accountInfoByPubkey)

@@ -13,8 +13,7 @@ import {
 
 import { CollateralToken, TokenLoan } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { TokenLoanListingsTabName } from '@banx/pages/tokenLending/LoansTokenPage/LoansTokenPage'
-import { useTokenLoansTabs } from '@banx/pages/tokenLending/LoansTokenPage/hooks'
+import { TokenLoansTabName, useTokenLoansTabs } from '@banx/pages/tokenLending/LoansTokenPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken } from '@banx/store'
@@ -28,7 +27,7 @@ import {
 import {
   CreateListTokenTxnDataParams,
   createListTokenTxnData,
-  parseTokenListSimulatedAccounts,
+  parseListTokenSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
   destroySnackbar,
@@ -84,7 +83,7 @@ export const useListLoan: UseListLoan = ({
   }
 
   const goToLoansPage = () => {
-    setLoanTab(TokenLoanListingsTabName.LISTINGS)
+    setLoanTab(TokenLoansTabName.LISTINGS)
     navigate(buildUrlWithModeAndToken(PATHS.LOANS, AssetMode.Token, tokenType))
   }
 
@@ -134,7 +133,7 @@ export const useListLoan: UseListLoan = ({
             })
 
             if (accountInfoByPubkey) {
-              const accounts = parseTokenListSimulatedAccounts(accountInfoByPubkey)
+              const accounts = parseListTokenSimulatedAccounts(accountInfoByPubkey)
 
               const optimisticLoan = createOptimisticLoan({
                 newFraktBond: accounts.fraktBond,
