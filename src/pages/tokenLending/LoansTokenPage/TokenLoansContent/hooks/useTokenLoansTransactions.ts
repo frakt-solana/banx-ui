@@ -3,7 +3,7 @@ import { every, uniqueId } from 'lodash'
 import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/tokens'
+import { TokenLoan } from '@banx/api/tokens'
 import { useIsLedger, useModal } from '@banx/store/common'
 import { useTokenLoansOptimistic } from '@banx/store/token'
 import {
@@ -32,7 +32,7 @@ import {
 } from '@banx/utils'
 
 import { caclFractionToRepay, caclFractionToRepayForRepaymentCall } from '../helpers'
-import { useSelectedTokenLoans } from '../loansState'
+import { useSelectedTokenLoans } from '../loansCart'
 
 export const useTokenLoansTransactions = () => {
   const wallet = useWallet()
@@ -44,7 +44,7 @@ export const useTokenLoansTransactions = () => {
   const { update: updateLoansOptimistic } = useTokenLoansOptimistic()
   const { selection, clear: clearSelection } = useSelectedTokenLoans()
 
-  const repayLoan = async (loan: core.TokenLoan) => {
+  const repayLoan = async (loan: TokenLoan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -83,18 +83,11 @@ export const useTokenLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
 
-              //TODO Move optimistics creation into a separate function
-              const optimisticLoan: core.TokenLoan = {
-                ...params.loan,
-                publicKey: fraktBond.publicKey,
-                //? Needs to prevent BE data overlap in optimistics logic
-                fraktBond: {
-                  ...fraktBond,
-                  hadoMarket: params.loan.fraktBond.hadoMarket,
-                  lastTransactedAt: moment().unix(),
-                },
-                bondTradeTransaction: bondTradeTransaction,
-              }
+              const optimisticLoan = createOptimisticLoan(
+                params.loan,
+                fraktBond,
+                bondTradeTransaction,
+              )
 
               updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
@@ -150,18 +143,11 @@ export const useTokenLoansTransactions = () => {
                 const { bondTradeTransaction, fraktBond } =
                   parseRepayLoanSimulatedAccounts(accountInfoByPubkey)
 
-                //TODO Move optimistics creation into a separate function
-                const optimisticLoan: core.TokenLoan = {
-                  ...params.loan,
-                  publicKey: fraktBond.publicKey,
-                  //? Needs to prevent BE data overlap in optimistics logic
-                  fraktBond: {
-                    ...fraktBond,
-                    hadoMarket: params.loan.fraktBond.hadoMarket,
-                    lastTransactedAt: moment().unix(),
-                  },
-                  bondTradeTransaction: bondTradeTransaction,
-                }
+                const optimisticLoan = createOptimisticLoan(
+                  params.loan,
+                  fraktBond,
+                  bondTradeTransaction,
+                )
 
                 updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               }
@@ -189,7 +175,7 @@ export const useTokenLoansTransactions = () => {
     }
   }
 
-  const repayPartialLoan = async (loan: core.TokenLoan, fractionToRepay: number) => {
+  const repayPartialLoan = async (loan: TokenLoan, fractionToRepay: number) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -231,18 +217,11 @@ export const useTokenLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
 
-              //TODO Move optimistics creation into a separate function
-              const optimisticLoan: core.TokenLoan = {
-                ...params.loan,
-                publicKey: fraktBond.publicKey,
-                //? Needs to prevent BE data overlap in optimistics logic
-                fraktBond: {
-                  ...fraktBond,
-                  hadoMarket: params.loan.fraktBond.hadoMarket,
-                  lastTransactedAt: moment().unix(),
-                },
-                bondTradeTransaction: bondTradeTransaction,
-              }
+              const optimisticLoan = createOptimisticLoan(
+                params.loan,
+                fraktBond,
+                bondTradeTransaction,
+              )
 
               updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               clearSelection()
@@ -316,18 +295,11 @@ export const useTokenLoansTransactions = () => {
                 const { bondTradeTransaction, fraktBond } =
                   parseRepayPartialLoanSimulatedAccounts(accountInfoByPubkey)
 
-                //TODO Move optimistics creation into a separate function
-                const optimisticLoan: core.TokenLoan = {
-                  ...params.loan,
-                  publicKey: fraktBond.publicKey,
-                  //? Needs to prevent BE data overlap in optimistics logic
-                  fraktBond: {
-                    ...fraktBond,
-                    hadoMarket: params.loan.fraktBond.hadoMarket,
-                    lastTransactedAt: moment().unix(),
-                  },
-                  bondTradeTransaction: bondTradeTransaction,
-                }
+                const optimisticLoan = createOptimisticLoan(
+                  params.loan,
+                  fraktBond,
+                  bondTradeTransaction,
+                )
 
                 updateLoansOptimistic([optimisticLoan], wallet.publicKey.toBase58())
               }
@@ -361,5 +333,24 @@ export const useTokenLoansTransactions = () => {
     repayAllLoans,
     repayPartialLoan,
     repayUnpaidLoansInterest,
+  }
+}
+
+const createOptimisticLoan = (
+  loan: TokenLoan,
+  newFraktBond: TokenLoan['fraktBond'],
+  newBondTradeTransaction: TokenLoan['bondTradeTransaction'],
+): TokenLoan => {
+  const currentTimeInSeconds = moment().unix()
+
+  return {
+    ...loan,
+    publicKey: newFraktBond.publicKey,
+    fraktBond: {
+      ...newFraktBond,
+      lastTransactedAt: currentTimeInSeconds, //? Needs to prevent BE data overlap in optimistics logic
+      hadoMarket: loan.fraktBond.hadoMarket,
+    },
+    bondTradeTransaction: newBondTradeTransaction,
   }
 }

@@ -18,7 +18,7 @@ import {
   isTokenLoanRepaymentCallActive,
 } from '@banx/utils'
 
-import { useTokenLoansTransactions } from '../../hooks'
+import { useTokenLoansTransactions } from '../../../TokenLoansContent/hooks'
 
 import styles from './RepayTokenModal.module.less'
 
