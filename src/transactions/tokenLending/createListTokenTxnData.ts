@@ -19,7 +19,7 @@ import { ZERO_BN, getTokenDecimals } from '@banx/utils'
 import { parseAccountInfoByPubkey } from '../functions'
 import { sendTxnPlaceHolder } from '../helpers'
 
-export type CreateTokenListTxnDataParams = {
+export type CreateListTokenTxnDataParams = {
   collateral: CollateralToken
 
   borrowAmount: number
@@ -31,11 +31,11 @@ export type CreateTokenListTxnDataParams = {
 }
 
 type CreateListTxnData = (
-  params: CreateTokenListTxnDataParams,
+  params: CreateListTokenTxnDataParams,
   walletAndConnection: WalletAndConnection,
-) => Promise<CreateTxnData<CreateTokenListTxnDataParams>>
+) => Promise<CreateTxnData<CreateListTokenTxnDataParams>>
 
-export const createTokenListTxnData: CreateListTxnData = async (params, walletAndConnection) => {
+export const createListTokenTxnData: CreateListTxnData = async (params, walletAndConnection) => {
   const { connection, wallet } = walletAndConnection
 
   const { aprRate, borrowAmount, collateralAmount, collateral, freezeValue, tokenType } = params

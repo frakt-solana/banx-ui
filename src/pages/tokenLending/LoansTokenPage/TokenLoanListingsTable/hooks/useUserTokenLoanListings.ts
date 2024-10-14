@@ -25,7 +25,7 @@ export const useUserTokenLoanListings = () => {
 
   const { data, isLoading, isFetched, isFetching } = useQuery(
     [USE_USER_TOKEN_LOAN_LISTINGS_QUERY_KEY, walletPubkey, tokenType],
-    () => core.fetchUserTokenLoansListings({ walletPubkey, tokenType }),
+    () => core.fetchUserTokenLoanListings({ walletPubkey, tokenType }),
     {
       refetchOnWindowFocus: false,
       refetchInterval: 15 * 1000,
@@ -47,7 +47,7 @@ export const useUserTokenLoanListings = () => {
     )
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
-      const sameLoanFromBE = (data || []).find(({ publicKey }) => publicKey === loan.publicKey)
+      const sameLoanFromBE = data.find(({ publicKey }) => publicKey === loan.publicKey)
       if (!sameLoanFromBE) return false
       const isBELoanNewer = isLoanNewer(sameLoanFromBE, loan)
       return isBELoanNewer

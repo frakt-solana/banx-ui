@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { filter, first, groupBy, isEmpty, map } from 'lodash'
+import { filter, first, groupBy, map } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { TokenLoan } from '@banx/api/tokens'

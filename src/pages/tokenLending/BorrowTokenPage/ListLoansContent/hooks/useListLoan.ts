@@ -13,7 +13,7 @@ import {
 
 import { CollateralToken, TokenLoan } from '@banx/api/tokens'
 import { SECONDS_IN_DAY } from '@banx/constants'
-import { TokenLoansTabsName } from '@banx/pages/tokenLending/LoansTokenPage/LoansTokenPage'
+import { TokenLoanListingsTabName } from '@banx/pages/tokenLending/LoansTokenPage/LoansTokenPage'
 import { useTokenLoansTabs } from '@banx/pages/tokenLending/LoansTokenPage/hooks'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -26,8 +26,8 @@ import {
   defaultTxnErrorHandler,
 } from '@banx/transactions'
 import {
-  CreateTokenListTxnDataParams,
-  createTokenListTxnData,
+  CreateListTokenTxnDataParams,
+  createListTokenTxnData,
   parseTokenListSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
@@ -84,7 +84,7 @@ export const useListLoan: UseListLoan = ({
   }
 
   const goToLoansPage = () => {
-    setLoanTab(TokenLoansTabsName.LISTINGS)
+    setLoanTab(TokenLoanListingsTabName.LISTINGS)
     navigate(buildUrlWithModeAndToken(PATHS.LOANS, AssetMode.Token, tokenType))
   }
 
@@ -101,7 +101,7 @@ export const useListLoan: UseListLoan = ({
       const aprRate = apr * 100
       const freezeDurationInSeconds = freezeDuration * SECONDS_IN_DAY
 
-      const txnData = await createTokenListTxnData(
+      const txnData = await createListTokenTxnData(
         {
           collateral: collateralToken,
           borrowAmount: borrowAmount * marketTokenDecimals,
@@ -113,7 +113,7 @@ export const useListLoan: UseListLoan = ({
         walletAndConnection,
       )
 
-      await new TxnExecutor<CreateTokenListTxnDataParams>(walletAndConnection, {
+      await new TxnExecutor<CreateListTokenTxnDataParams>(walletAndConnection, {
         ...TXN_EXECUTOR_DEFAULT_OPTIONS,
       })
         .addTxnData(txnData)

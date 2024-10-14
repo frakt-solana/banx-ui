@@ -3,7 +3,7 @@ import { create } from 'zustand'
 
 import { TokenLoan } from '@banx/api/tokens'
 
-export interface LoanOptimistic {
+export interface TokenLoanOptimistic {
   loan: TokenLoan
   wallet: string
 }
@@ -16,9 +16,9 @@ const convertLoanToOptimistic = (loan: TokenLoan, walletPublicKey: string) => {
 }
 
 interface SelectTokenLoansState {
-  selection: LoanOptimistic[]
+  selection: TokenLoanOptimistic[]
   set: (selection: TokenLoan[], walletPublicKey: string) => void
-  find: (loanPubkey: string, walletPublicKey: string) => LoanOptimistic | null
+  find: (loanPubkey: string, walletPublicKey: string) => TokenLoanOptimistic | null
   add: (loan: TokenLoan, walletPublicKey: string) => void
   remove: (loanPubkey: string, walletPublicKey: string) => void
   toggle: (loan: TokenLoan, walletPublicKey: string) => void
@@ -73,21 +73,5 @@ export const useSelectTokenLoans = create<SelectTokenLoansState>((set, get) => (
     const isLoanInSelection = !!find(loan.publicKey, walletPublicKey)
 
     isLoanInSelection ? remove(loan.publicKey, walletPublicKey) : add(loan, walletPublicKey)
-  },
-}))
-
-interface HiddenLoansPubkeysState {
-  hiddenLoansPubkeys: string[]
-  addHiddenLoansPubkeys: (...pubkeys: string[]) => void
-}
-
-export const useHiddenLoansPubkeys = create<HiddenLoansPubkeysState>((set) => ({
-  hiddenLoansPubkeys: [],
-  addHiddenLoansPubkeys: (...pubkeys) => {
-    set(
-      produce((state: HiddenLoansPubkeysState) => {
-        state.hiddenLoansPubkeys.push(...pubkeys)
-      }),
-    )
   },
 }))

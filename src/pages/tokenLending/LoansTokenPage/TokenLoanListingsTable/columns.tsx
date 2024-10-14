@@ -10,14 +10,14 @@ import {
 import { TokenLoan } from '@banx/api/tokens'
 import { formatCollateralTokenValue, getTokenLoanSupply } from '@banx/utils'
 
-import { LoanOptimistic } from './loansState'
+import { TokenLoanOptimistic } from './loansState'
 import { APRCell, ActionsCell, FreezeCell, LTVCell } from './tableCells'
 
 import styles from './TokenLoanListingsTable.module.less'
 
 type GetTableColumns = (props: {
   onSelectAll: () => void
-  findLoanInSelection: (loanPubkey: string) => LoanOptimistic | null
+  findLoanInSelection: (loanPubkey: string) => TokenLoanOptimistic | null
   toggleLoanInSelection: (loan: TokenLoan) => void
   hasSelectedLoans: boolean
   isCardView: boolean

@@ -12,13 +12,13 @@ import { DisplayValue, createPercentValueJSX } from '@banx/components/TableCompo
 import { TokenLoan } from '@banx/api/tokens'
 
 import { useTokenLoanListingsTransactions } from './hooks'
-import { LoanOptimistic } from './loansState'
+import { TokenLoanOptimistic } from './loansState'
 
 import styles from './TokenLoanListingsTable.module.less'
 
 interface SummaryProps {
   loans: TokenLoan[]
-  selectedLoans: LoanOptimistic[]
+  selectedLoans: TokenLoanOptimistic[]
   setSelection: (loans: TokenLoan[], walletPublicKey: string) => void
 }
 

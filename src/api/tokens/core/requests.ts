@@ -200,7 +200,7 @@ type FetchUserTokenLoanListings = (props: {
   getAll?: boolean
 }) => Promise<TokenLoan[] | undefined>
 
-export const fetchUserTokenLoansListings: FetchUserTokenLoanListings = async ({
+export const fetchUserTokenLoanListings: FetchUserTokenLoanListings = async ({
   walletPubkey,
   tokenType,
   getAll = true,
