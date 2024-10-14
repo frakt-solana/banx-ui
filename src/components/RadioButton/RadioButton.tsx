@@ -7,6 +7,7 @@ import styles from './RadioButton.module.less'
 export interface RBOption {
   label: string
   value: string
+  disabled?: boolean
 }
 
 export interface RadioButtonProps {
@@ -35,7 +36,7 @@ export const RadioButton: FC<RadioButtonProps> = ({
             key={option.label}
             onChange={() => onOptionChange(option)}
             className={classNames(styles.radioButton, {
-              [styles.disabled]: disabled,
+              [styles.disabled]: disabled || option.disabled,
               [styles.active]: checked,
             })}
           >
@@ -45,7 +46,7 @@ export const RadioButton: FC<RadioButtonProps> = ({
               name={value}
               value={value}
               checked={checked}
-              disabled={disabled}
+              disabled={disabled || option.disabled}
             />
             <label htmlFor={value}>{option.label}</label>
           </div>
