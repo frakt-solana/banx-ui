@@ -84,13 +84,13 @@ export const getInputErrorMessage = ({
 
   const errorConditions: Array<[boolean, string]> = [
     [isCollateralInsufficient, `Not enough ${collateralToken?.collateral.ticker ?? ''}`],
-    [isCollateralEmpty && isBorrowAmountEmpty, 'Please enter a value'],
-    [isCollateralEmpty, 'Please enter a value for collateral amount'],
-    [isBorrowAmountEmpty, 'Please enter a value for borrow amount'],
-    [isAprEmpty, 'Please enter a value for APR'],
+    [isCollateralEmpty && isBorrowAmountEmpty, 'Enter a value'],
+    [isCollateralEmpty, 'Enter collateral amount'],
+    [isBorrowAmountEmpty, 'Enter borrow amount'],
+    [isAprEmpty, 'Enter APR value'],
     [isFreezeValueTooHigh, `Max freeze period is ${DAYS_IN_YEAR} days`],
-    [isAprTooLow, `APR too low (min: ${MIN_APR}%)`],
-    [isAprTooHigh, `APR too high (max: ${MAX_APR}%)`],
+    [isAprTooLow, `Min APR is ${MIN_APR}%`],
+    [isAprTooHigh, `Max APR is ${MAX_APR}%`],
   ]
 
   const errorMessage = errorConditions.find(([condition]) => condition)?.[1] ?? ''
