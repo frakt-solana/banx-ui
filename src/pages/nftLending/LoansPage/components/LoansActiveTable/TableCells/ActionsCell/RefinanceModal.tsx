@@ -140,7 +140,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         findSuitableOffer({
           loanValue: currentSpotPrice,
           offers,
-          userVaults: []
+          userVaults: [],
         }),
       )
       .value()

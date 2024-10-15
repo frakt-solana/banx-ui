@@ -158,7 +158,9 @@ export const usePlaceOffer: UsePlaceOffer = ({ marketPubkey, offerPubkey, setOff
 
     const loansToMarks = lenderLoans.map(convertLoanToMark)
     //TODO: Fix it
-    const simpleOffersToMarks = convertOffersToSimple([offerToUse], []).map(convertSimpleOfferToMark)
+    const simpleOffersToMarks = convertOffersToSimple([offerToUse], []).map(
+      convertSimpleOfferToMark,
+    )
 
     return chain([...loansToMarks, ...simpleOffersToMarks])
       .filter(({ value }) => value > 0)
