@@ -1,4 +1,6 @@
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
+import { web3 } from 'fbonds-core'
+import { calcLenderTokenApr } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { uniqueId } from 'lodash'
 import moment from 'moment'
 import { useNavigate } from 'react-router-dom'
@@ -30,7 +32,6 @@ import {
   parseListTokenSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
-  calcLenderTokenApr,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -98,7 +99,8 @@ export const useListLoan: UseListLoan = ({
 
       const marketTokenDecimals = getTokenDecimals(tokenType)
 
-      const aprRate = calcLenderTokenApr(apr * 100)
+      const aprRate =
+        calcLenderTokenApr(apr, new web3.PublicKey(collateralToken.marketPubkey)) * 100
 
       const freezeDurationInSeconds = freezeDuration * SECONDS_IN_DAY
 

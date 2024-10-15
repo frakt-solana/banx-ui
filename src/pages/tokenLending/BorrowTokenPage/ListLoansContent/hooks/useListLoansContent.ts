@@ -1,8 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
 
+import { web3 } from 'fbonds-core'
+import { calcLenderTokenApr } from 'fbonds-core/lib/fbond-protocol/helpers'
+
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
-import { calcLenderTokenApr } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MINT } from '../../constants'
 import { useBorrowTokensList, useCollateralsList } from '../../hooks'
@@ -82,7 +84,12 @@ export const useListLoansContent = () => {
     collateralToken,
   })
 
-  const lenderAprValue = !hasAprErrorMessage ? calcLenderTokenApr(parseFloat(inputAprValue)) : null
+  const lenderAprValue = !hasAprErrorMessage
+    ? calcLenderTokenApr(
+        parseFloat(inputAprValue),
+        new web3.PublicKey(collateralToken?.marketPubkey ?? web3.PublicKey.default),
+      )
+    : null
 
   return {
     listLoan,
@@ -106,9 +113,9 @@ export const useListLoansContent = () => {
     inputFreezeValue,
     setInputFreezeValue,
 
-    errorMessage,
-
     lenderAprValue,
+
+    errorMessage,
 
     ltvPercent,
     upfrontFee,
