@@ -132,7 +132,6 @@ const Summary: FC<SummaryProps> = ({ ltv, upfrontFee, weeklyFee }) => {
         classNamesProps={statClassNames}
         valueType={VALUES_TYPES.PERCENT}
         valueStyles={{ color: ltv ? getColorByPercent(ltv, HealthColorIncreasing) : '' }}
-        tooltipText="loan-to-value ratio across loans"
         flexType="row"
       />
       <StatInfo

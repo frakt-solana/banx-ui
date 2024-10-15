@@ -30,6 +30,7 @@ import {
   parseListTokenSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
 import {
+  calcLenderTokenApr,
   destroySnackbar,
   enqueueConfirmationError,
   enqueueSnackbar,
@@ -97,7 +98,8 @@ export const useListLoan: UseListLoan = ({
 
       const marketTokenDecimals = getTokenDecimals(tokenType)
 
-      const aprRate = apr * 100
+      const aprRate = calcLenderTokenApr(apr * 100)
+
       const freezeDurationInSeconds = freezeDuration * SECONDS_IN_DAY
 
       const txnData = await createListTokenTxnData(

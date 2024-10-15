@@ -1,10 +1,13 @@
 import React, { FC } from 'react'
 
+import { web3 } from 'fbonds-core'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
+
 import { Button } from '@banx/components/Buttons'
 import { HorizontalCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { TokenLoan } from '@banx/api/tokens'
-import { BONDS, SECONDS_IN_DAY } from '@banx/constants'
+import { SECONDS_IN_DAY } from '@banx/constants'
 import {
   HealthColorIncreasing,
   calculateTokenLoanLtvByLoanValue,
@@ -30,7 +33,10 @@ export const LTVCell: FC<{ loan: TokenLoan }> = ({ loan }) => {
 }
 
 export const APRCell: FC<{ loan: TokenLoan }> = ({ loan }) => {
-  const aprPercent = (loan.bondTradeTransaction.amountOfBonds + BONDS.REPAY_FEE_APR) / 100
+  const marketPubkey = new web3.PublicKey(loan.fraktBond.hadoMarket)
+  const aprRate = loan.bondTradeTransaction.amountOfBonds
+
+  const aprPercent = calcBorrowerTokenAPR(aprRate, marketPubkey) / 100
 
   return <HorizontalCell value={createPercentValueJSX(aprPercent)} isHighlighted />
 }

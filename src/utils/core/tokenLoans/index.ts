@@ -1,5 +1,9 @@
 import { BN, web3 } from 'fbonds-core'
-import { BASE_POINTS, PROTOCOL_FEE_TOKEN_BN } from 'fbonds-core/lib/fbond-protocol/constants'
+import {
+  BASE_POINTS,
+  PROTOCOL_FEE_TOKEN_BN,
+  REPAY_FEE_APR_TOKEN_PROTOCOL,
+} from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   calculateCurrentInterestSolPure,
   calculateLenderPartialPartFromBorrower,
@@ -194,4 +198,8 @@ export const adjustTokenAmountWithUpfrontFee = (amount: BN): BN => {
   const FRACTION = BASE_POINTS_BN.sub(PROTOCOL_FEE_TOKEN_BN) //? 9975
 
   return amount.mul(FRACTION).div(BASE_POINTS_BN)
+}
+
+export const calcLenderTokenApr = (borrowAprRate: number) => {
+  return borrowAprRate / (1 + REPAY_FEE_APR_TOKEN_PROTOCOL / BASE_POINTS)
 }

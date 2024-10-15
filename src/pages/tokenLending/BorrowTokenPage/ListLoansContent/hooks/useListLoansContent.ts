@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
+import { calcLenderTokenApr } from '@banx/utils'
 
 import { BorrowToken, DEFAULT_COLLATERAL_MINT } from '../../constants'
 import { useBorrowTokensList, useCollateralsList } from '../../hooks'
@@ -81,7 +82,7 @@ export const useListLoansContent = () => {
     collateralToken,
   })
 
-  const lenderAprValue = !hasAprErrorMessage ? parseFloat(inputAprValue) : null
+  const lenderAprValue = !hasAprErrorMessage ? calcLenderTokenApr(parseFloat(inputAprValue)) : null
 
   return {
     listLoan,
