@@ -3,6 +3,7 @@ import { FC, useMemo } from 'react'
 import Table from '@banx/components/Table'
 
 import { core } from '@banx/api/nft'
+import { UserVaultPrimitive } from '@banx/api/shared'
 
 import { Summary } from './Summary'
 import { useBorrowTable } from './hooks'
@@ -13,6 +14,7 @@ interface BorrowTableProps {
   nfts: core.BorrowNft[]
   isLoading: boolean
   rawOffers: Record<string, core.Offer[]>
+  rawUserVaults: UserVaultPrimitive[]
   maxLoanValueByMarket: Record<string, number>
   goToRequestLoanTab: () => void
 }
@@ -21,6 +23,7 @@ const BorrowTable: FC<BorrowTableProps> = ({
   nfts,
   isLoading,
   rawOffers,
+  rawUserVaults,
   maxLoanValueByMarket,
   goToRequestLoanTab,
 }) => {
@@ -38,6 +41,7 @@ const BorrowTable: FC<BorrowTableProps> = ({
   } = useBorrowTable({
     nfts,
     rawOffers,
+    rawUserVaults,
     maxLoanValueByMarket,
     goToRequestLoanTab,
   })

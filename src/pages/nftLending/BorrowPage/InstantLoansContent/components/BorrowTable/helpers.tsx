@@ -34,13 +34,13 @@ const calcAdjustedLoanValueByMaxByMarket: CalcAdjustedLoanValueByMaxByMarket = (
 export const createTableNftData = ({
   nfts,
   findOfferInCart,
-  findBestOffer,
+  getBestPriceByMarket,
   maxLoanValueByMarket,
   maxBorrowPercent,
 }: {
   nfts: core.BorrowNft[]
   findOfferInCart: CartState['findOfferInCart']
-  findBestOffer: CartState['findBestOffer']
+  getBestPriceByMarket: CartState['getBestPriceByMarket']
   maxLoanValueByMarket: Record<string, number>
   maxBorrowPercent: number
 }) => {
@@ -48,7 +48,9 @@ export const createTableNftData = ({
     const offer = findOfferInCart({ mint: nft.mint })
 
     const maxloanValue =
-      offer?.loanValue || findBestOffer({ marketPubkey: nft.loan.marketPubkey })?.loanValue || 0
+      offer?.loanValue || getBestPriceByMarket({ marketPubkey: nft.loan.marketPubkey }) || 0
+
+    // console.log("maxloanValue", maxloanValue)
 
     const loanValue = calcAdjustedLoanValueByMaxByMarket({
       loanValue: maxloanValue,

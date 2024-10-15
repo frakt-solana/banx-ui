@@ -3,4 +3,5 @@ export interface SimpleOffer {
   publicKey: string
   loanValue: number
   hadoMarket: string
+  assetReceiver: string
 }

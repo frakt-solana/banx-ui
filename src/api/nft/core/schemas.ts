@@ -7,6 +7,7 @@ import {
   OfferSchema,
   StringIntSchema,
   StringPublicKeySchema,
+  UserVaultPrimitiveSchema,
 } from '@banx/api/shared'
 
 const MarketMetaSchema = z.object({
@@ -59,6 +60,7 @@ export const BorrowNftSchema = z.object({
 export const BorrowNftsAndOffersSchema = z.object({
   nfts: BorrowNftSchema.array(),
   offers: z.record(OfferSchema.array()),
+  userVaults: UserVaultPrimitiveSchema.array(),
 })
 
 export const CollectionMetaSchema = z.object({

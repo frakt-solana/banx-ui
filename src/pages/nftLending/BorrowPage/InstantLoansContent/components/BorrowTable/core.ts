@@ -5,6 +5,7 @@ import { chain, groupBy, sumBy, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/nft'
+import { UserVaultPrimitive } from '@banx/api/shared'
 import { LoansOptimisticStore, OffersOptimisticStore } from '@banx/store/nft'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -153,6 +154,7 @@ export const executeBorrow = async (props: {
 export const makeCreateTxnsDataParams = (
   nfts: TableNftData[],
   rawOffers: Record<string, core.Offer[]>,
+  rawUserVaults: UserVaultPrimitive[],
   tokenType: LendingTokenType,
 ): CreateBorrowTxnDataParams[] => {
   const nftsByMarket = groupBy(nfts, ({ nft }) => nft.loan.marketPubkey)
@@ -162,7 +164,11 @@ export const makeCreateTxnsDataParams = (
       .entries()
       //? Match nfts and offers to borrow from the most suitable offers
       .map(([marketPubkey, nfts]) => {
-        const nftWithOffer = matchNftsAndOffers({ nfts, rawOffers: rawOffers[marketPubkey] })
+        const nftWithOffer = matchNftsAndOffers({
+          nfts,
+          rawOffers: rawOffers[marketPubkey],
+          rawUserVaults,
+        })
 
         const txnsParams: CreateBorrowTxnDataParams[] = nftWithOffer.map(({ nft, offer }) => ({
           nft: nft.nft,

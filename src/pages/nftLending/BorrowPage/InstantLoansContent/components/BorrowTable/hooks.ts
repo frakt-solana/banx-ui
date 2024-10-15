@@ -13,6 +13,7 @@ import {
 } from '@banx/components/modals'
 
 import { core } from '@banx/api/nft'
+import { UserVaultPrimitive } from '@banx/api/shared'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken, createGlobalState } from '@banx/store'
@@ -37,6 +38,7 @@ import styles from './BorrowTable.module.less'
 export interface UseBorrowTableProps {
   nfts: core.BorrowNft[]
   rawOffers: Record<string, core.Offer[]>
+  rawUserVaults: UserVaultPrimitive[]
   maxLoanValueByMarket: Record<string, number>
   goToRequestLoanTab: () => void
 }
@@ -46,6 +48,7 @@ const useCollectionsStore = createGlobalState<string[]>([])
 export const useBorrowTable = ({
   nfts,
   rawOffers,
+  rawUserVaults,
   maxLoanValueByMarket,
   goToRequestLoanTab,
 }: UseBorrowTableProps) => {
@@ -65,6 +68,7 @@ export const useBorrowTable = ({
     removeNft,
     findOfferInCart,
     findBestOffer,
+    getBestPriceByMarket,
     resetCart,
   } = useCartState()
   const { add: addLoansOptimistic } = useLoansOptimistic()
@@ -76,7 +80,7 @@ export const useBorrowTable = ({
     () => {
       return createTableNftData({
         nfts,
-        findBestOffer,
+        getBestPriceByMarket,
         findOfferInCart,
         maxLoanValueByMarket,
         maxBorrowPercent,
@@ -110,7 +114,12 @@ export const useBorrowTable = ({
   }
 
   const borrow = async (nft: TableNftData) => {
-    const createTxnsDataParams = makeCreateTxnsDataParams([nft], rawOffers, tokenType)
+    const createTxnsDataParams = makeCreateTxnsDataParams(
+      [nft],
+      rawOffers,
+      rawUserVaults,
+      tokenType,
+    )
 
     await executeBorrow({
       wallet,
@@ -128,7 +137,12 @@ export const useBorrowTable = ({
 
   const borrowAll = async () => {
     const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
-    const createTxnsDataParams = makeCreateTxnsDataParams(selectedNfts, rawOffers, tokenType)
+    const createTxnsDataParams = makeCreateTxnsDataParams(
+      selectedNfts,
+      rawOffers,
+      rawUserVaults,
+      tokenType,
+    )
 
     await executeBorrow({
       wallet,
@@ -152,12 +166,12 @@ export const useBorrowTable = ({
         return removeNft({ mint: nft.mint })
       }
 
-      const bestOffer = findBestOffer({ marketPubkey: nft.nft.loan.marketPubkey })
-      if (bestOffer) {
-        addNft({ mint: nft.mint, offer: bestOffer })
+      const bestPrice = getBestPriceByMarket({ marketPubkey: nft.nft.loan.marketPubkey })
+      if (bestPrice) {
+        addNft({ mint: nft.mint, marketPubkey: nft.nft.loan.marketPubkey })
       }
     },
-    [addNft, findBestOffer, findOfferInCart, removeNft],
+    [addNft, getBestPriceByMarket, findOfferInCart, removeNft],
   )
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
@@ -185,6 +199,7 @@ export const useBorrowTable = ({
     return tableNftsData.filter(({ mint }) => mints.includes(mint))
   }, [offerByMint, tableNftsData])
 
+  //TODO Fix here
   const maxBorrowAmount = useMemo(() => {
     //? calc amount of nfts that not in cart that user can borrow (if there are offers for them)
     const amountToBorrowNotInCart = chain(filteredNfts)

@@ -13,7 +13,7 @@ interface InstantLoansContentProps {
 export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestLoanTab }) => {
   const { connected } = useWallet()
 
-  const { nfts, isLoading, rawOffers, maxLoanValueByMarket } = useBorrowNfts()
+  const { nfts, isLoading, rawOffers, rawUserVaults, maxLoanValueByMarket } = useBorrowNfts()
 
   const showEmptyList = !nfts?.length && !isLoading
 
@@ -24,6 +24,7 @@ export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestL
       nfts={nfts}
       isLoading={isLoading}
       rawOffers={rawOffers}
+      rawUserVaults={rawUserVaults}
       maxLoanValueByMarket={maxLoanValueByMarket}
       goToRequestLoanTab={goToRequestLoanTab}
     />

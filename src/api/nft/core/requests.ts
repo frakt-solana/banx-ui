@@ -200,10 +200,10 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   })
 
   const { data } = await axios.get<BorrowNftsAndOffersResponse>(
-    `${BACKEND_BASE_URL}/nfts/borrow-v2/${walletPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/nfts/borrow-v3/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  return await parseResponseSafe<BorrowNftsAndOffers>(data.data, BorrowNftsAndOffersSchema)
+  return await BorrowNftsAndOffersSchema.parseAsync(data.data)
 }
 
 type FetchBorrowerLoansRequests = (

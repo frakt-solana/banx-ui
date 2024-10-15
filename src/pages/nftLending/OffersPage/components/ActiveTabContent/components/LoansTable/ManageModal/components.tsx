@@ -84,7 +84,8 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
       .thru((offers) =>
         filterOutWalletLoans({ offers, walletPubkey: wallet?.publicKey?.toBase58() }),
       )
-      .thru((offers) => findSuitableOffer({ loanValue: calculateLoanRepayValue(loan), offers }))
+      //TODO: fix
+      .thru((offers) => findSuitableOffer({ loanValue: calculateLoanRepayValue(loan), userVaults: [], offers }))
       .value()
   }, [offers, loan, wallet])
 

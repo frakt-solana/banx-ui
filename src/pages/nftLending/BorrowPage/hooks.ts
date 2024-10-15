@@ -5,10 +5,11 @@ import { useQuery } from '@tanstack/react-query'
 import { BN } from 'fbonds-core'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { produce } from 'immer'
-import { chain, filter, groupBy, isEmpty, map, maxBy, sortBy, sumBy, uniqBy } from 'lodash'
+import { chain, filter, groupBy, isEmpty, map, sortBy, sumBy, uniqBy } from 'lodash'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
+import { UserVaultPrimitive } from '@banx/api/shared'
 import { useTokenType } from '@banx/store/common'
 import {
   isOfferNewer,
@@ -38,7 +39,7 @@ export const useBorrowNfts = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
 
-  const { setCart } = useCartState()
+  const { setCart, getBestPriceByMarket } = useCartState()
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
   const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
 
@@ -121,34 +122,46 @@ export const useBorrowNfts = () => {
       .value() as Record<string, core.Offer[]>
   }, [data, optimisticOffers, walletPublicKey])
 
+  const userVaults: UserVaultPrimitive[] = useMemo(() => {
+    if (!data || !walletPublicKey) {
+      return []
+    }
+
+    return data.userVaults
+  }, [data, walletPublicKey])
+
   const simpleOffers = useMemo(() => {
+    if (isEmpty(userVaults)) return {}
+
     return Object.fromEntries(
       Object.entries(mergedRawOffers || {}).map(([marketPubkey, offers]) => {
-        const simpleOffers = convertOffersToSimple(offers, 'desc')
+        const simpleOffers = convertOffersToSimple(offers, userVaults, 'desc')
         return [marketPubkey, simpleOffers]
       }),
     )
-  }, [mergedRawOffers])
+  }, [mergedRawOffers, userVaults])
 
   const maxLoanValueByMarket: Record<string, number> = useMemo(() => {
+    if (!userVaults) return {}
+
     return chain(simpleOffers)
-      .entries()
-      .map(([hadoMarket, offers]) => {
-        const bestOffer = maxBy(offers, ({ loanValue }) => loanValue)
-        return [hadoMarket, bestOffer?.loanValue || 0]
+      .keys()
+      .map((hadoMarket) => {
+        const price = getBestPriceByMarket({ marketPubkey: hadoMarket })
+        return [hadoMarket, price]
       })
       .fromPairs()
       .value()
-  }, [simpleOffers])
+  }, [userVaults, simpleOffers, getBestPriceByMarket])
 
   //? Set offers in cartState
   useEffect(() => {
-    if (!isEmpty(simpleOffers)) {
-      setCart({ offersByMarket: simpleOffers })
+    if (!isEmpty(simpleOffers) && !isEmpty(userVaults)) {
+      setCart({ offersByMarket: simpleOffers, userVaults })
     } else {
-      setCart({ offersByMarket: {} })
+      setCart({ offersByMarket: {}, userVaults: [] })
     }
-  }, [setCart, simpleOffers])
+  }, [setCart, simpleOffers, userVaults])
 
   const walletOptimisticLoans = useMemo(() => {
     if (!walletPublicKey) return []
@@ -217,6 +230,7 @@ export const useBorrowNfts = () => {
   return {
     nfts: nfts || [],
     rawOffers: mergedRawOffers || {},
+    rawUserVaults: userVaults || [],
     maxBorrow,
     isLoading,
     maxLoanValueByMarket,

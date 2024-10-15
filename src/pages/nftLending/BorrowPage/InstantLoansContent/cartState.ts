@@ -1,24 +1,34 @@
 import produce from 'immer'
-import { groupBy, isEmpty } from 'lodash'
+import { chain, cloneDeep, groupBy, isEmpty } from 'lodash'
 import { create } from 'zustand'
 
+import { UserVaultPrimitive } from '@banx/api'
 import { SimpleOffer } from '@banx/utils'
 
 import { SimpleOffersByMarket } from './types'
 
 export interface CartState {
+  //? What in cart
   offerByMint: Record<string, SimpleOffer>
-  offersByMarket: SimpleOffersByMarket
+  //? Available offers. When user adds nft, it goes to offerByMint and pop from offersByMarket
+  offersByMarket: SimpleOffersByMarket //? Record<string, []> push/pop
 
-  addNft: (props: { mint: string; offer: SimpleOffer }) => void
+  userVaultsInUse: UserVaultPrimitive[]
+  rawUserVaults: UserVaultPrimitive[]
+
+  addNft: (props: { mint: string; marketPubkey: string }) => void
   removeNft: (props: { mint: string }) => void
 
   findOfferInCart: (props: { mint: string }) => SimpleOffer | null
   findBestOffer: (props: { marketPubkey: string }) => SimpleOffer | null
+  getBestPriceByMarket: (props: { marketPubkey: string }) => number | null
 
   addNfts: (props: { mintAndMarketArr: Array<[string, string]>; amount: number }) => void
 
-  setCart: (props: { offersByMarket: SimpleOffersByMarket }) => void
+  setCart: (props: {
+    offersByMarket: SimpleOffersByMarket
+    userVaults: UserVaultPrimitive[]
+  }) => void
   resetCart: () => void
 }
 
@@ -27,6 +37,8 @@ const offersSorter = (a: SimpleOffer, b: SimpleOffer) => b.loanValue - a.loanVal
 export const useCartState = create<CartState>((set, get) => ({
   offerByMint: {},
   offersByMarket: {},
+  userVaultsInUse: [],
+  rawUserVaults: [],
 
   findOfferInCart: ({ mint }) => {
     return get().offerByMint[mint] ?? null
@@ -36,19 +48,46 @@ export const useCartState = create<CartState>((set, get) => ({
     return get().offersByMarket[marketPubkey]?.at(0) ?? null
   },
 
-  addNft: ({ mint, offer }) => {
+  getBestPriceByMarket: ({ marketPubkey }) => {
+    const offersByMarket = get().offersByMarket[marketPubkey] || []
+    const vaultsInUseByUser: Record<string, UserVaultPrimitive> = chain(get().userVaultsInUse)
+      .map((vault) => [vault.user, vault])
+      .fromPairs()
+      .value()
+
+    //TODO: use liquidity if vault.offerLiquidityAmount < offer.loanValue
+
+    const price =
+      offersByMarket.find(
+        (offer) => offer.loanValue < vaultsInUseByUser[offer.assetReceiver].offerLiquidityAmount,
+      )?.loanValue ?? null
+
+    return price
+  },
+
+  addNft: ({ mint, marketPubkey }) => {
     if (get().findOfferInCart({ mint })) return
 
     set(
       produce((state: CartState) => {
+        const offer = state.offersByMarket[marketPubkey]?.at(0)
+        if (!offer) return
+
         state.offerByMint[mint] = offer
 
+        const { loanValue, assetReceiver } = offer
         //? Remove offer from offersByMarket
-        const { hadoMarket: marketPubkey } = offer
         state.offersByMarket = {
           ...state.offersByMarket,
           [marketPubkey]: state.offersByMarket[marketPubkey].filter(({ id }) => id !== offer.id),
         }
+        //? Remove liquidity from userVaultsInUse
+        state.userVaultsInUse = state.userVaultsInUse.map((vault) => {
+          if (vault.user === assetReceiver) {
+            return { ...vault, offerLiquidityAmount: vault.offerLiquidityAmount - loanValue }
+          }
+          return vault
+        })
       }),
     )
   },
@@ -92,12 +131,35 @@ export const useCartState = create<CartState>((set, get) => ({
               offersSorter,
             ),
           }
+
+          //TODO Add worstOfferWithSameMarket liquidity to userVaultsInUse
+          state.userVaultsInUse = state.userVaultsInUse.map((vault) => {
+            if (vault.user === worstOfferWithSameMarket.assetReceiver) {
+              return {
+                ...vault,
+                offerLiquidityAmount:
+                  vault.offerLiquidityAmount - worstOfferWithSameMarket.loanValue,
+              }
+            }
+            return vault
+          })
         } else {
           //? Put offer from CartNft back to offersByMarket
           state.offersByMarket = {
             ...state.offersByMarket,
             [marketPubkey]: [...state.offersByMarket[marketPubkey], offerInCart].sort(offersSorter),
           }
+
+          //TODO Add offerInCart liquidity to userVaultsInUse
+          state.userVaultsInUse = state.userVaultsInUse.map((vault) => {
+            if (vault.user === offerInCart.assetReceiver) {
+              return {
+                ...vault,
+                offerLiquidityAmount: vault.offerLiquidityAmount - offerInCart.loanValue,
+              }
+            }
+            return vault
+          })
         }
       }),
     )
@@ -154,11 +216,13 @@ export const useCartState = create<CartState>((set, get) => ({
     )
   },
 
-  setCart: ({ offersByMarket }) => {
+  setCart: ({ offersByMarket, userVaults }) => {
     set(
       produce((state: CartState) => {
         state.offerByMint = {}
         state.offersByMarket = offersByMarket
+        state.userVaultsInUse = userVaults
+        state.rawUserVaults = userVaults
       }),
     )
   },
@@ -178,6 +242,7 @@ export const useCartState = create<CartState>((set, get) => ({
 
         state.offerByMint = {}
         state.offersByMarket = offersByMarket
+        state.userVaultsInUse = cloneDeep(state.rawUserVaults)
       }),
     ),
 }))

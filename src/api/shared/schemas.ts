@@ -170,3 +170,22 @@ export const UserVaultSchema = z.object({
   rewardsHarvested: SerializedBNSchema,
   lastTransactedAt: SerializedBNSchema,
 })
+
+export const UserVaultPrimitiveSchema = z.object({
+  publicKey: StringPublicKeySchema,
+  userVaultState: z.nativeEnum(UserVaultState),
+  user: StringPublicKeySchema,
+  lendingTokenType: z.nativeEnum(LendingTokenType),
+  offerLiquidityAmount: StringIntSchema,
+  liquidityInLoansAmount: StringIntSchema,
+  repaymentsAmount: StringIntSchema,
+  interestRewardsAmount: StringIntSchema,
+  rentRewards: StringIntSchema,
+  fundsInCurrentEpoch: StringIntSchema,
+  fundsInNextEpoch: StringIntSchema,
+  lastCalculatedSlot: StringIntSchema,
+  lastCalculatedTimestamp: StringIntSchema,
+  rewardsToHarvest: StringIntSchema,
+  rewardsHarvested: StringIntSchema,
+  lastTransactedAt: StringIntSchema,
+})
