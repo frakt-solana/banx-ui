@@ -6,6 +6,7 @@ import { PROTOCOL_FEE_TOKEN } from 'fbonds-core/lib/fbond-protocol/constants'
 import { Button } from '@banx/components/Buttons'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
+import { useWalletModal } from '@banx/components/WalletModal'
 import { NumericStepInput } from '@banx/components/inputs'
 
 import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
@@ -17,6 +18,7 @@ import styles from './ListLoansContent.module.less'
 
 const ListLoansContent = () => {
   const { connected } = useWallet()
+  const { toggleVisibility } = useWalletModal()
 
   const {
     listLoan,
@@ -41,7 +43,15 @@ const ListLoansContent = () => {
     weeklyFee,
   } = useListLoansContent()
 
-  const displayMessage = errorMessage || (!connected ? 'Connect wallet' : 'List request')
+  const onActionClick = () => {
+    if (connected) {
+      return listLoan()
+    }
+
+    toggleVisibility()
+  }
+
+  const displayMessage = !connected ? 'Connect wallet' : errorMessage || 'List request'
 
   return (
     <div className={styles.container}>
@@ -99,9 +109,9 @@ const ListLoansContent = () => {
         <Summary ltv={ltvPercent} upfrontFee={upfrontFee} weeklyFee={weeklyFee} />
 
         <Button
-          onClick={listLoan}
+          onClick={onActionClick}
           className={styles.actionButton}
-          disabled={!connected || !!errorMessage}
+          disabled={connected && !!errorMessage}
         >
           {displayMessage}
         </Button>
