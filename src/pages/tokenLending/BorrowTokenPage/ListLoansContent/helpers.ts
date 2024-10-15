@@ -1,3 +1,4 @@
+import { web3 } from 'fbonds-core'
 import {
   BASE_POINTS,
   MAX_APR_SPL,
@@ -5,6 +6,7 @@ import {
   PROTOCOL_FEE_TOKEN,
 } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calculateCurrentInterestSolPure } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 
@@ -68,7 +70,7 @@ export const getInputErrorMessage = ({
   freezeDuration,
   apr,
 }: GetInputErrorMessageProps) => {
-  const MIN_APR = MIN_APR_SPL / 100
+  const MIN_APR = Math.round(calcBorrowerTokenAPR(MIN_APR_SPL, web3.PublicKey.default) / 100)
   const MAX_APR = MAX_APR_SPL / 100
 
   const isCollateralInsufficient = isBalanceInsufficient(collateralToken, collateralAmount)
