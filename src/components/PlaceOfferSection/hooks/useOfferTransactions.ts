@@ -70,6 +70,7 @@ export const useOfferTransactions = ({
           deltaValue,
           tokenType,
           bondFeature: BondFeatures.AutoReceiveAndReceiveNft,
+          escrowBalance: userVault?.offerLiquidityAmount,
         },
         walletAndConnection,
       )
