@@ -2,7 +2,9 @@ import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
-import { sumBy } from 'lodash'
+import { web3 } from 'fbonds-core'
+import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
+import { map, sumBy } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
 import { CounterSlider } from '@banx/components/Slider'
@@ -10,6 +12,7 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { TokenLoan } from '@banx/api/tokens'
+import { calcWeightedAverage, calculateTokenLoanLtvByLoanValue } from '@banx/utils'
 
 import { useTokenLoanListingsTransactions } from './hooks'
 import { TokenLoanOptimistic } from './loansState'
@@ -38,8 +41,8 @@ export const Summary: FC<SummaryProps> = ({
   const totalSelectedLoans = selectedLoans.length
   const totalBorrow = sumBy(selectedLoans, (loan) => loan.fraktBond.borrowedAmount)
 
-  const weightedLtv = 0
-  const weightedApr = 0
+  const weightedApr = calculateWeightedApr(selectedLoans)
+  const weightedLtv = calculateWeightedLtv(selectedLoans)
 
   const handleLoanSelection = (value = 0) => {
     setSelection(loans.slice(0, value), walletPublicKey?.toBase58() || '')
@@ -80,4 +83,26 @@ export const Summary: FC<SummaryProps> = ({
       </div>
     </div>
   )
+}
+
+const calculateWeightedApr = (loans: TokenLoan[]) => {
+  const totalAprValues = map(loans, (loan) => {
+    const marketPubkey = new web3.PublicKey(loan.fraktBond.hadoMarket)
+    return calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds, marketPubkey) / 100
+  })
+
+  const totalRepayValues = map(loans, (loan) => loan.fraktBond.borrowedAmount)
+
+  return calcWeightedAverage(totalAprValues, totalRepayValues)
+}
+
+const calculateWeightedLtv = (loans: TokenLoan[]) => {
+  const totalLtvValues = loans.map((loan) => {
+    const loanValue = loan.fraktBond.borrowedAmount
+    return calculateTokenLoanLtvByLoanValue(loan, loanValue)
+  })
+
+  const totalRepayValues = map(loans, (loan) => loan.fraktBond.borrowedAmount)
+
+  return calcWeightedAverage(totalLtvValues, totalRepayValues)
 }
