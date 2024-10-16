@@ -20,7 +20,7 @@ export const calcTokenWeeklyInterest = (loan: core.TokenLoan) => {
   const { soldAt, amountOfBonds } = loan.bondTradeTransaction
 
   return calculateCurrentInterestSolPure({
-    loanValue: loan.bondTradeTransaction.amountOfBonds,
+    loanValue: calculateLendToBorrowValue(loan),
     startTime: soldAt,
     currentTime: soldAt + SECONDS_IN_DAY * 7,
     rateBasePoints: calcBorrowerTokenAPR(
