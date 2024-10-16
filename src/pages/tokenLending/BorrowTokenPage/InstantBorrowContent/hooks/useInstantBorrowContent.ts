@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { BN } from 'fbonds-core'
+import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
 import { adjustTokenAmountWithUpfrontFee, bnToHuman, stringToBN, sumBNs } from '@banx/utils'
 
-import { BorrowToken, DEFAULT_COLLATERAL_MINT } from '../../constants'
+import { BorrowToken } from '../../constants'
 import { useBorrowTokensList, useCollateralsList } from '../../hooks'
 import { getErrorMessage } from '../helpers'
 import { useBorrowOffers } from './useBorrowOffers'
@@ -38,7 +39,7 @@ export const useInstantBorrowContent = () => {
 
     return firstCollateral?.amountInWallet
       ? firstCollateral
-      : collateralsList.find(({ collateral }) => collateral.mint === DEFAULT_COLLATERAL_MINT)
+      : collateralsList.find(({ collateral }) => collateral.mint === BANX_TOKEN_MINT.toBase58())
   }, [collateralsList])
 
   useEffect(() => {
