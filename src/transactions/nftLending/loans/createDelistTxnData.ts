@@ -69,7 +69,6 @@ const getIxnsAndSignersByListingType = async ({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
         banxStake: new web3.PublicKey(loan.fraktBond.banxStake),
-        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
         userPubkey: wallet.publicKey,
         nftMint: new web3.PublicKey(loan.nft.mint),
@@ -131,7 +130,6 @@ const getIxnsAndSignersByListingType = async ({
     const { instructions, signers } = await removePerpetualListingCore({
       programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
       accounts: {
-        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
         userPubkey: wallet.publicKey,
         nftAsset: new web3.PublicKey(loan.nft.mint),
         collection: new web3.PublicKey(loan.nft.meta.collectionId),

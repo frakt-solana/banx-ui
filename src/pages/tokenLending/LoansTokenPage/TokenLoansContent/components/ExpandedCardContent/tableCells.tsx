@@ -1,6 +1,7 @@
 import { FC } from 'react'
 
 import { web3 } from 'fbonds-core'
+import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
 import { calcBorrowerTokenAPR } from 'fbonds-core/lib/fbond-protocol/helpers'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { capitalize } from 'lodash'
@@ -15,7 +16,7 @@ import {
 import Timer from '@banx/components/Timer'
 
 import { core } from '@banx/api/tokens'
-import { SECONDS_IN_72_HOURS } from '@banx/constants'
+import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
 import { useModal } from '@banx/store/common'
 import {
   HealthColorIncreasing,
@@ -59,7 +60,8 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   const totalAccruedInterest = calculateAccruedInterest(loan)
 
-  const upfrontFee = bondTradeTransaction.borrowerOriginalLent / 100
+  const upfrontFee =
+    (bondTradeTransaction.borrowerOriginalLent * BONDS.PROTOCOL_FEE_TOKEN) / BASE_POINTS
 
   const weeklyFee = calcTokenWeeklyFeeWithRepayFee(loan)
 
