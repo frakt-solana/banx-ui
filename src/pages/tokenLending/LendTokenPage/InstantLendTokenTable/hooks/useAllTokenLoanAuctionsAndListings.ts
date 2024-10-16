@@ -23,13 +23,13 @@ const useHiddenLoansPubkeys = create<HiddenLoansPubkeysState>((set) => ({
   },
 }))
 
-export const useAllTokenLoansRequests = () => {
+export const useAllTokenLoanAuctionsAndListings = () => {
   const { pubkeys, addLoansPubkeys } = useHiddenLoansPubkeys()
   const { tokenType } = useTokenType()
 
   const { data, isLoading } = useQuery(
-    ['allTokenLoansRequests', tokenType],
-    () => core.fetchAllTokenLoansRequests({ tokenType }),
+    ['allTokenLoanAuctionsAndListings', tokenType],
+    () => core.fetchTokenLoanAuctionsAndListings({ tokenType }),
     {
       staleTime: 5 * 1000,
       refetchOnWindowFocus: false,
