@@ -165,6 +165,7 @@ export const useCartState = create<CartState>((set, get) => ({
     )
   },
 
+  //TODO remove liquidity from userVaults
   addNfts: ({ mintAndMarketArr, amount }) => {
     const { resetCart, offerByMint } = get()
 
