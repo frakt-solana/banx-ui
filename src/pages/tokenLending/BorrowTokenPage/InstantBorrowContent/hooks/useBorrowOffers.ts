@@ -122,18 +122,21 @@ const useFetchOffers = (props: {
   }
 
   const { data: suggestedOffers, isLoading: isLoadingSuggested } = useQuery(
-    ['suggestedBorrowOffers', collateralToken, borrowToken, customLtv],
+    ['suggestedBorrowOffers', collateralAmount, borrowToken, customLtv],
     () => fetchOffers(customLtv * 100),
     {
       ...queryOptions,
-      enabled: !!customLtv && !!collateralAmount,
+      enabled: !!customLtv && !!collateralAmount && !!collateralToken,
     },
   )
 
   const { data: allOffers, isLoading: isLoadingAll } = useQuery(
-    ['allBorrowOffers', collateralToken, borrowToken],
+    ['allBorrowOffers', collateralAmount, borrowToken],
     () => fetchOffers(),
-    queryOptions,
+    {
+      ...queryOptions,
+      enabled: !!collateralToken,
+    },
   )
 
   return { suggestedOffers, allOffers, isLoading: isLoadingSuggested || isLoadingAll }

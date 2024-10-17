@@ -171,5 +171,5 @@ export const BorrowOfferSchema = z.object({
   apr: z.string(), //?  BN serialized to decimal string (apr in base points)
   ltv: z.string(), //? BN serialized to decimal string (ltv in base points)
 
-  disabled: z.boolean(),
+  disabled: z.boolean().or(z.any()),
 })
