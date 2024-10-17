@@ -9,7 +9,6 @@ import { useModal } from '@banx/store/common'
 
 import { LoanValueSlider } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import MarketOrderBook from './MarketOrderBook'
 import OrderBook from './OrderBook'
 import { Summary } from './Summary'
 import WarningModal from './WarningModal'
@@ -97,7 +96,7 @@ const InstantBorrowContent = () => {
         />
 
         <LoanValueSlider
-          label="Max LTV"
+          label="LTV"
           value={ltvSliderValue}
           onChange={onChangeLtvSlider}
           disabled={!parseFloat(collateralInputValue)}
@@ -122,10 +121,6 @@ const InstantBorrowContent = () => {
 
       <div className={styles.orderBookContainer}>
         {loading && <Loader className={styles.loader} />}
-
-        {!loading && !offers.length && !!collateralToken && (
-          <MarketOrderBook collateral={collateralToken} />
-        )}
 
         {!loading && !!offers.length && (
           <OrderBook

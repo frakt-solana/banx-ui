@@ -1,1 +1,0 @@
-export const MAX_TOKEN_TO_GET_TRESHOLD = 100
