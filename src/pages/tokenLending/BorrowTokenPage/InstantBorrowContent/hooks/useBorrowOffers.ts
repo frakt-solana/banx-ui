@@ -20,16 +20,18 @@ const MAX_TOKEN_TO_GET_TRESHOLD = 100
 const DEBOUNCE_DELAY_MS = 600
 const MIN_SLIDER_PERCENT = 10
 
-export const useBorrowOffers = (
-  collateralToken: CollateralToken | undefined,
-  borrowToken: BorrowToken | undefined,
-) => {
-  const [inputCollateralsAmount, setInputCollateralsAmount] = useState('')
-  const [ltvSliderValue, setLtvSlider] = useState(100)
+export const useBorrowOffers = (props: {
+  collateralToken: CollateralToken | undefined
+  borrowToken: BorrowToken | undefined
+  collateralInputValue: string
+}) => {
+  const { collateralToken, borrowToken, collateralInputValue } = props
+
+  const [ltvSliderValue, setLtvSlider] = useState(MIN_SLIDER_PERCENT)
 
   const { tokenType } = useTokenType()
 
-  const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, DEBOUNCE_DELAY_MS)
+  const debouncedCollateralsAmount = useDebounceValue(collateralInputValue, DEBOUNCE_DELAY_MS)
   const debouncedLtvValue = useDebounceValue(ltvSliderValue, DEBOUNCE_DELAY_MS)
 
   const { suggestedOffers, allOffers, isLoading } = useFetchOffers({
@@ -44,10 +46,10 @@ export const useBorrowOffers = (
     if (!allOffers) return
 
     setLtvSlider(getLowestLtv(allOffers))
-  }, [allOffers, collateralToken])
+  }, [allOffers])
 
   const mergedOffers = useMemo(() => {
-    if (!suggestedOffers || !allOffers) return []
+    if (!suggestedOffers && !allOffers) return []
 
     const prioritizeOffers = (offer: BorrowOffer) => {
       const matchingOffer = find(suggestedOffers, { publicKey: offer.publicKey })
@@ -63,7 +65,7 @@ export const useBorrowOffers = (
       .value()
   }, [allOffers, suggestedOffers, debouncedLtvValue])
 
-  const { selection: offersInCart, set: setOffers, clear: clearOffers } = useSelectedOffers()
+  const { set: setOffers, clear: clearOffers } = useSelectedOffers()
 
   useEffect(() => {
     if (!suggestedOffers) {
@@ -73,7 +75,7 @@ export const useBorrowOffers = (
     const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
 
     const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
-    const collateralsAmount = stringToBN(inputCollateralsAmount, collateralTokenDecimals)
+    const collateralsAmount = stringToBN(collateralInputValue, collateralTokenDecimals)
 
     const updatedOffers = getUpdatedBorrowOffers({
       collateralsAmount,
@@ -82,15 +84,11 @@ export const useBorrowOffers = (
     })
 
     setOffers(updatedOffers)
-  }, [inputCollateralsAmount, collateralToken, suggestedOffers, tokenType, setOffers, clearOffers])
+  }, [collateralInputValue, collateralToken, suggestedOffers, tokenType, setOffers, clearOffers])
 
   return {
     data: mergedOffers,
     isLoading,
-
-    offersInCart,
-
-    setInputCollateralsAmount,
     ltvSliderValue,
     onChangeLtvSlider: setLtvSlider,
   }
@@ -123,7 +121,7 @@ const useFetchOffers = (props: {
   }
 
   const { data: suggestedOffers, isLoading: isLoadingSuggested } = useQuery(
-    ['suggestedBorrowOffers', collateralAmount, borrowToken, customLtv],
+    ['suggestedBorrowOffers', collateralToken, collateralAmount, borrowToken, customLtv],
     () => fetchOffers(customLtv * 100),
     {
       ...queryOptions,
@@ -132,7 +130,7 @@ const useFetchOffers = (props: {
   )
 
   const { data: allOffers, isLoading: isLoadingAll } = useQuery(
-    ['allBorrowOffers', collateralAmount, borrowToken],
+    ['allBorrowOffers', collateralToken, collateralAmount, borrowToken],
     () => fetchOffers(),
     {
       ...queryOptions,

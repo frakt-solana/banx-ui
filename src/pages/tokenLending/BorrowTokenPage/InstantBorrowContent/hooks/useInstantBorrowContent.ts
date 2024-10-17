@@ -5,13 +5,20 @@ import { BANX_TOKEN_MINT } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { CollateralToken } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
-import { adjustTokenAmountWithUpfrontFee, bnToHuman, stringToBN, sumBNs } from '@banx/utils'
+import {
+  adjustTokenAmountWithUpfrontFee,
+  bnToHuman,
+  limitDecimalPlaces,
+  stringToBN,
+  sumBNs,
+} from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
 import { useBorrowTokensList, useCollateralsList } from '../../hooks'
 import { getErrorMessage } from '../helpers'
 import { useBorrowOffers } from './useBorrowOffers'
 import { useBorrowOffersTransaction } from './useBorrowOffersTransaction'
+import { useSelectedOffers } from './useSelectedOffers'
 
 export const useInstantBorrowContent = () => {
   const { tokenType, setTokenType } = useTokenType()
@@ -27,12 +34,19 @@ export const useInstantBorrowContent = () => {
 
   const {
     data: offers,
-    offersInCart,
     isLoading: isLoadingOffers,
-    setInputCollateralsAmount,
     ltvSliderValue,
     onChangeLtvSlider,
-  } = useBorrowOffers(collateralToken, borrowToken)
+  } = useBorrowOffers({ collateralToken, borrowToken, collateralInputValue })
+
+  useEffect(() => {
+    if (!collateralToken) return
+
+    const collateralTokenDecimals = collateralToken.collateral.decimals || 0
+    const amountInWallet = collateralToken.amountInWallet / Math.pow(10, collateralTokenDecimals)
+
+    setCollateralInputValue(limitDecimalPlaces(amountInWallet.toString()))
+  }, [collateralToken])
 
   const collateralToSet = useMemo(() => {
     const [firstCollateral] = collateralsList
@@ -67,7 +81,6 @@ export const useInstantBorrowContent = () => {
     if (!borrowToken || !collateralToken) return
 
     setCollateralInputValue(value)
-    setInputCollateralsAmount(value)
   }
 
   const handleCollateralTokenChange = (token: CollateralToken) => {
@@ -79,10 +92,12 @@ export const useInstantBorrowContent = () => {
     setTokenType(token.lendingTokenType)
   }
 
+  const { selection: selectedOffers } = useSelectedOffers()
+
   useEffect(() => {
     if (!borrowToken) return
 
-    const totalAmountToGet = sumBNs(offersInCart.map((offer) => new BN(offer.maxTokenToGet)))
+    const totalAmountToGet = sumBNs(selectedOffers.map((offer) => new BN(offer.maxTokenToGet)))
     const adjustedAmountToGet = adjustTokenAmountWithUpfrontFee(totalAmountToGet)
 
     const totalAmountToGetStr = bnToHuman(
@@ -93,7 +108,7 @@ export const useInstantBorrowContent = () => {
     if (totalAmountToGetStr !== borrowInputValue) {
       setBorrowInputValue(totalAmountToGetStr)
     }
-  }, [offersInCart, borrowToken, borrowInputValue, collateralToken, collateralInputValue])
+  }, [selectedOffers, borrowToken, borrowInputValue, collateralToken, collateralInputValue])
 
   const errorMessage = getErrorMessage({
     offers,
@@ -115,7 +130,7 @@ export const useInstantBorrowContent = () => {
 
   return {
     offers,
-    offersInCart,
+    selectedOffers,
     isLoading: isLoadingOffers,
 
     canFundRequiredCollaterals,

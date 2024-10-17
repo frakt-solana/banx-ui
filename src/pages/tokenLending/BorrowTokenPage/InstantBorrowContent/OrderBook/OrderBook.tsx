@@ -18,9 +18,15 @@ interface OrderBookProps {
   offers: BorrowOffer[]
   requiredCollateralsAmount: string //? input value string
   collateral: CollateralToken | undefined
+  loading: boolean
 }
 
-const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, collateral }) => {
+const OrderBook: FC<OrderBookProps> = ({
+  offers,
+  requiredCollateralsAmount,
+  collateral,
+  loading,
+}) => {
   const { tokenType } = useTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
@@ -115,13 +121,18 @@ const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, coll
   }, [onRowClick])
 
   return (
-    <Table
-      data={offers}
-      columns={columns}
-      rowParams={rowParams}
-      className={styles.table}
-      classNameTableWrapper={styles.tableWrapper}
-    />
+    <div className={styles.container}>
+      <Table
+        data={offers}
+        columns={columns}
+        rowParams={rowParams}
+        className={styles.table}
+        classNameTableWrapper={styles.tableWrapper}
+        loading={!offers.length && loading ? loading : false}
+        loaderClassName={styles.loader}
+        emptyMessage={!offers.length ? 'No found offers' : ''}
+      />
+    </div>
   )
 }
 
