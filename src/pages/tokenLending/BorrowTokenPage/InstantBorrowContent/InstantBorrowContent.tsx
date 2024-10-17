@@ -97,7 +97,7 @@ const InstantBorrowContent = () => {
         />
 
         <LoanValueSlider
-          label="Max LTV"
+          label="LTV"
           value={ltvSliderValue}
           onChange={onChangeLtvSlider}
           disabled={!parseFloat(collateralInputValue)}

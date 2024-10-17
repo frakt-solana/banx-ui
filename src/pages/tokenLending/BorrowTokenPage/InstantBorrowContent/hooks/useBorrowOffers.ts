@@ -52,7 +52,7 @@ export const useBorrowOffers = (
     return core.fetchBorrowOffers({
       market: marketPubkey,
       bondingCurveType,
-      ltvLimit,
+      customLtv: ltvLimit,
       excludeWallet: walletPubkeyString || PUBKEY_PLACEHOLDER,
     })
   }

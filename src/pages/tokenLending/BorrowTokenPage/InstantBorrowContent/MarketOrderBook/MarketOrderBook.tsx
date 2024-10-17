@@ -1,20 +1,14 @@
 import { FC, useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useQuery } from '@tanstack/react-query'
 import classNames from 'classnames'
+import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { chain } from 'lodash'
 
-import { calculateLtvPercent } from '@banx/components/PlaceTokenOfferSection'
 import Table from '@banx/components/Table'
 
-import { CollateralToken } from '@banx/api/tokens'
-import { useTokenMarketOffers } from '@banx/pages/tokenLending/LendTokenPage'
+import { BorrowOffer, CollateralToken, core } from '@banx/api/tokens'
 import { useTokenType } from '@banx/store/common'
-import {
-  calculateTokensPerCollateral,
-  formatTokensPerCollateralToStr,
-  getTokenDecimals,
-} from '@banx/utils'
 
 import { getTableColumns } from './columns'
 
@@ -24,39 +18,32 @@ interface MarketOrderBookProps {
   collateral: CollateralToken
 }
 
-const MAX_LTV_THRESHOLD = 100
+const MAX_LTV_THRESHOLD = 10000 //? Base points
 
 const MarketOrderBook: FC<MarketOrderBookProps> = ({ collateral }) => {
-  const { publicKey } = useWallet()
-  const { offers, isLoading } = useTokenMarketOffers(collateral.marketPubkey)
+  const { data: offers, isLoading } = useQuery(
+    ['borrowOffersMarketOrderBook', collateral],
+    () =>
+      core.fetchBorrowOffers({
+        market: collateral.marketPubkey,
+        bondingCurveType: getBondingCurveTypeFromLendingToken(tokenType),
+        customLtv: undefined,
+      }),
+    {
+      staleTime: 5 * 1000,
+      refetchOnWindowFocus: false,
+    },
+  )
 
   const { tokenType } = useTokenType()
   const columns = getTableColumns({ collateral, tokenType })
 
-  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
-
-  const filteredOffers = useMemo(() => {
+  const filteredOffers: BorrowOffer[] = useMemo(() => {
     return chain(offers)
-      .filter((offer) => offer.assetReceiver.toBase58() !== publicKey?.toBase58())
-      .filter((offer) => {
-        const tokensPerCollateral = formatTokensPerCollateralToStr(
-          calculateTokensPerCollateral(
-            offer.validation.collateralsPerToken,
-            collateral.collateral.decimals,
-          ),
-        )
-
-        const ltvPercent = calculateLtvPercent({
-          collateralPerToken: tokensPerCollateral,
-          collateralPrice: collateral.collateralPrice,
-          marketTokenDecimals,
-        })
-
-        return ltvPercent <= MAX_LTV_THRESHOLD
-      })
-      .sortBy((offer) => offer.validation.collateralsPerToken.toNumber())
+      .filter(({ ltv }) => parseInt(ltv) <= MAX_LTV_THRESHOLD)
+      .sortBy(({ collateralsPerToken }) => parseInt(collateralsPerToken))
       .value()
-  }, [collateral, marketTokenDecimals, offers, publicKey])
+  }, [offers])
 
   return (
     <Table
@@ -64,7 +51,7 @@ const MarketOrderBook: FC<MarketOrderBookProps> = ({ collateral }) => {
       columns={columns}
       className={styles.table}
       classNameTableWrapper={classNames(styles.tableWrapper, {
-        [styles.showOverlay]: !!offers.length,
+        [styles.showOverlay]: !!filteredOffers.length,
       })}
       emptyMessage={!filteredOffers.length ? 'No suitable offers' : ''}
       loaderClassName={styles.tableLoader}
