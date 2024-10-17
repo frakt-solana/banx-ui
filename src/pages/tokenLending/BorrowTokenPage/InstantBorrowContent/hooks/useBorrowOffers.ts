@@ -5,114 +5,136 @@ import { useQuery } from '@tanstack/react-query'
 import { BN } from 'fbonds-core'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { chain, find } from 'lodash'
 
-import { CollateralToken, core } from '@banx/api/tokens'
+import { BorrowOffer, CollateralToken, core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
 import { useTokenType } from '@banx/store/common'
 import { getTokenDecimals, stringToBN } from '@banx/utils'
 
 import { BorrowToken } from '../../constants'
 import { getUpdatedBorrowOffers } from '../OrderBook/helpers'
-import { MAX_TOKEN_TO_GET_TRESHOLD } from './constants'
 import { useSelectedOffers } from './useSelectedOffers'
+
+const MAX_TOKEN_TO_GET_TRESHOLD = 100
+const DEBOUNCE_DELAY_MS = 600
 
 export const useBorrowOffers = (
   collateralToken: CollateralToken | undefined,
   borrowToken: BorrowToken | undefined,
 ) => {
-  const { publicKey } = useWallet()
-  const walletPubkeyString = publicKey?.toString() || ''
-
   const [inputCollateralsAmount, setInputCollateralsAmount] = useState('')
   const [ltvSliderValue, setLtvSlider] = useState(100)
 
   const { tokenType } = useTokenType()
 
-  const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, 600)
-  const debouncedLtvSliderValue = useDebounceValue(ltvSliderValue, 600)
+  const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, DEBOUNCE_DELAY_MS)
+  const debouncedLtvValue = useDebounceValue(ltvSliderValue, DEBOUNCE_DELAY_MS)
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
 
-  const queryKey = [
-    'borrowOffers',
-    {
-      collateralToken,
-      borrowToken,
-      debouncedLtvSliderValue,
-      walletPubkeyString,
-    },
-  ]
-
-  const fetchBorrowOffers = () => {
-    const marketPubkey = collateralToken?.marketPubkey || ''
-    const bondingCurveType = getBondingCurveTypeFromLendingToken(tokenType)
-
-    const ltvLimit = debouncedLtvSliderValue * 100 //? base points 50% => 5000
-
-    return core.fetchBorrowOffers({
-      market: marketPubkey,
-      bondingCurveType,
-      customLtv: ltvLimit,
-      excludeWallet: walletPubkeyString || PUBKEY_PLACEHOLDER,
-    })
-  }
-
-  const { data: borrowOffers, isLoading } = useQuery([queryKey], () => fetchBorrowOffers(), {
-    staleTime: 5 * 1000,
-    refetchOnWindowFocus: false,
-    enabled: !!parseFloat(debouncedCollateralsAmount),
+  const { suggestedOffers, allOffers, isLoading } = useFetchOffers({
+    collateralToken,
+    borrowToken,
+    customLtv: debouncedLtvValue,
+    collateralAmount: parseFloat(debouncedCollateralsAmount),
   })
 
-  const onChangeLtvSlider = (value: number) => {
-    setLtvSlider(value)
-  }
+  const mergedOffers = useMemo(() => {
+    if (!suggestedOffers || !allOffers) return []
 
-  //? Filter out offers with maxTokenToGet < MAX_TOKEN_TO_GET_TRESHOLD
-  const filteredOffers = useMemo(() => {
-    if (!borrowOffers) return []
+    const prioritizeOffers = (offer: BorrowOffer) => {
+      const matchingOffer = find(suggestedOffers, { publicKey: offer.publicKey })
+      const isDisabled = !matchingOffer || debouncedLtvValue >= parseFloat(offer.ltv) / 100
 
-    return borrowOffers.filter((offer) =>
-      new BN(offer.maxTokenToGet).gte(new BN(MAX_TOKEN_TO_GET_TRESHOLD)),
-    )
-  }, [borrowOffers])
+      return { ...(matchingOffer ?? offer), disabled: isDisabled }
+    }
+
+    return chain(allOffers)
+      .map(prioritizeOffers)
+      .filter((offer) => new BN(offer.maxTokenToGet).gte(new BN(MAX_TOKEN_TO_GET_TRESHOLD)))
+      .sortBy((offer) => parseFloat(offer.apr))
+      .value()
+  }, [allOffers, suggestedOffers, debouncedLtvValue])
 
   const { selection: offersInCart, set: setOffers, clear: clearOffers } = useSelectedOffers()
 
   useEffect(() => {
-    if (filteredOffers) {
-      const collateralsAmount = stringToBN(
-        inputCollateralsAmount,
-        collateralToken?.collateral.decimals || 0,
-      )
-
-      const updatedOffers = getUpdatedBorrowOffers({
-        collateralsAmount,
-        offers: filteredOffers,
-        tokenDecimals: marketTokenDecimals,
-      })
-
-      setOffers(updatedOffers)
-    } else {
-      clearOffers()
+    if (!suggestedOffers) {
+      return clearOffers()
     }
+
+    const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
+    const collateralsAmount = stringToBN(inputCollateralsAmount, collateralTokenDecimals)
+
+    const updatedOffers = getUpdatedBorrowOffers({
+      collateralsAmount,
+      offers: suggestedOffers,
+      tokenDecimals: marketTokenDecimals,
+    })
+
+    setOffers(updatedOffers)
   }, [
     inputCollateralsAmount,
     collateralToken,
-    filteredOffers,
-    setOffers,
-    walletPubkeyString,
+    suggestedOffers,
     marketTokenDecimals,
+    setOffers,
     clearOffers,
   ])
 
   return {
-    data: filteredOffers ?? [],
+    data: mergedOffers,
     isLoading,
 
     offersInCart,
 
     setInputCollateralsAmount,
     ltvSliderValue,
-    onChangeLtvSlider,
+    onChangeLtvSlider: setLtvSlider,
   }
+}
+
+const useFetchOffers = (props: {
+  collateralToken: CollateralToken | undefined
+  borrowToken: BorrowToken | undefined
+  collateralAmount: number
+  customLtv: number
+}) => {
+  const { collateralToken, borrowToken, collateralAmount, customLtv } = props
+
+  const wallet = useWallet()
+  const walletPubkey = wallet.publicKey?.toBase58() || PUBKEY_PLACEHOLDER
+
+  const { tokenType } = useTokenType()
+
+  const queryParams = {
+    market: collateralToken?.marketPubkey ?? '',
+    bondingCurveType: getBondingCurveTypeFromLendingToken(tokenType),
+    excludeWallet: walletPubkey,
+  }
+
+  const fetchOffers = (customLtv?: number) => core.fetchBorrowOffers({ ...queryParams, customLtv })
+
+  const queryOptions = {
+    staleTime: 5000,
+    refetchOnWindowFocus: false,
+  }
+
+  const { data: suggestedOffers, isLoading: isLoadingSuggested } = useQuery(
+    ['suggestedBorrowOffers', collateralToken, borrowToken, customLtv],
+    () => fetchOffers(customLtv * 100),
+    {
+      ...queryOptions,
+      enabled: !!customLtv && !!collateralAmount,
+    },
+  )
+
+  const { data: allOffers, isLoading: isLoadingAll } = useQuery(
+    ['allBorrowOffers', collateralToken, borrowToken],
+    () => fetchOffers(),
+    queryOptions,
+  )
+
+  return { suggestedOffers, allOffers, isLoading: isLoadingSuggested || isLoadingAll }
 }

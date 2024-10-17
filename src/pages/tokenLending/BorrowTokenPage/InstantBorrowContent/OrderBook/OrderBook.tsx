@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 
 import { BN } from 'fbonds-core'
-import { maxBy } from 'lodash'
 
 import Table from '@banx/components/Table'
 
@@ -11,7 +10,7 @@ import { ZERO_BN, getTokenDecimals, stringToBN, sumBNs } from '@banx/utils'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
 import { getTableColumns } from './columns'
-import { createRowStyle, getUpdatedBorrowOffers } from './helpers'
+import { getUpdatedBorrowOffers } from './helpers'
 
 import styles from './OrderBook.module.less'
 
@@ -103,22 +102,17 @@ const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, coll
     collateral,
   })
 
-  const offerWithHighestOfferSize = useMemo(
-    () => maxBy(offers, (offer) => parseFloat(offer.maxTokenToGet)),
-    [offers],
-  )
-
   const rowParams = useMemo(() => {
     return {
       onRowClick,
       activeRowParams: [
         {
-          condition: () => true,
-          styles: (offer: BorrowOffer) => createRowStyle(offer, offerWithHighestOfferSize),
+          condition: (offer: BorrowOffer) => offer.disabled,
+          className: styles.disabledOffer,
         },
       ],
     }
-  }, [offerWithHighestOfferSize, onRowClick])
+  }, [onRowClick])
 
   return (
     <Table
