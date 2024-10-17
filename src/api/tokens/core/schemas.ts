@@ -172,4 +172,5 @@ export const BorrowOfferSchema = z.object({
   ltv: z.string(), //? BN serialized to decimal string (ltv in base points)
 
   disabled: z.boolean().or(z.any()),
+  maxLtv: z.string().or(z.any()),
 })

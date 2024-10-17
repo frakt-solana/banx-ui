@@ -55,7 +55,7 @@ export const useBorrowOffers = (props: {
       const matchingOffer = find(suggestedOffers, { publicKey: offer.publicKey })
       const isDisabled = !matchingOffer || debouncedLtvValue >= parseFloat(offer.ltv) / 100
 
-      return { ...(matchingOffer ?? offer), disabled: isDisabled }
+      return { ...(matchingOffer ?? offer), disabled: isDisabled, maxLtv: offer.ltv }
     }
 
     return chain(allOffers)

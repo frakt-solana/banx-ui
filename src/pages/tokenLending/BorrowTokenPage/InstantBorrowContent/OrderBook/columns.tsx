@@ -4,7 +4,7 @@ import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 
 import Checkbox from '@banx/components/Checkbox'
 import { ColumnType } from '@banx/components/Table'
-import { DisplayValue, HeaderCell } from '@banx/components/TableComponents'
+import { DisplayValue, HeaderCell, createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { BorrowOffer, CollateralToken } from '@banx/api/tokens'
 
@@ -66,13 +66,18 @@ export const getTableColumns: GetTableColumns = ({
     },
     {
       key: 'apr',
-      title: (
-        <div className={styles.aprRow}>
-          <HeaderCell label="APR" />
-        </div>
-      ),
+      title: <HeaderCell label="APR" />,
       render: (offer) => (
         <AprCell offer={offer} marketPubkey={collateral?.marketPubkey ?? PUBKEY_PLACEHOLDER} />
+      ),
+    },
+    {
+      key: 'maxLtv',
+      title: <HeaderCell label="Max ltv" />,
+      render: (offer) => (
+        <span className={styles.ltvValue}>
+          {createPercentValueJSX(parseFloat(offer.maxLtv) / 100)}
+        </span>
       ),
     },
     {

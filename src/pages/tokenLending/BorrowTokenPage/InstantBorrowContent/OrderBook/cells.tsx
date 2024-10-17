@@ -27,8 +27,6 @@ export const BorrowCell: FC<BorrowCellProps> = ({
   const tokenDecimals = Math.log10(getTokenDecimals(tokenType))
   const collateralMultiplier = Math.pow(10, tokenDecimals)
 
-  const ltvPercent = parseFloat(offer.ltv) / 100
-
   const calculatedTokenToGet = BN.min(
     restCollateralsAmount.mul(new BN(collateralMultiplier)).div(new BN(offer.collateralsPerToken)),
     new BN(offer.maxTokenToGet),
@@ -45,7 +43,6 @@ export const BorrowCell: FC<BorrowCellProps> = ({
   return (
     <div className={styles.borrowValueContainer}>
       <DisplayValue value={adjustedBorrowValueToDisplay.toNumber()} />
-      <span className={styles.ltvValue}>{createPercentValueJSX(ltvPercent)} LTV</span>
     </div>
   )
 }
@@ -59,9 +56,5 @@ export const AprCell: FC<AprCellProps> = ({ offer, marketPubkey }) => {
   const aprPercent =
     calcBorrowerTokenAPR(parseFloat(offer.apr), new web3.PublicKey(marketPubkey)) / 100
 
-  return (
-    <div className={styles.aprRow}>
-      <span className={styles.aprValue}>{createPercentValueJSX(aprPercent)}</span>
-    </div>
-  )
+  return <span className={styles.aprValue}>{createPercentValueJSX(aprPercent)}</span>
 }
