@@ -95,7 +95,7 @@ const getIxnsAndSignersForListedLoan = async (
     })
 
     if (isBanxSolTokenType(lendingTokenType)) {
-      const buyBanxSolIxns = await banxSol.combineWithSellBanxSolInstructions(
+      const sellBanxSolIxns = await banxSol.combineWithSellBanxSolInstructions(
         {
           params,
           inputAmount: amount,
@@ -105,8 +105,8 @@ const getIxnsAndSignersForListedLoan = async (
         walletAndConnection,
       )
 
-      instructions.push(...buyBanxSolIxns.instructions)
-      signers.push(...(buyBanxSolIxns.signers ?? []))
+      instructions.push(...sellBanxSolIxns.instructions)
+      signers.push(...(sellBanxSolIxns.signers ?? []))
     } else {
       instructions.push(...liquidityIxns.instructions)
       signers.push(...liquidityIxns.signers)
