@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query'
 import { BN } from 'fbonds-core'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 import { getBondingCurveTypeFromLendingToken } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { chain, find } from 'lodash'
+import { chain, find, minBy } from 'lodash'
 
 import { BorrowOffer, CollateralToken, core } from '@banx/api/tokens'
 import { useDebounceValue } from '@banx/hooks'
@@ -18,6 +18,7 @@ import { useSelectedOffers } from './useSelectedOffers'
 
 const MAX_TOKEN_TO_GET_TRESHOLD = 100
 const DEBOUNCE_DELAY_MS = 600
+const MIN_SLIDER_PERCENT = 10
 
 export const useBorrowOffers = (
   collateralToken: CollateralToken | undefined,
@@ -31,14 +32,19 @@ export const useBorrowOffers = (
   const debouncedCollateralsAmount = useDebounceValue(inputCollateralsAmount, DEBOUNCE_DELAY_MS)
   const debouncedLtvValue = useDebounceValue(ltvSliderValue, DEBOUNCE_DELAY_MS)
 
-  const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
-
   const { suggestedOffers, allOffers, isLoading } = useFetchOffers({
     collateralToken,
     borrowToken,
     customLtv: debouncedLtvValue,
     collateralAmount: parseFloat(debouncedCollateralsAmount),
   })
+
+  //? Set the lowest LTV as default
+  useEffect(() => {
+    if (!allOffers) return
+
+    setLtvSlider(getLowestLtv(allOffers))
+  }, [allOffers, collateralToken])
 
   const mergedOffers = useMemo(() => {
     if (!suggestedOffers || !allOffers) return []
@@ -64,6 +70,8 @@ export const useBorrowOffers = (
       return clearOffers()
     }
 
+    const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
+
     const collateralTokenDecimals = collateralToken?.collateral.decimals || 0
     const collateralsAmount = stringToBN(inputCollateralsAmount, collateralTokenDecimals)
 
@@ -74,14 +82,7 @@ export const useBorrowOffers = (
     })
 
     setOffers(updatedOffers)
-  }, [
-    inputCollateralsAmount,
-    collateralToken,
-    suggestedOffers,
-    marketTokenDecimals,
-    setOffers,
-    clearOffers,
-  ])
+  }, [inputCollateralsAmount, collateralToken, suggestedOffers, tokenType, setOffers, clearOffers])
 
   return {
     data: mergedOffers,
@@ -140,4 +141,14 @@ const useFetchOffers = (props: {
   )
 
   return { suggestedOffers, allOffers, isLoading: isLoadingSuggested || isLoadingAll }
+}
+
+const getLowestLtv = (offers: BorrowOffer[], minSliderPercent = MIN_SLIDER_PERCENT): number => {
+  if (!offers.length) return minSliderPercent
+
+  const parseLtv = (ltv: string) => parseFloat(ltv) / 100
+  const minLtvOffer = minBy(offers, (offer) => parseLtv(offer.ltv))
+  const minLtv = minLtvOffer ? parseLtv(minLtvOffer.ltv) : minSliderPercent
+
+  return Math.max(minLtv, minSliderPercent)
 }
