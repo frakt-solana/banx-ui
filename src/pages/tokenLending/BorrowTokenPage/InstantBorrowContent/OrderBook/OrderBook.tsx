@@ -53,9 +53,10 @@ const OrderBook: FC<OrderBookProps> = ({
     const collateralTokenDecimals = collateral?.collateral.decimals || 0
     const collateralsAmount = stringToBN(requiredCollateralsAmount, collateralTokenDecimals)
 
+    const offersToUpdate = offers.filter((offer) => !offer.disabled)
     const updatedOffers = getUpdatedBorrowOffers({
       collateralsAmount,
-      offers,
+      offers: offersToUpdate,
       tokenDecimals: marketTokenDecimals,
     })
 
