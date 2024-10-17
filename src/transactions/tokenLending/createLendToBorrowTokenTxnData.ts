@@ -153,7 +153,9 @@ const getIxnsAndSignersForAuctionLoan = async (
 
   const repayValue = calculateTokenLoanRepayValueOnCertainDate({
     loan,
-    date: moment().unix(),
+    //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+    //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
+    date: moment().unix() + 180,
   })
 
   const amount = BN.min(userVaultBalance, repayValue)
