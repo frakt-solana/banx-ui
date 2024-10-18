@@ -1,28 +1,32 @@
 import { BN, web3 } from 'fbonds-core'
-import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
+import { LOOKUP_TABLE, ZERO_BN } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   lendToBorrowerListing,
   refinancePerpetualLoan,
+  updateLiquidityToUserVault,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import moment from 'moment'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
-import { core } from '@banx/api/tokens'
+import { UserVault } from '@banx/api'
+import { TokenLoan } from '@banx/api/tokens'
 import { BONDS } from '@banx/constants'
-import { banxSol } from '@banx/transactions'
 import {
   calculateTokenLoanRepayValueOnCertainDate,
+  calculateTokenLoanValueWithUpfrontFee,
   isBanxSolTokenType,
   isTokenLoanListed,
 } from '@banx/utils'
 
 import { sendTxnPlaceHolder } from '../helpers'
+import { banxSol } from '../index'
 
 export type CreateLendToBorrowTokenTxnDataParams = {
-  loan: core.TokenLoan
+  loan: TokenLoan
   aprRate: number
   tokenType: LendingTokenType
+  userVault: UserVault | undefined
 }
 
 type CreateLendToBorrowTokenTxnData = (
@@ -34,36 +38,10 @@ export const createLendToBorrowTokenTxnData: CreateLendToBorrowTokenTxnData = as
   params,
   walletAndConnection,
 ) => {
-  const { loan, tokenType } = params
-
-  const { instructions, signers, lookupTables } = await getIxnsAndSignersByLoanType(
-    params,
-    walletAndConnection,
-  )
+  const { instructions, signers } = await getInstructionsAndSigners(params, walletAndConnection)
 
   const accounts: web3.PublicKey[] = []
-
-  if (isBanxSolTokenType(tokenType) && !isTokenLoanListed(loan)) {
-    const repayValue = calculateTokenLoanRepayValueOnCertainDate({
-      loan,
-      upfrontFeeIncluded: true,
-      //? It is necessary to add some time because interest is accumulated even during the transaction processing.
-      //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
-      date: moment().unix() + 180,
-    })
-
-    return await banxSol.combineWithBuyBanxSolInstructions(
-      {
-        params,
-        accounts,
-        inputAmount: new BN(repayValue),
-        instructions,
-        signers,
-        lookupTables,
-      },
-      walletAndConnection,
-    )
-  }
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   return {
     params,
@@ -74,56 +52,138 @@ export const createLendToBorrowTokenTxnData: CreateLendToBorrowTokenTxnData = as
   }
 }
 
-const getIxnsAndSignersByLoanType = async (
+const getInstructionsAndSigners = async (
   params: CreateLendToBorrowTokenTxnDataParams,
   walletAndConnection: WalletAndConnection,
 ) => {
-  const { loan, aprRate } = params
+  const isListed = isTokenLoanListed(params.loan)
+
+  return isListed
+    ? await getIxnsAndSignersForListedLoan(params, walletAndConnection)
+    : await getIxnsAndSignersForAuctionLoan(params, walletAndConnection)
+}
+
+const getIxnsAndSignersForListedLoan = async (
+  params: CreateLendToBorrowTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => {
+  const { loan, userVault } = params
   const { connection, wallet } = walletAndConnection
 
   const { bondTradeTransaction, fraktBond } = loan
 
-  if (isTokenLoanListed(loan)) {
-    const {
-      instructions,
-      signers,
-      accounts: accountsCollection,
-    } = await lendToBorrowerListing({
-      programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
-      accounts: {
-        hadoMarket: new web3.PublicKey(fraktBond.hadoMarket || ''),
-        protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
-        borrower: new web3.PublicKey(loan.fraktBond.fbondIssuer),
-        userPubkey: wallet.publicKey,
-        bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
-        oldBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
-        fraktBond: new web3.PublicKey(fraktBond.publicKey),
-      },
-      args: {
-        lendingTokenType: bondTradeTransaction.lendingToken,
-      },
+  const userVaultBalance = userVault?.offerLiquidityAmount ?? ZERO_BN
+
+  const instructions: web3.TransactionInstruction[] = []
+  const signers: web3.Signer[] = []
+
+  const amount = BN.min(userVaultBalance, calculateTokenLoanValueWithUpfrontFee(loan))
+  const lendingTokenType = bondTradeTransaction.lendingToken
+
+  if (userVault && !userVault.offerLiquidityAmount.isZero()) {
+    const liquidityIxns = await updateLiquidityToUserVault({
       connection,
+      args: {
+        amount,
+        lendingTokenType,
+        add: false,
+      },
+      accounts: {
+        userPubkey: wallet.publicKey,
+      },
       sendTxn: sendTxnPlaceHolder,
     })
 
-    return {
-      instructions,
-      signers,
-      accountsCollection,
-      lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+    if (isBanxSolTokenType(lendingTokenType)) {
+      const sellBanxSolIxns = await banxSol.combineWithSellBanxSolInstructions(
+        {
+          params,
+          inputAmount: amount,
+          instructions: liquidityIxns.instructions,
+          signers: liquidityIxns.signers,
+        },
+        walletAndConnection,
+      )
+
+      instructions.push(...sellBanxSolIxns.instructions)
+      signers.push(...(sellBanxSolIxns.signers ?? []))
+    } else {
+      instructions.push(...liquidityIxns.instructions)
+      signers.push(...liquidityIxns.signers)
     }
   }
 
-  const {
-    instructions,
-    signers,
-    accounts: accountsCollection,
-  } = await refinancePerpetualLoan({
+  const lendToBorrowIxns = await lendToBorrowerListing({
+    programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+    accounts: {
+      hadoMarket: new web3.PublicKey(fraktBond.hadoMarket),
+      protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
+      borrower: new web3.PublicKey(fraktBond.fbondIssuer),
+      userPubkey: wallet.publicKey,
+      bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
+      oldBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
+      fraktBond: new web3.PublicKey(fraktBond.publicKey),
+    },
+    args: {
+      lendingTokenType: bondTradeTransaction.lendingToken,
+    },
+    connection,
+    sendTxn: sendTxnPlaceHolder,
+  })
+
+  instructions.push(...lendToBorrowIxns.instructions)
+  signers.push(...lendToBorrowIxns.signers)
+
+  return { instructions, signers }
+}
+
+const getIxnsAndSignersForAuctionLoan = async (
+  params: CreateLendToBorrowTokenTxnDataParams,
+  walletAndConnection: WalletAndConnection,
+) => {
+  const { loan, aprRate, userVault } = params
+  const { connection, wallet } = walletAndConnection
+
+  const { bondTradeTransaction, fraktBond } = loan
+
+  const userVaultBalance = userVault?.offerLiquidityAmount ?? ZERO_BN
+
+  const instructions: web3.TransactionInstruction[] = []
+  const signers: web3.Signer[] = []
+
+  const repayValue = calculateTokenLoanRepayValueOnCertainDate({
+    loan,
+    //? It is necessary to add some time because interest is accumulated even during the transaction processing.
+    //? There may not be enough funds for repayment. Therefore, we should add a small reserve for this dust.
+    date: moment().unix() + 180,
+  })
+
+  const amount = BN.min(userVaultBalance, repayValue)
+
+  if (userVault && !userVault.offerLiquidityAmount.isZero()) {
+    const liquidityIxns = await updateLiquidityToUserVault({
+      connection,
+      args: {
+        amount: amount,
+        lendingTokenType: bondTradeTransaction.lendingToken,
+        add: false,
+      },
+      accounts: {
+        userPubkey: wallet.publicKey,
+      },
+      sendTxn: sendTxnPlaceHolder,
+    })
+
+    instructions.push(...liquidityIxns.instructions)
+    signers.push(...liquidityIxns.signers)
+  }
+
+  const refinanceIxns = await refinancePerpetualLoan({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: wallet.publicKey,
-      hadoMarket: new web3.PublicKey(fraktBond.hadoMarket || ''),
+      hadoMarket: new web3.PublicKey(fraktBond.hadoMarket),
       protocolFeeReceiver: new web3.PublicKey(BONDS.ADMIN_PUBKEY),
       previousBondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       previousLender: new web3.PublicKey(bondTradeTransaction.user),
@@ -137,10 +197,21 @@ const getIxnsAndSignersByLoanType = async (
     sendTxn: sendTxnPlaceHolder,
   })
 
-  return {
-    instructions,
-    signers,
-    accountsCollection,
-    lookupTables: [new web3.PublicKey(LOOKUP_TABLE)],
+  instructions.push(...refinanceIxns.instructions)
+  signers.push(...refinanceIxns.signers)
+
+  const remainingRepayAmount = repayValue.sub(amount)
+  if (!remainingRepayAmount.isZero()) {
+    return await banxSol.combineWithBuyBanxSolInstructions(
+      {
+        params,
+        inputAmount: remainingRepayAmount,
+        instructions,
+        signers,
+      },
+      walletAndConnection,
+    )
   }
+
+  return { instructions, signers }
 }
