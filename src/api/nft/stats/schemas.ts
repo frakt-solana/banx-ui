@@ -37,6 +37,7 @@ export const TotalLenderStatsSchema = z.object({
     pendingOffers: z.number(),
     weeklyInterest: z.number(),
     weightedApy: z.number(),
+    vaultBalance: z.number(),
   }),
   allTime: z.object({
     totalLent: z.number(),
