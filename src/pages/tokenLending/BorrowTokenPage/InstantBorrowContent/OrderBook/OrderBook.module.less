@@ -1,3 +1,37 @@
+.container {
+  border: var(--border-primary);
+  border-left: 0;
+  border-radius: 12px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+
+  padding-top: 12px;
+
+  height: 100%;
+  width: 100%;
+
+  @media (max-width: 960px) {
+    border: 0;
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 0 0 140px;
+
+    overflow: hidden;
+    height: unset;
+  }
+}
+
+.loader {
+  height: 100%;
+
+  path {
+    fill: #9cff1f;
+  }
+}
+
 .table {
   tr > td,
   tr > th {
@@ -18,6 +52,12 @@
   }
 }
 
+.disabledOffer {
+  background: var(--bg-secondary) !important;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 // * Cells * //
 .checkboxRow {
   display: flex;
@@ -28,16 +68,6 @@
 .checkbox {
   height: 16px;
   padding-left: 18px;
-}
-
-.aprRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.aprValue {
-  text-align: center;
 }
 
 .aprValue,

@@ -1,7 +1,6 @@
 import { FC, useCallback, useEffect, useMemo } from 'react'
 
 import { BN } from 'fbonds-core'
-import { maxBy } from 'lodash'
 
 import Table from '@banx/components/Table'
 
@@ -11,7 +10,7 @@ import { ZERO_BN, getTokenDecimals, stringToBN, sumBNs } from '@banx/utils'
 
 import { useSelectedOffers } from '../hooks/useSelectedOffers'
 import { getTableColumns } from './columns'
-import { createRowStyle, getUpdatedBorrowOffers } from './helpers'
+import { getUpdatedBorrowOffers } from './helpers'
 
 import styles from './OrderBook.module.less'
 
@@ -19,9 +18,15 @@ interface OrderBookProps {
   offers: BorrowOffer[]
   requiredCollateralsAmount: string //? input value string
   collateral: CollateralToken | undefined
+  loading: boolean
 }
 
-const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, collateral }) => {
+const OrderBook: FC<OrderBookProps> = ({
+  offers,
+  requiredCollateralsAmount,
+  collateral,
+  loading,
+}) => {
   const { tokenType } = useTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
@@ -48,9 +53,10 @@ const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, coll
     const collateralTokenDecimals = collateral?.collateral.decimals || 0
     const collateralsAmount = stringToBN(requiredCollateralsAmount, collateralTokenDecimals)
 
+    const offersToUpdate = offers.filter((offer) => !offer.disabled)
     const updatedOffers = getUpdatedBorrowOffers({
       collateralsAmount,
-      offers,
+      offers: offersToUpdate,
       tokenDecimals: marketTokenDecimals,
     })
 
@@ -103,31 +109,31 @@ const OrderBook: FC<OrderBookProps> = ({ offers, requiredCollateralsAmount, coll
     collateral,
   })
 
-  const offerWithHighestOfferSize = useMemo(
-    () => maxBy(offers, (offer) => parseFloat(offer.maxTokenToGet)),
-    [offers],
-  )
-
   const rowParams = useMemo(() => {
     return {
       onRowClick,
       activeRowParams: [
         {
-          condition: () => true,
-          styles: (offer: BorrowOffer) => createRowStyle(offer, offerWithHighestOfferSize),
+          condition: (offer: BorrowOffer) => offer.disabled,
+          className: styles.disabledOffer,
         },
       ],
     }
-  }, [offerWithHighestOfferSize, onRowClick])
+  }, [onRowClick])
 
   return (
-    <Table
-      data={offers}
-      columns={columns}
-      rowParams={rowParams}
-      className={styles.table}
-      classNameTableWrapper={styles.tableWrapper}
-    />
+    <div className={styles.container}>
+      <Table
+        data={offers}
+        columns={columns}
+        rowParams={rowParams}
+        className={styles.table}
+        classNameTableWrapper={styles.tableWrapper}
+        loading={!offers.length && loading ? loading : false}
+        loaderClassName={styles.loader}
+        emptyMessage={!offers.length ? 'No found offers' : ''}
+      />
+    </div>
   )
 }
 

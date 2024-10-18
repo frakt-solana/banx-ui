@@ -2,14 +2,12 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { PUBKEY_PLACEHOLDER } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { Button } from '@banx/components/Buttons'
-import { Loader } from '@banx/components/Loader'
 import { useWalletModal } from '@banx/components/WalletModal'
 
 import { useModal } from '@banx/store/common'
 
 import { LoanValueSlider } from '../components'
 import InputTokenSelect from '../components/InputTokenSelect'
-import MarketOrderBook from './MarketOrderBook'
 import OrderBook from './OrderBook'
 import { Summary } from './Summary'
 import WarningModal from './WarningModal'
@@ -23,7 +21,7 @@ const InstantBorrowContent = () => {
 
   const {
     offers,
-    offersInCart,
+    selectedOffers,
     isLoading,
 
     canFundRequiredCollaterals,
@@ -61,7 +59,7 @@ const InstantBorrowContent = () => {
     }
 
     return openModal(WarningModal, {
-      offers: offersInCart,
+      offers: selectedOffers,
       collateral: collateralToken,
       onSubmit: borrow,
       onCancel: closeModal,
@@ -97,7 +95,7 @@ const InstantBorrowContent = () => {
         />
 
         <LoanValueSlider
-          label="Max LTV"
+          label="LTV"
           value={ltvSliderValue}
           onChange={onChangeLtvSlider}
           disabled={!parseFloat(collateralInputValue)}
@@ -105,14 +103,14 @@ const InstantBorrowContent = () => {
 
         <div className={styles.footerContent}>
           <Summary
-            offers={offersInCart}
+            offers={selectedOffers}
             marketPubkey={collateralToken?.marketPubkey ?? PUBKEY_PLACEHOLDER}
           />
 
           <Button
             onClick={onSubmit}
             className={styles.borrowButton}
-            disabled={wallet.connected && (!!errorMessage || !offersInCart.length)}
+            disabled={wallet.connected && (!!errorMessage || !selectedOffers.length)}
             loading={!errorMessage && (isBorrowing || loading)}
           >
             {getButtonActionText({ isWalletConnected: wallet.connected, errorMessage })}
@@ -120,21 +118,12 @@ const InstantBorrowContent = () => {
         </div>
       </div>
 
-      <div className={styles.orderBookContainer}>
-        {loading && <Loader className={styles.loader} />}
-
-        {!loading && !offers.length && !!collateralToken && (
-          <MarketOrderBook collateral={collateralToken} />
-        )}
-
-        {!loading && !!offers.length && (
-          <OrderBook
-            offers={offers}
-            requiredCollateralsAmount={collateralInputValue}
-            collateral={collateralToken}
-          />
-        )}
-      </div>
+      <OrderBook
+        offers={offers}
+        requiredCollateralsAmount={collateralInputValue}
+        collateral={collateralToken}
+        loading={loading}
+      />
     </div>
   )
 }
