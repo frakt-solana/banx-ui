@@ -29,14 +29,14 @@ export const useAllocationBlock = () => {
   const {
     activeLoans = 0,
     underWaterLoans = 0,
-    pendingOffers = 0,
+    vaultBalance = 0,
     terminatingLoans = 0,
     weeklyInterest = 0,
     weightedApy = 0,
   } = allocationStats || {}
 
   const allocationStatusToValueMap = {
-    [AllocationStatus.Pending]: pendingOffers,
+    [AllocationStatus.Vault]: vaultBalance,
     [AllocationStatus.Active]: activeLoans,
     [AllocationStatus.Underwater]: underWaterLoans,
     [AllocationStatus.Terminating]: terminatingLoans,
