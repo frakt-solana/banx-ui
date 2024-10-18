@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
@@ -27,6 +27,8 @@ export const useBorrowOffers = (props: {
 }) => {
   const { collateralToken, borrowToken, collateralInputValue } = props
 
+  const prevCollateralToken = useRef<CollateralToken | undefined>(undefined)
+
   const [ltvSliderValue, setLtvSlider] = useState(MIN_SLIDER_PERCENT)
 
   const { tokenType } = useTokenType()
@@ -41,15 +43,18 @@ export const useBorrowOffers = (props: {
     collateralAmount: parseFloat(debouncedCollateralsAmount),
   })
 
-  //? Set the lowest LTV as default
   useEffect(() => {
-    if (!allOffers) return
+    const isNewCollateralToken = collateralToken !== prevCollateralToken.current
 
-    setLtvSlider(getLowestLtv(allOffers))
-  }, [allOffers])
+    //? Update slider only if the collateral token changes
+    if (isNewCollateralToken && allOffers?.length) {
+      setLtvSlider(getLowestLtv(allOffers))
+      prevCollateralToken.current = collateralToken
+    }
+  }, [collateralToken, allOffers])
 
   const mergedOffers = useMemo(() => {
-    if (!suggestedOffers && !allOffers) return []
+    if (!suggestedOffers || !allOffers) return []
 
     const prioritizeOffers = (offer: BorrowOffer) => {
       const matchingOffer = find(suggestedOffers, { publicKey: offer.publicKey })
