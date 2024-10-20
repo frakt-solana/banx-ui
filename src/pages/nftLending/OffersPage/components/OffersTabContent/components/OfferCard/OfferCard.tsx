@@ -112,10 +112,10 @@ const AdditionalOfferOverview: FC<AdditionalOfferOverviewProps> = ({ offer, mark
       />
 
       <StatInfo
-        label="In offer"
+        label="Size"
         value={<DisplayValue value={offerSize} />}
         secondValue={`min ${buyOrdersQuantity} loans`}
-        tooltipText={TOOLTIP_TEXTS.IN_OFFER}
+        tooltipText={TOOLTIP_TEXTS.SIZE}
         classNamesProps={classNamesProps}
       />
 
