@@ -2,6 +2,7 @@ import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, isEmpty } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
@@ -19,6 +20,7 @@ import {
   calculateLentTokenValueWithInterest,
   formatValueByTokenType,
   getTokenDecimals,
+  getTokenTicker,
   getTokenUnit,
   isTokenLoanActive,
   isTokenLoanTerminating,
@@ -82,7 +84,7 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   return (
     <div className={styles.closureContent}>
-      <ClouseContentInfo />
+      <ClouseContentInfo tokenType={tokenType} />
 
       {isFreezeExpired && (
         <div className={styles.modalContent}>
@@ -148,14 +150,15 @@ const ActionsButton: FC<ActionsButtonProps> = ({
   )
 }
 
-const ClouseContentInfo = () => (
+const ClouseContentInfo: FC<{ tokenType: LendingTokenType }> = ({ tokenType }) => (
   <div className={classNames(styles.modalContent, styles.twoColumnsContent, styles.closureTexts)}>
     <h3>Exit</h3>
     <h3>Terminate</h3>
     <p>Instantly receive your total claim</p>
     <p>
-      Send your loan to refinancing auction to seek new lenders. If successful, you will receive SOL
-      in your wallet. If unsuccessful after 72 hours you will receive the collateral instead
+      Send your loan to refinancing auction to seek new lenders. If successful, you will receive{' '}
+      {getTokenTicker(tokenType)} in your escrow. If unsuccessful after 72 hours you will receive
+      the collateral instead
     </p>
   </div>
 )
