@@ -32,7 +32,6 @@ export const DebtCell: FC<DebtCellProps> = ({ loan, tokenType }) => {
   const tooltopContent = (
     <div className={styles.tooltipContainer}>
       {createTooltipContent('Price', loan.collateralPrice / marketTokenDecimals, true)}
-      {createTooltipContent('Debt', lentValue)}
     </div>
   )
 

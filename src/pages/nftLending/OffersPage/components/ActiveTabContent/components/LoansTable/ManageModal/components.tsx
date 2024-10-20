@@ -50,6 +50,7 @@ import {
   findSuitableOffer,
   formatValueByTokenType,
   getColorByPercent,
+  getTokenTicker,
   getTokenUnit,
   isLoanActiveOrRefinanced,
   isLoanRepaymentCallActive,
@@ -239,6 +240,8 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
 
   const formattedExitValue = formatValueByTokenType(totalClaimValue, tokenType)
 
+  const tokenTicker = getTokenTicker(tokenType)
+
   return (
     <div className={styles.closureContent}>
       <div
@@ -248,8 +251,9 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
         <h3>Terminate</h3>
         <p>Instantly receive your total claim</p>
         <p>
-          Send your loan to refinancing auction to seek new lenders. If successful, you will receive
-          SOL in your wallet. If unsuccessful after 72 hours you will receive the collateral instead
+          Send your loan to refinancing auction to seek new lenders. If successful, you will receive{' '}
+          {tokenTicker} in your escrow. If unsuccessful after 72 hours you will receive the
+          collateral instead
         </p>
       </div>
       {isFreezeExpired && (
