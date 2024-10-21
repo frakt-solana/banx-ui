@@ -42,7 +42,7 @@ export const useMarketOffers = ({ marketPubkey }: { marketPubkey?: string }) => 
   const walletPubkey = publicKey?.toBase58() || ''
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
-    ['marketPairs', marketPubkey, tokenType],
+    ['marketPairs', marketPubkey, tokenType, walletPubkey],
     () => core.fetchMarketOffers({ marketPubkey, tokenType, excludeWallet: walletPubkey }),
     {
       enabled: !!marketPubkey,
