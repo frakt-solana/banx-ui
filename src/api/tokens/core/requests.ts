@@ -53,15 +53,18 @@ type FetchTokenMarketOffers = (props: {
   marketPubkey?: string
   tokenType: LendingTokenType
   getAll?: boolean
+  excludeWallet?: string
 }) => Promise<BondOfferV3[] | undefined>
 export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   marketPubkey,
   tokenType,
   getAll = true,
+  excludeWallet,
 }) => {
   const queryParams = new URLSearchParams({
     getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
+    excludeWallet: String(excludeWallet),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
