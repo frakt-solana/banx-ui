@@ -1,11 +1,12 @@
 import { FC, useMemo } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
+import { Skeleton } from 'antd'
 import classNames from 'classnames'
+import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, isEmpty } from 'lodash'
 
 import { Button } from '@banx/components/Buttons'
-import { Loader } from '@banx/components/Loader'
 import { createDisplayValueJSX } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
@@ -37,7 +38,11 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   const { publicKey } = useWallet()
 
   const marketPubkey = loan.fraktBond.hadoMarket || ''
-  const { offers, updateOrAddOffer, isLoading } = useTokenMarketOffers(marketPubkey)
+  const {
+    offers,
+    updateOrAddOffer,
+    isLoading: isLoadingOffers,
+  } = useTokenMarketOffers(marketPubkey)
 
   const { instantTokenLoan, terminateTokenLoan } = useTokenLenderLoansTransactions()
   const { tokenType } = useTokenType()
@@ -82,64 +87,126 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   return (
     <div className={styles.closureContent}>
-      <ClouseContentInfo />
+      <ExitContentInfo
+        exitValue={lentValue}
+        onActionClick={handleInstantLoan}
+        isLoading={isLoadingOffers}
+        tokenType={tokenType}
+        disabled={!canRefinance || !isFreezeExpired}
+      />
 
-      {isFreezeExpired && (
-        <div className={styles.modalContent}>
-          {isLoading && <Loader />}
-          {!isLoading && (
-            <ActionsButton
-              refinanceAction={handleInstantLoan}
-              terminateAction={() => terminateTokenLoan(loan)}
-              canTerminate={canTerminate}
-              canRefinance={canRefinance}
-              exitValue={lentValue}
-            />
-          )}
-        </div>
-      )}
+      <ListLoanContentInfo
+        onActionClick={() => terminateTokenLoan(loan, false)}
+        disabled={!canTerminate || !isFreezeExpired}
+      />
+
+      <TerminateContentInfo
+        onActionClick={() => terminateTokenLoan(loan)}
+        disabled={!canTerminate || !isFreezeExpired}
+      />
+
       {!isFreezeExpired && <TimerContent expiredAt={freezeExpiredAt} />}
     </div>
   )
 }
 
-interface ActionsButtonProps {
-  refinanceAction: () => Promise<void>
-  terminateAction: () => Promise<void>
-  canTerminate: boolean
-  canRefinance: boolean
+interface ExitContentInfoProps {
+  onActionClick: () => Promise<void>
+  disabled: boolean
   exitValue: number
+
+  isLoading: boolean
+  tokenType: LendingTokenType
 }
 
-const ActionsButton: FC<ActionsButtonProps> = ({
-  refinanceAction,
-  terminateAction,
-  canTerminate,
-  canRefinance,
+const ExitContentInfo: FC<ExitContentInfoProps> = ({
+  onActionClick,
+  disabled,
   exitValue,
+  isLoading,
+  tokenType,
 }) => {
-  const { tokenType } = useTokenType()
   const tokenUnit = getTokenUnit(tokenType)
 
   const formattedExitValue = formatValueByTokenType(exitValue, tokenType)
 
-  const displayExitValueJSX = canRefinance ? (
+  const displayExitValueJSX = !disabled ? (
     <div className={styles.exitValue}>
       Exit + {createDisplayValueJSX(formattedExitValue, tokenUnit)}
     </div>
   ) : (
-    <>No suitable offers yet</>
+    <>No offers</>
   )
 
   return (
-    <div className={styles.twoColumnsContent}>
-      <Button onClick={refinanceAction} disabled={!canRefinance} variant="secondary">
-        {displayExitValueJSX}
-      </Button>
+    <div className={styles.closureContentInfo}>
+      <div className={styles.closureContentTexts}>
+        <h3>Exit</h3>
+        <p>Instantly receive your total claim</p>
+      </div>
+
+      {isLoading && <Skeleton.Button className={styles.skeletonButton} />}
+
+      {!isLoading && (
+        <Button
+          onClick={onActionClick}
+          className={styles.actionButton}
+          disabled={disabled}
+          variant="secondary"
+        >
+          {displayExitValueJSX}
+        </Button>
+      )}
+    </div>
+  )
+}
+
+interface ListLoanContentInfo {
+  onActionClick: () => Promise<void>
+  disabled: boolean
+}
+
+const ListLoanContentInfo: FC<ListLoanContentInfo> = ({ onActionClick, disabled }) => {
+  return (
+    <div className={styles.closureContentInfo}>
+      <div className={styles.closureContentTexts}>
+        <h3>List loan</h3>
+        <p>Receive your total claim after new lender funds loan</p>
+      </div>
+
       <Button
-        className={styles.terminateButton}
-        onClick={terminateAction}
-        disabled={!canTerminate}
+        className={styles.actionButton}
+        onClick={onActionClick}
+        disabled={disabled}
+        variant="secondary"
+      >
+        List
+      </Button>
+    </div>
+  )
+}
+
+interface TerminateContentInfo {
+  onActionClick: () => Promise<void>
+  disabled: boolean
+}
+
+const TerminateContentInfo: FC<TerminateContentInfo> = ({ onActionClick, disabled }) => {
+  return (
+    <div className={styles.closureContentInfo}>
+      <div className={styles.closureContentTexts}>
+        <h3>Terminate</h3>
+        <p>
+          Send your loan to refinancing auction to seek new lenders. If successful you will receive
+          repayment in escrow. If unsuccessful after 72 hours you will receive the collateral
+          instead
+        </p>
+      </div>
+
+      <Button
+        className={classNames(styles.actionButton, styles.terminateButton)}
+        onClick={onActionClick}
+        disabled={disabled}
         variant="secondary"
       >
         Terminate
@@ -148,20 +215,8 @@ const ActionsButton: FC<ActionsButtonProps> = ({
   )
 }
 
-const ClouseContentInfo = () => (
-  <div className={classNames(styles.modalContent, styles.twoColumnsContent, styles.closureTexts)}>
-    <h3>Exit</h3>
-    <h3>Terminate</h3>
-    <p>Instantly receive your total claim</p>
-    <p>
-      Send your loan to refinancing auction to seek new lenders. If successful, you will receive SOL
-      in your wallet. If unsuccessful after 72 hours you will receive the collateral instead
-    </p>
-  </div>
-)
-
 const TimerContent: FC<{ expiredAt: number }> = ({ expiredAt }) => (
   <div className={styles.freezeTimerWrapper}>
-    Exit and termination are frozen for <Timer expiredAt={expiredAt} />
+    Exit, list and termination are frozen for <Timer expiredAt={expiredAt} />
   </div>
 )
