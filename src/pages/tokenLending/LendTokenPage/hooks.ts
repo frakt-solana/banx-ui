@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
 import { useQuery } from '@tanstack/react-query'
 import { BondOfferV3, PairState } from 'fbonds-core/lib/fbond-protocol/types'
 import { chain, map, maxBy } from 'lodash'
@@ -38,12 +39,20 @@ export const useTokenMarketsPreview = () => {
 }
 
 export const useTokenMarketOffers = (marketPubkey: string) => {
+  const { publicKey } = useWallet()
+  const walletPubkey = publicKey?.toBase58() || ''
+
   const { optimisticOffers, update: updateOffer, remove: removeOffers } = useTokenOffersOptimistic()
   const { tokenType } = useTokenType()
 
   const { data, isLoading, isFetching, isFetched } = useQuery(
-    ['marketTokenOffers', marketPubkey, tokenType],
-    () => core.fetchTokenMarketOffers({ marketPubkey, tokenType }),
+    ['marketTokenOffers', marketPubkey, tokenType, walletPubkey],
+    () =>
+      core.fetchTokenMarketOffers({
+        marketPubkey,
+        tokenType,
+        excludeWallet: walletPubkey,
+      }),
     {
       enabled: !!marketPubkey,
       staleTime: 30 * 1000,
