@@ -108,24 +108,24 @@ export const ActiveLoansTable = () => {
       activeRowParams: [
         {
           condition: (loan: core.TokenLoan) => isTokenLoanTerminating(loan),
-          className: styles.terminated,
-          cardClassName: styles.terminated,
+          className: styles.loanTerminating,
+          cardClassName: styles.loanTerminating,
         },
         {
           condition: (loan: core.TokenLoan) => isTokenLoanLiquidated(loan),
-          className: styles.liquidated,
-          cardClassName: styles.liquidated,
+          className: styles.loanLiquidated,
+          cardClassName: styles.loanLiquidated,
         },
         {
           condition: (loan: core.TokenLoan) =>
             isTokenLoanUnderWater(loan) && !isTokenLoanRepaymentCallActive(loan),
-          className: styles.underwater,
-          cardClassName: styles.underwater,
+          className: styles.loanUnderwater,
+          cardClassName: styles.loanUnderwater,
         },
         {
           condition: (loan: core.TokenLoan) => isTokenLoanRepaymentCallActive(loan),
-          className: styles.activeRepaymentCall,
-          cardClassName: styles.activeRepaymentCall,
+          className: styles.loanRepaymentCallActive,
+          cardClassName: styles.loanRepaymentCallActive,
         },
         {
           condition: (loan: core.TokenLoan) => isTokenLoanSelling(loan),

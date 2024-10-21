@@ -5,7 +5,7 @@ import moment from 'moment'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
-import { core } from '@banx/api/tokens'
+import { TokenLoan } from '@banx/api/tokens'
 import { useIsLedger, useModal } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
@@ -52,7 +52,7 @@ export const useTokenLenderLoansTransactions = () => {
 
   const { close } = useModal()
 
-  const terminateTokenLoan = async (loan: core.TokenLoan, startLiquidation?: boolean) => {
+  const terminateTokenLoan = async (loan: TokenLoan, startLiquidation?: boolean) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -85,8 +85,12 @@ export const useTokenLenderLoansTransactions = () => {
 
           return confirmed.forEach(({ accountInfoByPubkey, params, signature }) => {
             if (accountInfoByPubkey && wallet?.publicKey) {
+              const messageText = startLiquidation
+                ? 'Loan successfully listed'
+                : 'Loan successfully terminated'
+
               enqueueSnackbar({
-                message: 'Loan successfully terminated',
+                message: messageText,
                 type: 'success',
                 solanaExplorerPath: `tx/${signature}`,
               })
@@ -95,14 +99,9 @@ export const useTokenLenderLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({
-                ...loan,
-                fraktBond: {
-                  ...fraktBond,
-                  hadoMarket: loan.fraktBond.hadoMarket,
-                },
-                bondTradeTransaction,
-              })
+              const optimisticLoan = createOptimisticLoan(loan, fraktBond, bondTradeTransaction)
+              updateOrAddLoan(optimisticLoan)
+
               removeLoan(loan.publicKey, wallet.publicKey.toBase58())
               close()
             }
@@ -122,7 +121,7 @@ export const useTokenLenderLoansTransactions = () => {
     }
   }
 
-  const revertTerminateTokenLoan = async (loan: core.TokenLoan) => {
+  const revertTerminateTokenLoan = async (loan: TokenLoan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -162,14 +161,9 @@ export const useTokenLenderLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({
-                ...loan,
-                fraktBond: {
-                  ...fraktBond,
-                  hadoMarket: loan.fraktBond.hadoMarket,
-                },
-                bondTradeTransaction,
-              })
+              const optimisticLoan = createOptimisticLoan(loan, fraktBond, bondTradeTransaction)
+              updateOrAddLoan(optimisticLoan)
+
               removeLoan(loan.publicKey, wallet.publicKey.toBase58())
               close()
             }
@@ -189,7 +183,7 @@ export const useTokenLenderLoansTransactions = () => {
     }
   }
 
-  const terminateTokenLoans = async (loans: core.TokenLoan[]) => {
+  const terminateTokenLoans = async (loans: TokenLoan[]) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -222,15 +216,10 @@ export const useTokenLenderLoansTransactions = () => {
               const { bondTradeTransaction, fraktBond } =
                 parseTerminateSimulatedAccounts(accountInfoByPubkey)
 
-              updateOrAddLoan({
-                ...loan,
-                fraktBond: {
-                  ...fraktBond,
-                  hadoMarket: loan.fraktBond.hadoMarket,
-                },
-                bondTradeTransaction,
-              })
+              const optimisticLoan = createOptimisticLoan(loan, fraktBond, bondTradeTransaction)
+              updateOrAddLoan(optimisticLoan)
             })
+
             clearSelection()
           }
 
@@ -255,7 +244,7 @@ export const useTokenLenderLoansTransactions = () => {
   }
 
   const instantTokenLoan = async (
-    loan: core.TokenLoan,
+    loan: TokenLoan,
     bestOffer: BondOfferV3,
     updateOrAddOffer: (offer: BondOfferV3) => void,
   ) => {
@@ -323,7 +312,7 @@ export const useTokenLenderLoansTransactions = () => {
     }
   }
 
-  const claimTokenLoans = async (loans: core.TokenLoan[]) => {
+  const claimTokenLoans = async (loans: TokenLoan[]) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -378,7 +367,7 @@ export const useTokenLenderLoansTransactions = () => {
     }
   }
 
-  const claimTokenLoan = async (loan: core.TokenLoan) => {
+  const claimTokenLoan = async (loan: TokenLoan) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -430,7 +419,7 @@ export const useTokenLenderLoansTransactions = () => {
     }
   }
 
-  const sendRepaymentCall = async (loan: core.TokenLoan, repayPercent: number) => {
+  const sendRepaymentCall = async (loan: TokenLoan, repayPercent: number) => {
     const callAmount = Math.floor(
       (caclulateBorrowTokenLoanValue(loan).toNumber() * repayPercent) / 100,
     )
@@ -476,15 +465,13 @@ export const useTokenLenderLoansTransactions = () => {
               const { loan } = params
               const bondTradeTransaction = parseRepaymentCallSimulatedAccounts(accountInfoByPubkey)
 
-              const optimisticLoan = {
-                ...loan,
-                fraktBond: {
-                  ...loan.fraktBond,
-                  hadoMarket: loan.fraktBond.hadoMarket,
-                  lastTransactedAt: moment().unix(), //? Needs to prevent BE data overlap in optimistics logic
-                },
+              const optimisticLoan = createOptimisticLoan(
+                loan,
+                loan.fraktBond,
                 bondTradeTransaction,
-              }
+              )
+
+              updateOrAddLoan(optimisticLoan)
 
               updateOrAddLoan(optimisticLoan)
               close()
@@ -514,4 +501,24 @@ export const useTokenLenderLoansTransactions = () => {
     revertTerminateTokenLoan,
     sendRepaymentCall,
   }
+}
+
+const createOptimisticLoan = (
+  loan: TokenLoan,
+  newFraktBond: TokenLoan['fraktBond'],
+  newBondTradeTransaction: TokenLoan['bondTradeTransaction'],
+): TokenLoan => {
+  const currentTimeInSeconds = moment().unix()
+
+  const optimisticLoan = {
+    ...loan,
+    fraktBond: {
+      ...newFraktBond,
+      lastTransactedAt: currentTimeInSeconds, //? Needs to prevent BE data overlap in optimistics logic
+      hadoMarket: loan.fraktBond.hadoMarket,
+    },
+    bondTradeTransaction: newBondTradeTransaction,
+  }
+
+  return optimisticLoan
 }

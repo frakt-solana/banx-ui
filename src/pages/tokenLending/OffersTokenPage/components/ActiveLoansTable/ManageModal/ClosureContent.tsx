@@ -73,14 +73,14 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
     )
   }, [loan, offers, marketTokenDecimals, publicKey])
 
-  const isLoanActive = isTokenLoanActive(loan)
-  const isLoanSelling = isTokenLoanSelling(loan)
-  const isLoanTerminating = isTokenLoanTerminating(loan)
+  const loanStatus = {
+    isActive: isTokenLoanActive(loan),
+    isSelling: isTokenLoanSelling(loan),
+    isTerminating: isTokenLoanTerminating(loan),
+  }
 
-  const hasRefinanceOffer = !isEmpty(bestOffer)
-
-  const canRefinance = hasRefinanceOffer && isLoanActive
-  const canTerminate = !isLoanTerminating && !isLoanSelling && isLoanActive
+  const canRefinance = !isEmpty(bestOffer) && loanStatus.isActive
+  const canTerminate = !loanStatus.isTerminating && !loanStatus.isSelling && loanStatus.isActive
 
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
   const isFreezeExpired = checkIfFreezeExpired(loan)
@@ -89,6 +89,14 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   const handleInstantLoan = async () => {
     await instantTokenLoan(loan, bestOffer, updateOrAddOffer)
+  }
+
+  const handleListLoan = async () => {
+    if (loanStatus.isSelling) {
+      return await revertTerminateTokenLoan(loan)
+    }
+
+    return await terminateTokenLoan(loan, false)
   }
 
   return (
@@ -102,10 +110,9 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
       />
 
       <ListLoanContentInfo
-        onListActionClick={() => terminateTokenLoan(loan, false)}
-        onDelistActionClick={() => revertTerminateTokenLoan(loan)}
+        onActionClick={handleListLoan}
         disabled={!canTerminate || !isFreezeExpired}
-        isLoanSelling={isLoanSelling}
+        isLoanSelling={loanStatus.isSelling}
       />
 
       <TerminateContentInfo
@@ -170,18 +177,18 @@ const ExitContentInfo: FC<ExitContentInfoProps> = ({
 }
 
 interface ListLoanContentInfo {
-  onListActionClick: () => Promise<void>
-  onDelistActionClick: () => Promise<void>
+  onActionClick: () => Promise<void>
   isLoanSelling: boolean
   disabled: boolean
 }
 
 const ListLoanContentInfo: FC<ListLoanContentInfo> = ({
-  onListActionClick,
-  onDelistActionClick,
+  onActionClick,
   isLoanSelling,
   disabled,
 }) => {
+  const buttonText = isLoanSelling ? 'Delist' : 'List'
+
   return (
     <div className={styles.closureContentInfo}>
       <div className={styles.closureContentTexts}>
@@ -189,22 +196,14 @@ const ListLoanContentInfo: FC<ListLoanContentInfo> = ({
         <p>Receive your total claim after new lender funds loan</p>
       </div>
 
-      {isLoanSelling && (
-        <Button className={styles.actionButton} onClick={onDelistActionClick} variant="secondary">
-          Delist
-        </Button>
-      )}
-
-      {!isLoanSelling && (
-        <Button
-          className={styles.actionButton}
-          onClick={onListActionClick}
-          disabled={disabled}
-          variant="secondary"
-        >
-          List
-        </Button>
-      )}
+      <Button
+        className={styles.actionButton}
+        onClick={onActionClick}
+        disabled={!isLoanSelling && disabled} //? Disable only if not selling
+        variant="secondary"
+      >
+        {buttonText}
+      </Button>
     </div>
   )
 }

@@ -122,23 +122,27 @@
   }
 }
 
-//? Active row styles
-.terminated,
-.liquidated {
+// * ActiveRowStyles * //
+.loanTerminating {
   background: var(--additional-red-secondary) !important;
 }
 
-.underwater {
+.loanLiquidated {
+  background: var(--additional-red-secondary) !important;
+}
+
+.loanUnderwater {
   background: var(--additional-lava-secondary) !important;
+}
+
+.loanRepaymentCallActive {
+  background: var(--additional-yellow-secondary) !important;
 }
 
 .loanSelling {
   background: var(--additional-lava-secondary) !important;
 }
-
-.activeRepaymentCall {
-  background: var(--additional-yellow-secondary) !important;
-}
+// * ActiveRowStyles * //
 
 .tooltipContainer {
   display: flex;

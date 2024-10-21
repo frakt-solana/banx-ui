@@ -116,18 +116,23 @@ const getLoanStatus = (loan: core.TokenLoan) => {
 }
 
 const getTimeContent = (loan: core.TokenLoan) => {
+  const currentTimeInSeconds = moment().unix()
+  const { terminationStartedAt, soldAt } = loan.bondTradeTransaction
+
   if (isTokenLoanTerminating(loan) && !isTokenLoanLiquidated(loan)) {
-    const expiredAt = loan.fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
-
-    return <Timer expiredAt={expiredAt} />
+    const auctionEndTime = loan.fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+    return <Timer expiredAt={auctionEndTime} />
   }
 
-  if (isTokenLoanActive(loan) || isTokenLoanLiquidated(loan) || isTokenLoanSelling(loan)) {
-    const currentTimeInSeconds = moment().unix()
-    const timeSinceActivationInSeconds = currentTimeInSeconds - loan.bondTradeTransaction.soldAt
-
-    return calculateTimeFromNow(timeSinceActivationInSeconds)
+  if (isTokenLoanSelling(loan)) {
+    const timeSinceActivation = currentTimeInSeconds - terminationStartedAt
+    return calculateTimeFromNow(timeSinceActivation)
   }
 
-  return ''
+  if (isTokenLoanActive(loan) || isTokenLoanLiquidated(loan)) {
+    const timeSinceActivation = currentTimeInSeconds - soldAt
+    return calculateTimeFromNow(timeSinceActivation)
+  }
+
+  return null
 }
