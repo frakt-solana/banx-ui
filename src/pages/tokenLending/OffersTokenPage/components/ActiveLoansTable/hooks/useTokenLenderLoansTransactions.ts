@@ -50,13 +50,16 @@ export const useTokenLenderLoansTransactions = () => {
 
   const { close } = useModal()
 
-  const terminateTokenLoan = async (loan: core.TokenLoan) => {
+  const terminateTokenLoan = async (loan: core.TokenLoan, startLiquidation?: boolean) => {
     const loadingSnackbarId = uniqueId()
 
     try {
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
-      const txnData = await createTerminateTokenTxnData({ loan }, walletAndConnection)
+      const txnData = await createTerminateTokenTxnData(
+        { loan, startLiquidation },
+        walletAndConnection,
+      )
 
       await new TxnExecutor<CreateTerminateTokenTxnDataParams>(
         walletAndConnection,

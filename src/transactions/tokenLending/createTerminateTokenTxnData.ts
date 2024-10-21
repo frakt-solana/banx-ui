@@ -10,6 +10,7 @@ import { sendTxnPlaceHolder } from '../helpers'
 
 export type CreateTerminateTokenTxnDataParams = {
   loan: core.TokenLoan
+  startLiquidation?: boolean
 }
 
 type CreateTerminateTokenTxnData = (
@@ -21,7 +22,7 @@ export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { loan } = params
+  const { loan, startLiquidation = true } = params
 
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -32,6 +33,9 @@ export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async (
       bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
+    },
+    args: {
+      startLiquidation,
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,

@@ -210,7 +210,7 @@ export const useTokenOfferTransactions = ({
       const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
 
       const txnData = await createRemoveOfferTxnData(
-        { offer: convertBondOfferV3ToCore(optimisticOffer), tokenType },
+        { offer: convertBondOfferV3ToCore(optimisticOffer) },
         walletAndConnection,
       )
 
