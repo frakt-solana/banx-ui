@@ -8,6 +8,12 @@ import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
+/**
+ * @property {boolean} [startLiquidation] - Determines the liquidation behavior after termination.
+ * - @true The loan will be liquidated upon termination.
+ * - @false The termination will continue indefinitely without liquidation.
+ */
+
 export type CreateTerminateTokenTxnDataParams = {
   loan: core.TokenLoan
   startLiquidation?: boolean

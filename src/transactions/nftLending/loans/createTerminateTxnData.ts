@@ -13,9 +13,15 @@ import { BONDS } from '@banx/constants'
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
+/**
+ * @property {boolean} [startLiquidation] - Determines the liquidation behavior after termination.
+ * - @true The loan will be liquidated upon termination.
+ * - @false The termination will continue indefinitely without liquidation.
+ */
+
 export type CreateTerminateTxnDataParams = {
   loan: core.Loan
-  startLiquidation?: false
+  startLiquidation?: boolean
 }
 
 type CreateTerminateTxnData = (
