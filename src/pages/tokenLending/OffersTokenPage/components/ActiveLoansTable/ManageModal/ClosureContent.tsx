@@ -45,7 +45,9 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
     isLoading: isLoadingOffers,
   } = useTokenMarketOffers(marketPubkey)
 
-  const { instantTokenLoan, terminateTokenLoan } = useTokenLenderLoansTransactions()
+  const { instantTokenLoan, terminateTokenLoan, revertTerminateTokenLoan } =
+    useTokenLenderLoansTransactions()
+
   const { tokenType } = useTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType)) //? 1e9 => 9, 1e6 => 6
@@ -101,7 +103,7 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
       <ListLoanContentInfo
         onListActionClick={() => terminateTokenLoan(loan, false)}
-        onDelistActionClick={() => terminateTokenLoan(loan, false)}
+        onDelistActionClick={() => revertTerminateTokenLoan(loan)}
         disabled={!canTerminate || !isFreezeExpired}
         isLoanSelling={isLoanSelling}
       />

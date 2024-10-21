@@ -20,10 +20,12 @@ import {
   CreateClaimTokenTxnDataParams,
   CreateInstantRefinanceTokenTxnDataParams,
   CreateRepaymentCallTokenTxnDataParams,
+  CreateRevertTerminateTokenTxnDataParams,
   CreateTerminateTokenTxnDataParams,
   createClaimTokenTxnData,
   createInstantRefinanceTokenTxnData,
   createRepaymentCallTokenTxnData,
+  createRevertTerminationTokenTxnData,
   createTerminateTokenTxnData,
   parseInstantRefinanceTokenSimulatedAccounts,
 } from '@banx/transactions/tokenLending'
@@ -116,6 +118,73 @@ export const useTokenLenderLoansTransactions = () => {
         additionalData: loan,
         walletPubkey: wallet?.publicKey?.toBase58(),
         transactionName: 'Terminate',
+      })
+    }
+  }
+
+  const revertTerminateTokenLoan = async (loan: core.TokenLoan) => {
+    const loadingSnackbarId = uniqueId()
+
+    try {
+      const walletAndConnection = createExecutorWalletAndConnection({ wallet, connection })
+
+      const txnData = await createRevertTerminationTokenTxnData({ loan }, walletAndConnection)
+
+      await new TxnExecutor<CreateRevertTerminateTokenTxnDataParams>(
+        walletAndConnection,
+        TXN_EXECUTOR_DEFAULT_OPTIONS,
+      )
+        .addTxnData(txnData)
+        .on('sentSome', (results) => {
+          results.forEach(({ signature }) => enqueueTransactionSent(signature))
+          enqueueWaitingConfirmation(loadingSnackbarId)
+        })
+        .on('confirmedAll', (results) => {
+          const { confirmed, failed } = results
+
+          destroySnackbar(loadingSnackbarId)
+
+          if (failed.length) {
+            return failed.forEach(({ signature, reason }) =>
+              enqueueConfirmationError(signature, reason),
+            )
+          }
+
+          return confirmed.forEach(({ accountInfoByPubkey, params, signature }) => {
+            if (accountInfoByPubkey && wallet?.publicKey) {
+              enqueueSnackbar({
+                message: 'Loan successfully delisted',
+                type: 'success',
+                solanaExplorerPath: `tx/${signature}`,
+              })
+
+              const { loan } = params
+              const { bondTradeTransaction, fraktBond } =
+                parseTerminateSimulatedAccounts(accountInfoByPubkey)
+
+              updateOrAddLoan({
+                ...loan,
+                fraktBond: {
+                  ...fraktBond,
+                  hadoMarket: loan.fraktBond.hadoMarket,
+                },
+                bondTradeTransaction,
+              })
+              removeLoan(loan.publicKey, wallet.publicKey.toBase58())
+              close()
+            }
+          })
+        })
+        .on('error', (error) => {
+          throw error
+        })
+        .execute()
+    } catch (error) {
+      destroySnackbar(loadingSnackbarId)
+      defaultTxnErrorHandler(error, {
+        additionalData: loan,
+        walletPubkey: wallet?.publicKey?.toBase58(),
+        transactionName: 'RevertTokenLoan',
       })
     }
   }
@@ -442,6 +511,7 @@ export const useTokenLenderLoansTransactions = () => {
     instantTokenLoan,
     terminateTokenLoan,
     terminateTokenLoans,
+    revertTerminateTokenLoan,
     sendRepaymentCall,
   }
 }
