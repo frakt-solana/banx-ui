@@ -22,6 +22,7 @@ import {
   getTokenDecimals,
   getTokenUnit,
   isTokenLoanActive,
+  isTokenLoanSelling,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
@@ -71,10 +72,13 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   }, [loan, offers, marketTokenDecimals, publicKey])
 
   const isLoanActive = isTokenLoanActive(loan)
+  const isLoanSelling = isTokenLoanSelling(loan)
+  const isLoanTerminating = isTokenLoanTerminating(loan)
+
   const hasRefinanceOffer = !isEmpty(bestOffer)
 
   const canRefinance = hasRefinanceOffer && isLoanActive
-  const canTerminate = !isTokenLoanTerminating(loan) && isLoanActive
+  const canTerminate = !isLoanTerminating && !isLoanSelling && isLoanActive
 
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
   const isFreezeExpired = checkIfFreezeExpired(loan)
@@ -96,8 +100,10 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
       />
 
       <ListLoanContentInfo
-        onActionClick={() => terminateTokenLoan(loan, false)}
+        onListActionClick={() => terminateTokenLoan(loan, false)}
+        onDelistActionClick={() => terminateTokenLoan(loan, false)}
         disabled={!canTerminate || !isFreezeExpired}
+        isLoanSelling={isLoanSelling}
       />
 
       <TerminateContentInfo
@@ -162,11 +168,18 @@ const ExitContentInfo: FC<ExitContentInfoProps> = ({
 }
 
 interface ListLoanContentInfo {
-  onActionClick: () => Promise<void>
+  onListActionClick: () => Promise<void>
+  onDelistActionClick: () => Promise<void>
+  isLoanSelling: boolean
   disabled: boolean
 }
 
-const ListLoanContentInfo: FC<ListLoanContentInfo> = ({ onActionClick, disabled }) => {
+const ListLoanContentInfo: FC<ListLoanContentInfo> = ({
+  onListActionClick,
+  onDelistActionClick,
+  isLoanSelling,
+  disabled,
+}) => {
   return (
     <div className={styles.closureContentInfo}>
       <div className={styles.closureContentTexts}>
@@ -174,14 +187,22 @@ const ListLoanContentInfo: FC<ListLoanContentInfo> = ({ onActionClick, disabled 
         <p>Receive your total claim after new lender funds loan</p>
       </div>
 
-      <Button
-        className={styles.actionButton}
-        onClick={onActionClick}
-        disabled={disabled}
-        variant="secondary"
-      >
-        List
-      </Button>
+      {isLoanSelling && (
+        <Button className={styles.actionButton} onClick={onDelistActionClick} variant="secondary">
+          Delist
+        </Button>
+      )}
+
+      {!isLoanSelling && (
+        <Button
+          className={styles.actionButton}
+          onClick={onListActionClick}
+          disabled={disabled}
+          variant="secondary"
+        >
+          List
+        </Button>
+      )}
     </div>
   )
 }

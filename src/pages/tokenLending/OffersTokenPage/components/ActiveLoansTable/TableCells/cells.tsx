@@ -25,6 +25,7 @@ import {
   getColorByPercent,
   isTokenLoanActive,
   isTokenLoanLiquidated,
+  isTokenLoanSelling,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
@@ -121,7 +122,7 @@ const getTimeContent = (loan: core.TokenLoan) => {
     return <Timer expiredAt={expiredAt} />
   }
 
-  if (isTokenLoanActive(loan) || isTokenLoanLiquidated(loan)) {
+  if (isTokenLoanActive(loan) || isTokenLoanLiquidated(loan) || isTokenLoanSelling(loan)) {
     const currentTimeInSeconds = moment().unix()
     const timeSinceActivationInSeconds = currentTimeInSeconds - loan.bondTradeTransaction.soldAt
 

@@ -15,6 +15,7 @@ import {
   isTokenLoanLiquidated,
   isTokenLoanListed,
   isTokenLoanRepaymentCallActive,
+  isTokenLoanSelling,
   isTokenLoanTerminating,
   isTokenLoanUnderWater,
 } from '@banx/utils'
@@ -125,6 +126,11 @@ export const ActiveLoansTable = () => {
           condition: (loan: core.TokenLoan) => isTokenLoanRepaymentCallActive(loan),
           className: styles.activeRepaymentCall,
           cardClassName: styles.activeRepaymentCall,
+        },
+        {
+          condition: (loan: core.TokenLoan) => isTokenLoanSelling(loan),
+          className: styles.loanSelling,
+          cardClassName: styles.loanSelling,
         },
       ],
     }
