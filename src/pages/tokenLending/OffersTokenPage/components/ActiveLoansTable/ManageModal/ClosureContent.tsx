@@ -80,7 +80,8 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
   }
 
   const canRefinance = !isEmpty(bestOffer) && loanStatus.isActive
-  const canTerminate = !loanStatus.isTerminating && !loanStatus.isSelling && loanStatus.isActive
+  const canTerminate = !loanStatus.isTerminating
+  const canList = !loanStatus.isTerminating && !loanStatus.isSelling
 
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
   const isFreezeExpired = checkIfFreezeExpired(loan)
@@ -111,7 +112,7 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
       <ListLoanContentInfo
         onActionClick={handleListLoan}
-        disabled={!canTerminate || !isFreezeExpired}
+        disabled={!canList || !isFreezeExpired}
         isLoanSelling={loanStatus.isSelling}
       />
 
