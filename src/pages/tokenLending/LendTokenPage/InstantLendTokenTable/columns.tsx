@@ -15,6 +15,7 @@ import {
   getTokenLoanSupply,
   isTokenLoanFrozen,
   isTokenLoanListed,
+  isTokenLoanSelling,
 } from '@banx/utils'
 
 import { APRCell, ActionsCell, DebtCell, LTVCell } from './TableCells'
@@ -83,7 +84,9 @@ export const getTableColumns = ({
       title: <HeaderCell label="Ends in" />,
       render: (loan) => {
         const expiredAt = loan.fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
-        return !isTokenLoanListed(loan) ? <Timer expiredAt={expiredAt} /> : '--'
+        const showTimer = !isTokenLoanSelling(loan) && !isTokenLoanListed(loan)
+
+        return showTimer ? <Timer expiredAt={expiredAt} /> : '--'
       },
     },
     {
@@ -108,7 +111,7 @@ export const getTableColumns = ({
 }
 
 const createRightContentJSX = (loan: core.TokenLoan) => {
-  if (isTokenLoanListed(loan) && !isTokenLoanFrozen(loan)) {
+  if ((isTokenLoanListed(loan) && !isTokenLoanFrozen(loan)) || isTokenLoanSelling(loan)) {
     return null
   }
 
