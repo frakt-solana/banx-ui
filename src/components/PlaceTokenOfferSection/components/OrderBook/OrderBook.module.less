@@ -149,8 +149,22 @@
   white-space: nowrap;
 }
 
+.ownerBadge {
+  &::after {
+    content: 'You';
+    display: inline-block;
+
+    background-color: var(--additional-green-secondary);
+    border-radius: 100px;
+    color: var(--additional-green-primary-deep);
+    font: var(--body-text-xs);
+
+    padding: 1px 4px;
+    margin-left: 2px;
+  }
+}
+
 .ltvValue {
   font: var(--body-text-xs);
 }
-
 // * Offer * //

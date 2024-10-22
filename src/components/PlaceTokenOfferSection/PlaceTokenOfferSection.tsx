@@ -41,7 +41,6 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     onLoanValueChange,
     onOfferSizeChange,
     aprErrorMessage,
-    offerErrorMessage,
     onCreateTokenOffer,
     onUpdateTokenOffer,
     onRemoveTokenOffer,
@@ -81,9 +80,6 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
               disabled={!connected}
               step={inputStepByTokenType}
             />
-            <div className={styles.messageContainer}>
-              {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
-            </div>
           </div>
 
           <div className={styles.fieldColumn}>

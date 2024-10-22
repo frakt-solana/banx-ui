@@ -2,13 +2,10 @@ import { useEffect, useMemo } from 'react'
 
 import { BN } from 'fbonds-core'
 
-import { useUserVault } from '@banx/components/WalletModal'
-
-import { useWalletBalance } from '@banx/hooks'
 import { useTokenType } from '@banx/store/common'
 import { ZERO_BN, getTokenDecimals, stringToBN } from '@banx/utils'
 
-import { getAprErrorMessage, getErrorMessage } from '../helpers'
+import { getAprErrorMessage } from '../helpers'
 import { useOfferFormController } from './useOfferFormController'
 import { useTokenMarketAndOffer } from './useTokenMarketAndOffer'
 import { useTokenOffer } from './useTokenOffer'
@@ -16,8 +13,6 @@ import { useTokenOfferTransactions } from './useTokenOfferTransaction'
 
 export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) => {
   const { tokenType } = useTokenType()
-  const walletBalance = useWalletBalance(tokenType)
-  const { userVault } = useUserVault()
 
   const { offer, market, updateOrAddOffer } = useTokenMarketAndOffer(offerPubkey, marketPubkey)
   const { syntheticOffer, setSyntheticOffer } = useTokenOffer(offerPubkey, marketPubkey)
@@ -81,21 +76,12 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     apr: parseFloat(aprString),
   })
 
-  const offerErrorMessage = getErrorMessage({
-    walletBalance,
-    escrowBalance: userVault?.offerLiquidityAmount.toNumber() || 0,
-    syntheticOffer,
-    offerSize,
-    tokenType,
-  })
-
   const aprErrorMessage = getAprErrorMessage(parseFloat(aprString))
 
   const allFieldsAreFilled = !!collateralsPerToken && !!offerSize && !!parseFloat(aprString)
 
-  const disablePlaceOffer = !!offerErrorMessage || !allFieldsAreFilled || !!aprErrorMessage
-  const disableUpdateOffer =
-    !hasFormChanges || !!offerErrorMessage || !allFieldsAreFilled || !!aprErrorMessage
+  const disablePlaceOffer = !allFieldsAreFilled || !!aprErrorMessage
+  const disableUpdateOffer = !hasFormChanges || !allFieldsAreFilled || !!aprErrorMessage
 
   return {
     isEditMode,
@@ -110,7 +96,6 @@ export const usePlaceTokenOffer = (marketPubkey: string, offerPubkey: string) =>
     onLoanValueChange,
     onOfferSizeChange,
 
-    offerErrorMessage,
     aprErrorMessage,
 
     onCreateTokenOffer,
