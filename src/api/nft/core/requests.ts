@@ -198,7 +198,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     limit: String(limit),
     getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
-    marketPubKey: String(marketPublicKey),
+    marketPubKey: marketPublicKey || '',
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 

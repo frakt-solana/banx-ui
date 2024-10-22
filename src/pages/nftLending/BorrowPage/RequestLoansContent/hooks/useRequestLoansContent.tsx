@@ -11,14 +11,14 @@ import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage'
 import { createGlobalState } from '@banx/store'
 
-import { useBorrowNfts } from '../../hooks'
+import { useListLoansBorrowNfts } from '../../hooks'
 import { useSortedMarkets } from './useSortedMarkets'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useRequestLoansContent = () => {
   const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
-  const { nfts } = useBorrowNfts()
+  const { nfts, isLoading: isLoadingNfts } = useListLoansBorrowNfts()
   const { connected } = useWallet()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
@@ -56,8 +56,8 @@ export const useRequestLoansContent = () => {
     onChange: setSelectedCollections,
   })
 
-  const isLoading = isLoadingMarkets && isEmpty(marketsPreview)
-  const showEmptyList = connected && !isLoadingMarkets && isEmpty(filteredMarkets)
+  const isLoading = (isLoadingMarkets && isEmpty(marketsPreview)) || isLoadingNfts
+  const showEmptyList = connected && !isLoadingMarkets && isEmpty(filteredMarkets) && !isLoadingNfts
 
   return {
     markets: sortedMarkets,

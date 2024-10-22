@@ -15,7 +15,7 @@ import {
 
 import { core } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
-import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
+import { useListLoansBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/nftLending/LoansPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -49,7 +49,7 @@ import { DEFAULT_FREEZE_VALUE } from './constants'
 import { calculateSummaryInfo, clampInputValue } from './helpers'
 
 export const useRequestLoansForm = (market: core.MarketPreview) => {
-  const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
+  const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useListLoansBorrowNfts()
 
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
