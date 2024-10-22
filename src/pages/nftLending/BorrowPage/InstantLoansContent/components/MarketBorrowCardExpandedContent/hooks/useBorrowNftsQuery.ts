@@ -1,45 +1,23 @@
 import { useEffect, useMemo } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
-import { useQuery } from '@tanstack/react-query'
 import { isEmpty, maxBy } from 'lodash'
 
-import { core } from '@banx/api/nft'
-import { useTokenType } from '@banx/store/common'
+import { useBorrowNftsAndMarketsQuery } from '@banx/pages/nftLending/BorrowPage'
 import { convertOffersToSimple } from '@banx/utils'
 
 import { useCartState } from './useCartState'
 
 export const useBorrowNftsQuery = (marketPubkey: string) => {
-  const { tokenType } = useTokenType()
-  const { publicKey: walletPublicKey } = useWallet()
-  const walletPubkeyString = walletPublicKey?.toBase58() || ''
-
+  const { nftsByMarket, isLoading, userVaults, offersByMarket } = useBorrowNftsAndMarketsQuery()
   const { setCart } = useCartState()
 
-  const { data, isLoading } = useQuery(
-    ['borrowNftsByMarket', tokenType, marketPubkey, walletPubkeyString],
-    () =>
-      core.fetchBorrowNftsAndOffers({
-        walletPubkey: walletPubkeyString,
-        tokenType,
-        marketPublicKey: marketPubkey,
-      }),
-    {
-      enabled: !!walletPublicKey && !!marketPubkey,
-      staleTime: 5 * 1000,
-      refetchOnWindowFocus: false,
-    },
-  )
-
-  const userVaults = useMemo(() => {
-    return data?.userVaults || []
-  }, [data])
-
   const rawOffers = useMemo(() => {
-    if (isEmpty(data?.offers)) return []
-    return data?.offers?.[marketPubkey] || []
-  }, [data, marketPubkey])
+    return offersByMarket[marketPubkey] || []
+  }, [offersByMarket, marketPubkey])
+
+  const nfts = useMemo(() => {
+    return nftsByMarket[marketPubkey] || []
+  }, [marketPubkey, nftsByMarket])
 
   const simpleOffers = useMemo(() => {
     return convertOffersToSimple(rawOffers, userVaults, 'desc')
@@ -61,7 +39,7 @@ export const useBorrowNftsQuery = (marketPubkey: string) => {
 
   return {
     isLoading,
-    nfts: data?.nfts || [],
+    nfts,
     rawOffers,
     userVaults,
     maxLoanValueOnMarket,

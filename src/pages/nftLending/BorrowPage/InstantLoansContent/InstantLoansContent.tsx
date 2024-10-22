@@ -3,7 +3,7 @@ import { FC, useState } from 'react'
 import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
-import { useMarketsPreview } from '../../LendPage'
+import { useBorrowNftsAndMarketsQuery } from '../hooks'
 import { HeaderList } from './components/HeaderList'
 import { MarketBorrowCard } from './components/MarketBorrowCard'
 
@@ -14,8 +14,7 @@ type InstantLoansContentProps = {
 }
 
 export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestLoanTab }) => {
-  //TODO get markets that user has on wallet
-  const { marketsPreview, isLoading } = useMarketsPreview()
+  const { marketsPreview, isLoading } = useBorrowNftsAndMarketsQuery()
 
   const [expandedMarketPublicKey, setExpandedMarketPublicKey] = useState('')
 
@@ -23,10 +22,9 @@ export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestL
     setExpandedMarketPublicKey((prev) => (prev === marketPubkey ? '' : marketPubkey))
   }
 
-  const showEmptyList = !marketsPreview.length && !isLoading
+  const showEmptyList = !isLoading && !marketsPreview.length
 
-  //TODO No markets found is disconnected and no suitable nfts if connected
-  if (showEmptyList) return <EmptyList message={'No markets found'} />
+  if (showEmptyList) return <EmptyList message="No markets found" />
 
   return (
     <div className={styles.content}>
