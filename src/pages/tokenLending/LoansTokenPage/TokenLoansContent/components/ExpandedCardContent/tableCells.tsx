@@ -15,13 +15,12 @@ import {
 } from '@banx/components/TableComponents'
 import Timer from '@banx/components/Timer'
 
-import { core } from '@banx/api/tokens'
+import { TokenLoan } from '@banx/api/tokens'
 import { BONDS, SECONDS_IN_72_HOURS } from '@banx/constants'
 import { useModal } from '@banx/store/common'
 import {
   HealthColorIncreasing,
   STATUS_LOANS_COLOR_MAP,
-  STATUS_LOANS_MAP,
   caclulateBorrowTokenLoanValue,
   calcTokenWeeklyFeeWithRepayFee,
   calculateTimeFromNow,
@@ -29,12 +28,14 @@ import {
   getColorByPercent,
   getTokenDecimals,
   isTokenLoanActive,
+  isTokenLoanSelling,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
 import { calculateAccruedInterest } from '../../helpers'
 import RefinanceTokenModal from '../RefinanceTokenModal'
 import RepayTokenModal from '../RepayTokenModal'
+import { getTokenLoanStatus } from './helpers'
 
 import styles from './ExpandedCardContent.module.less'
 
@@ -52,7 +53,7 @@ const TooltipRow: FC<TooltipRowProps> = ({ label, value, isSubscriptFormat = fal
   </div>
 )
 
-export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+export const DebtCell: FC<{ loan: TokenLoan }> = ({ loan }) => {
   const { bondTradeTransaction, fraktBond } = loan
 
   const debtValue = caclulateBorrowTokenLoanValue(loan).toNumber()
@@ -85,7 +86,7 @@ export const DebtCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 }
 
 interface LTVCellProps {
-  loan: core.TokenLoan
+  loan: TokenLoan
   tokenType: LendingTokenType
 }
 
@@ -116,7 +117,7 @@ export const LTVCell: FC<LTVCellProps> = ({ loan, tokenType }) => {
   )
 }
 
-export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
+export const APRCell: FC<{ loan: TokenLoan }> = ({ loan }) => {
   const marketPubkey = new web3.PublicKey(loan.fraktBond.hadoMarket)
   const apr = calcBorrowerTokenAPR(loan.bondTradeTransaction.amountOfBonds, marketPubkey) / 100
 
@@ -130,11 +131,11 @@ export const APRCell: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 }
 
 interface StatusCellProps {
-  loan: core.TokenLoan
+  loan: TokenLoan
 }
 
 export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
-  const loanStatus = STATUS_LOANS_MAP[loan.bondTradeTransaction.bondTradeTransactionState]
+  const loanStatus = getTokenLoanStatus(loan)
   const loanStatusColor = STATUS_LOANS_COLOR_MAP[loanStatus]
 
   const timeContent = getTimeContent(loan)
@@ -149,10 +150,10 @@ export const StatusCell: FC<StatusCellProps> = ({ loan }) => {
   )
 }
 
-const getTimeContent = (loan: core.TokenLoan) => {
+const getTimeContent = (loan: TokenLoan) => {
   const { fraktBond } = loan
 
-  if (isTokenLoanActive(loan)) {
+  if (isTokenLoanActive(loan) || isTokenLoanSelling(loan)) {
     const currentTimeInSeconds = moment().unix()
     const timeSinceActivationInSeconds = currentTimeInSeconds - fraktBond.activatedAt
     return calculateTimeFromNow(timeSinceActivationInSeconds)
@@ -167,7 +168,7 @@ const getTimeContent = (loan: core.TokenLoan) => {
 }
 
 interface ActionsCellProps {
-  loan: core.TokenLoan
+  loan: TokenLoan
   disableActions: boolean
 }
 
