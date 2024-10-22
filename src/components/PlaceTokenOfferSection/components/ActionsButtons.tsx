@@ -39,13 +39,15 @@ export const ActionsButtons: FC<ActionButtonsProps> = ({
 
   const escrowBalance = userVault?.offerLiquidityAmount.toNumber() || 0
 
-  const showWarningModal = () => {
+  const openWarningModal = () => {
     openModal(WarningModal, { escrowBalance, onCreateOffer, offerSize })
   }
 
+  const showWarningModal = offerSize > escrowBalance
+
   const onMainActionBtnClick = () => {
-    if (offerSize > escrowBalance) {
-      return showWarningModal()
+    if (showWarningModal) {
+      return openWarningModal()
     }
 
     if (connected) {
@@ -53,6 +55,14 @@ export const ActionsButtons: FC<ActionButtonsProps> = ({
     }
 
     return toggleVisibility()
+  }
+
+  const onUpdateActionBtnClick = () => {
+    if (showWarningModal) {
+      return openWarningModal()
+    }
+
+    return onUpdateOffer()
   }
 
   return (
@@ -67,7 +77,7 @@ export const ActionsButtons: FC<ActionButtonsProps> = ({
             Remove
           </Button>
           <Button
-            onClick={onUpdateOffer}
+            onClick={onUpdateActionBtnClick}
             className={styles.actionButton}
             disabled={disableUpdateOffer}
           >
