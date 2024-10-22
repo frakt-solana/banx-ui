@@ -4,7 +4,11 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
 
 import { Button } from '@banx/components/Buttons'
-import { useWalletModal } from '@banx/components/WalletModal'
+import { useUserVault, useWalletModal } from '@banx/components/WalletModal'
+
+import { useModal } from '@banx/store/common'
+
+import { WarningModal } from './WarningModal'
 
 import styles from '../PlaceTokenOfferSection.module.less'
 
@@ -15,6 +19,7 @@ interface ActionButtonsProps {
   onCreateOffer: () => void
   onRemoveOffer: () => void
   onUpdateOffer: () => void
+  offerSize: number
 }
 
 export const ActionsButtons: FC<ActionButtonsProps> = ({
@@ -24,17 +29,30 @@ export const ActionsButtons: FC<ActionButtonsProps> = ({
   onCreateOffer,
   onRemoveOffer,
   onUpdateOffer,
+  offerSize,
 }) => {
   const { connected } = useWallet()
   const { toggleVisibility } = useWalletModal()
 
-  const onToggleWalletModal = () => toggleVisibility()
+  const { open: openModal } = useModal()
+  const { userVault } = useUserVault()
+
+  const escrowBalance = userVault?.offerLiquidityAmount.toNumber() || 0
+
+  const showWarningModal = () => {
+    openModal(WarningModal, { escrowBalance, onCreateOffer, offerSize })
+  }
 
   const onMainActionBtnClick = () => {
+    if (offerSize > escrowBalance) {
+      return showWarningModal()
+    }
+
     if (connected) {
       return onCreateOffer()
     }
-    onToggleWalletModal()
+
+    return toggleVisibility()
   }
 
   return (

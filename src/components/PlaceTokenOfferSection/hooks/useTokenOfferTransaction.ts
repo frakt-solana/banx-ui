@@ -8,7 +8,7 @@ import { TxnExecutor } from 'solana-transactions-executor'
 import { useUserVault } from '@banx/components/WalletModal'
 
 import { convertBondOfferV3ToCore } from '@banx/api/nft'
-import { useTokenType } from '@banx/store/common'
+import { useModal, useTokenType } from '@banx/store/common'
 import {
   TXN_EXECUTOR_DEFAULT_OPTIONS,
   createExecutorWalletAndConnection,
@@ -54,6 +54,7 @@ export const useTokenOfferTransactions = ({
   const { connection } = useConnection()
   const { tokenType } = useTokenType()
   const { userVault } = useUserVault()
+  const { close: closeModal } = useModal()
 
   const onCreateTokenOffer = async () => {
     const loadingSnackbarId = uniqueId()
@@ -108,6 +109,8 @@ export const useTokenOfferTransactions = ({
               updateOrAddOffer(offer)
               resetFormValues()
             }
+
+            closeModal()
           })
         })
         .on('error', (error) => {
@@ -181,6 +184,8 @@ export const useTokenOfferTransactions = ({
               //? Needs to prevent BE data overlap in optimistics logic
               updateOrAddOffer({ ...offer, lastTransactedAt: new BN(moment().unix()) })
             }
+
+            closeModal()
           })
         })
         .on('error', (error) => {

@@ -56,6 +56,8 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
 
   const inputStepByTokenType = isBanxSolTokenType(tokenType) ? 0.1 : 1
 
+  const offerSizeNumber = parseFloat(offerSizeString) * marketTokenDecimals
+
   return (
     <>
       <div className={styles.fieldsColumn}>
@@ -102,7 +104,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
       <AdditionalSummary
         market={market}
         collateralPerToken={collateralsPerTokenString}
-        offerSize={parseFloat(offerSizeString) * marketTokenDecimals}
+        offerSize={offerSizeNumber}
         apr={parseFloat(aprString)}
       />
 
@@ -112,6 +114,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
         onUpdateOffer={onUpdateTokenOffer}
         disablePlaceOffer={disablePlaceOffer}
         disableUpdateOffer={disableUpdateOffer}
+        offerSize={offerSizeNumber}
         isEditMode={isEditMode}
       />
     </>
