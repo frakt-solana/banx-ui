@@ -179,11 +179,13 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
 type FetchBorrowNftsAndOffers = (
   props: RequestWithPagination<{
     walletPubkey: string
+    marketPublicKey?: string
     tokenType: LendingTokenType
   }>,
 ) => Promise<BorrowNftsAndOffers | undefined>
 export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   walletPubkey,
+  marketPublicKey,
   tokenType,
   getAll = true, //TODO Remove when normal pagination added
   order = 'desc',
@@ -196,6 +198,7 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     limit: String(limit),
     getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
+    marketPubKey: String(marketPublicKey),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
