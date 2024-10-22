@@ -30,7 +30,6 @@ import {
 } from '@banx/utils'
 
 import { BorrowTabName } from './BorrowPage'
-import { useCartState } from './InstantLoansContent/cartState'
 import { SimpleOffersByMarket } from './InstantLoansContent/types'
 
 export const USE_BORROW_NFTS_V2_QUERY_KEY = 'walletBorrowNftsV2'
@@ -39,7 +38,6 @@ export const useBorrowNfts = () => {
   const { publicKey: walletPublicKey } = useWallet()
   const walletPubkeyString = walletPublicKey?.toBase58() || ''
 
-  const { setCart, getBestPriceByMarket } = useCartState()
   const { loans: optimisticLoans, remove: removeOptimisticLoans } = useLoansOptimistic()
   const { optimisticOffers, remove: removeOptimisticOffers } = useOffersOptimistic()
 
@@ -141,27 +139,8 @@ export const useBorrowNfts = () => {
     )
   }, [mergedRawOffers, userVaults])
 
-  const maxLoanValueByMarket: Record<string, number> = useMemo(() => {
-    if (!userVaults) return {}
-
-    return chain(simpleOffers)
-      .keys()
-      .map((hadoMarket) => {
-        const price = getBestPriceByMarket({ marketPubkey: hadoMarket })
-        return [hadoMarket, price]
-      })
-      .fromPairs()
-      .value()
-  }, [userVaults, simpleOffers, getBestPriceByMarket])
-
-  //? Set offers in cartState
-  useEffect(() => {
-    if (!isEmpty(simpleOffers) && !isEmpty(userVaults)) {
-      setCart({ offersByMarket: simpleOffers, userVaults })
-    } else {
-      setCart({ offersByMarket: {}, userVaults: [] })
-    }
-  }, [setCart, simpleOffers, userVaults])
+  //TODO Fix
+  const maxLoanValueByMarket: Record<string, number> = {}
 
   const walletOptimisticLoans = useMemo(() => {
     if (!walletPublicKey) return []
@@ -180,9 +159,7 @@ export const useBorrowNfts = () => {
   useEffect(() => {
     if (!data || isFetching || !isFetched || !walletPublicKey) return
 
-    const expiredLoans = walletOptimisticLoans.filter((loan) =>
-      isOptimisticLoanExpired(loan, walletPublicKey.toBase58()),
-    )
+    const expiredLoans = walletOptimisticLoans.filter((loan) => isOptimisticLoanExpired(loan))
 
     const nftMintsFromBE = map(data.nfts, ({ mint }) => mint)
 

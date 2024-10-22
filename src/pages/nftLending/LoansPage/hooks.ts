@@ -52,9 +52,7 @@ export const useWalletLoansAndOffers = () => {
   useEffect(() => {
     if (!data || isFetching || !isFetched || !publicKeyString) return
 
-    const expiredLoans = walletOptimisticLoans.filter((loan) =>
-      isOptimisticLoanExpired(loan, publicKeyString),
-    )
+    const expiredLoans = walletOptimisticLoans.filter((loan) => isOptimisticLoanExpired(loan))
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
       const sameLoanFromBE = (data?.nfts || []).find(
@@ -242,9 +240,7 @@ export const useBorrowerLoansRequests = () => {
   useEffect(() => {
     if (!data || isFetching || !isFetched || !publicKeyString) return
 
-    const expiredLoans = walletOptimisticLoans.filter((loan) =>
-      isOptimisticLoanExpired(loan, publicKeyString),
-    )
+    const expiredLoans = walletOptimisticLoans.filter((loan) => isOptimisticLoanExpired(loan))
 
     const optimisticsToRemove = walletOptimisticLoans.filter(({ loan }) => {
       const sameLoanFromBE = (data || []).find(({ publicKey }) => publicKey === loan.publicKey)

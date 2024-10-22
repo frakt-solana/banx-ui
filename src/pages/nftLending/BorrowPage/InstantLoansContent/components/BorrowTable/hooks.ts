@@ -1,11 +1,12 @@
 import { useCallback, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, filter, first, groupBy, includes, isEmpty, map, orderBy } from 'lodash'
+import { filter, first, groupBy, includes, map, orderBy } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
 import { SortOption } from '@banx/components/SortDropdown'
+import { ColumnType } from '@banx/components/Table'
 import {
   SubscribeNotificationsModal,
   createLoanSubscribeNotificationsContent,
@@ -17,18 +18,10 @@ import { UserVaultPrimitive } from '@banx/api/shared'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken, createGlobalState } from '@banx/store'
-import {
-  AssetMode,
-  ViewState,
-  useIsLedger,
-  useModal,
-  useTableView,
-  useTokenType,
-} from '@banx/store/common'
+import { AssetMode, useIsLedger, useModal, useTokenType } from '@banx/store/common'
 import { useLoansOptimistic, useOffersOptimistic } from '@banx/store/nft'
 
 import { useCartState } from '../../cartState'
-import { getTableColumns } from './columns'
 import { executeBorrow, makeCreateTxnsDataParams } from './core'
 import { createTableNftData } from './helpers'
 import { TableNftData } from './types'
@@ -50,7 +43,6 @@ export const useBorrowTable = ({
   rawOffers,
   rawUserVaults,
   maxLoanValueByMarket,
-  goToRequestLoanTab,
 }: UseBorrowTableProps) => {
   const wallet = useWallet()
   const { connection } = useConnection()
@@ -60,17 +52,8 @@ export const useBorrowTable = ({
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
   const { tokenType } = useTokenType()
 
-  const {
-    offerByMint,
-    offersByMarket,
-    addNft,
-    addNfts,
-    removeNft,
-    findOfferInCart,
-    findBestOffer,
-    getBestPriceByMarket,
-    resetCart,
-  } = useCartState()
+  const { offerByMint, addNft, removeNft, findOfferInCart, findBestOffer, getBestPriceByMarket } =
+    useCartState()
   const { add: addLoansOptimistic } = useLoansOptimistic()
   const { update: updateOffersOptimistic } = useOffersOptimistic()
 
@@ -199,60 +182,7 @@ export const useBorrowTable = ({
     return tableNftsData.filter(({ mint }) => mints.includes(mint))
   }, [offerByMint, tableNftsData])
 
-  //TODO Fix here
-  const maxBorrowAmount = useMemo(() => {
-    //? calc amount of nfts that not in cart that user can borrow (if there are offers for them)
-    const amountToBorrowNotInCart = chain(filteredNfts)
-      .filter(({ selected }) => {
-        return !selected
-      })
-      .groupBy(({ nft }) => nft.loan.marketPubkey)
-      .entries()
-      .map(([marketPubkey, nfts]) => {
-        const availableToBorrow = Math.min(nfts.length, offersByMarket[marketPubkey]?.length || 0)
-        return [marketPubkey, availableToBorrow] as [string, number]
-      })
-      .sumBy(([, amount]) => amount)
-      .value()
-
-    //? get amount of nfts that already in cart
-    const amountToBorrowInCart = Object.keys(offerByMint).length
-
-    return amountToBorrowNotInCart + amountToBorrowInCart
-  }, [offersByMarket, filteredNfts, offerByMint])
-
-  const onSelectNftsAmount = useCallback(
-    (amount = 0) => {
-      const mintAndMarketArr: Array<[string, string]> = sortedNfts.map(({ mint, nft }) => [
-        mint,
-        nft.loan.marketPubkey,
-      ])
-
-      addNfts({ mintAndMarketArr, amount })
-    },
-    [addNfts, sortedNfts],
-  )
-
-  const onSelectAll = useCallback(() => {
-    if (isEmpty(offerByMint)) {
-      onSelectNftsAmount(maxBorrowAmount)
-    } else {
-      resetCart()
-    }
-  }, [offerByMint, onSelectNftsAmount, maxBorrowAmount, resetCart])
-
-  const { viewState } = useTableView()
-
-  const columns = getTableColumns({
-    onNftSelect,
-    onBorrow: borrow,
-    isCardView: viewState === ViewState.CARD,
-    findOfferInCart,
-    hasSelectedNfts: !isEmpty(offerByMint),
-    goToRequestLoanTab,
-    onSelectAll,
-    tokenType,
-  })
+  const columns: ColumnType<TableNftData>[] = []
 
   return {
     tableNftData: sortedNfts,
@@ -278,10 +208,8 @@ export const useBorrowTable = ({
     },
     borrow,
     borrowAll,
-    selectAmount: onSelectNftsAmount,
     nftsInCart,
     findOfferInCart,
-    maxBorrowAmount,
     maxBorrowPercent,
     setMaxBorrowPercent,
   }

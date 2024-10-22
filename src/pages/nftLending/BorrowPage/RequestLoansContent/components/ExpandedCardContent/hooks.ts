@@ -50,6 +50,7 @@ import { calculateSummaryInfo, clampInputValue } from './helpers'
 
 export const useRequestLoansForm = (market: core.MarketPreview) => {
   const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
+
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
   const { connected } = useWallet()
