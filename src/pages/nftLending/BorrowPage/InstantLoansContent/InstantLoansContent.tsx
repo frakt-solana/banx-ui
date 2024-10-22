@@ -1,34 +1,52 @@
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
-import { useWallet } from '@solana/wallet-adapter-react'
+import EmptyList from '@banx/components/EmptyList'
+import { Loader } from '@banx/components/Loader'
 
-import { useBorrowNfts } from '../hooks'
-import BorrowTable from './components/BorrowTable'
-import NotConnectedTable from './components/NotConnectedTable'
+import { useMarketsPreview } from '../../LendPage'
+import { HeaderList } from './components/HeaderList'
+import { MarketBorrowCard } from './components/MarketBorrowCard'
 
-interface InstantLoansContentProps {
+import styles from './InstantLoansContent.module.less'
+
+type InstantLoansContentProps = {
   goToRequestLoanTab: () => void
 }
 
 export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestLoanTab }) => {
-  const { connected } = useWallet()
+  //TODO get markets that user has on wallet
+  const { marketsPreview, isLoading } = useMarketsPreview()
 
-  const { nfts, isLoading, rawOffers, rawUserVaults, maxLoanValueByMarket } = useBorrowNfts()
+  const [expandedMarketPublicKey, setExpandedMarketPublicKey] = useState('')
 
-  const showEmptyList = !nfts?.length && !isLoading
+  const handleCardToggle = (marketPubkey: string) => {
+    setExpandedMarketPublicKey((prev) => (prev === marketPubkey ? '' : marketPubkey))
+  }
 
-  const showBorrowTable = connected && !showEmptyList
+  const showEmptyList = !marketsPreview.length && !isLoading
 
-  return showBorrowTable ? (
-    <BorrowTable
-      nfts={nfts}
-      isLoading={isLoading}
-      rawOffers={rawOffers}
-      rawUserVaults={rawUserVaults}
-      maxLoanValueByMarket={maxLoanValueByMarket}
-      goToRequestLoanTab={goToRequestLoanTab}
-    />
-  ) : (
-    <NotConnectedTable />
+  //TODO No markets found is disconnected and no suitable nfts if connected
+  if (showEmptyList) return <EmptyList message={'No markets found'} />
+
+  return (
+    <div className={styles.content}>
+      <HeaderList />
+
+      {isLoading && <Loader />}
+
+      {!showEmptyList && (
+        <div className={styles.cardsList}>
+          {marketsPreview.map((preview) => (
+            <MarketBorrowCard
+              key={preview.marketPubkey}
+              marketPreview={preview}
+              onClick={() => handleCardToggle(preview.marketPubkey)}
+              isExpanded={expandedMarketPublicKey === preview.marketPubkey}
+              goToRequestLoanTab={goToRequestLoanTab}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   )
 }

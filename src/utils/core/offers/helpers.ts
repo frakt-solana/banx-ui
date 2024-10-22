@@ -8,10 +8,6 @@ import { UserVaultPrimitive } from '@banx/api/shared'
 
 import { SimpleOffer } from './types'
 
-//? UserVault 10
-//? OfferA 2*5 [5, 5]
-//? OfferB 3*4 [4, 4, 2]
-
 const spreadToSimpleOffers = (offer: core.Offer, userVaultBalance: number): SimpleOffer[] => {
   const { baseSpotPrice, mathCounter, buyOrdersQuantity, bondingCurve, bidSettlement, validation } =
     offer
@@ -154,6 +150,7 @@ type ConvertOffersToSimple = (
   userVaults: UserVaultPrimitive[],
   sort?: 'desc' | 'asc',
 ) => SimpleOffer[]
+//TODO Add param to ignore userVaults filtering for not borrow nft cases
 export const convertOffersToSimple: ConvertOffersToSimple = (offers, userVaults, sort = 'desc') => {
   const convertedOffers = chain(offers)
     .map((offer) => {

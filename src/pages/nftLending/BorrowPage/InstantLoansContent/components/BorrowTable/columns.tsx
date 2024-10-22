@@ -22,7 +22,7 @@ interface GetTableColumnsProps {
   onBorrow: (nft: TableNftData) => Promise<void>
   findOfferInCart: (nft: TableNftData) => SimpleOffer | null
   isCardView: boolean
-  hasSelectedNfts: boolean
+  cartNotEmpty: boolean
   onSelectAll: () => void
   tokenType: LendingTokenType
   goToRequestLoanTab: () => void
@@ -33,7 +33,7 @@ export const getTableColumns = ({
   onNftSelect,
   onBorrow,
   isCardView,
-  hasSelectedNfts,
+  cartNotEmpty,
   onSelectAll,
   tokenType,
   goToRequestLoanTab,
@@ -43,7 +43,7 @@ export const getTableColumns = ({
       key: 'collateral',
       title: (
         <div className={styles.headerTitleRow}>
-          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={hasSelectedNfts} />
+          <Checkbox className={styles.checkbox} onChange={onSelectAll} checked={cartNotEmpty} />
           <HeaderCell label="Collateral" />
         </div>
       ),
