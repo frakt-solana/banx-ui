@@ -11,7 +11,7 @@ import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage'
 import { createGlobalState } from '@banx/store'
 
-import { useListLoansBorrowNfts } from '../../hooks'
+import { useListLoansBorrowNfts } from './useListLoansBorrowNfts'
 import { useSortedMarkets } from './useSortedMarkets'
 
 const useCollectionsStore = createGlobalState<string[]>([])
