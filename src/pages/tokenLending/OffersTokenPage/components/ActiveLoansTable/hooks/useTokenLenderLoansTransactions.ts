@@ -86,8 +86,8 @@ export const useTokenLenderLoansTransactions = () => {
           return confirmed.forEach(({ accountInfoByPubkey, params, signature }) => {
             if (accountInfoByPubkey && wallet?.publicKey) {
               const messageText = startLiquidation
-                ? 'Loan successfully listed'
-                : 'Loan successfully terminated'
+                ? 'Loan successfully terminated'
+                : 'Loan successfully listed'
 
               enqueueSnackbar({
                 message: messageText,

@@ -79,7 +79,8 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
     isTerminating: isTokenLoanTerminating(loan),
   }
 
-  const canRefinance = !isEmpty(bestOffer) && loanStatus.isActive
+  const canRefinance = !isEmpty(bestOffer) && !loanStatus.isTerminating
+
   const canTerminate = !loanStatus.isTerminating
   const canList = !loanStatus.isTerminating && !loanStatus.isSelling
 
