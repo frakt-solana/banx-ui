@@ -10,7 +10,7 @@ import { buildUrlWithModeAndToken } from '@banx/store'
 import { AssetMode, ViewState, useTableView, useTokenType } from '@banx/store/common'
 import { NftWithLoanValue, calculateInterestOnBorrow } from '@banx/utils'
 
-import { getTableColumns } from '../../BorrowTable/columns'
+import { getTableColumns } from '../getTableColumns'
 import { useBorrowNftTransactions } from './useBorrowNftTransactions'
 import { useBorrowNftsQuery } from './useBorrowNftsQuery'
 import { CartState, useCartState } from './useCartState'

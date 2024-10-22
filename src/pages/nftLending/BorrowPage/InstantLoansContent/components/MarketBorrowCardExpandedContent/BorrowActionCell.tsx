@@ -2,7 +2,7 @@ import React, { FC, useState } from 'react'
 
 import { Button } from '@banx/components/Buttons'
 
-import styles from './BorrowTable.module.less'
+import styles from './MarketBorrowCardExpandedContent.module.less'
 
 interface BorrowActionCellProps {
   onBorrow: () => Promise<void>
