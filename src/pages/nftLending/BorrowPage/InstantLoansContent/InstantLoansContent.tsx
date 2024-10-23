@@ -1,9 +1,15 @@
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
+
+import { filter, map } from 'lodash'
 
 import EmptyList from '@banx/components/EmptyList'
 import { Loader } from '@banx/components/Loader'
 
+import { BorrowNft, MarketPreview } from '@banx/api/nft'
+import { createGlobalState } from '@banx/store'
+
 import { useBorrowNftsAndMarketsQuery } from '../hooks'
+import { FilterSection } from './components/FilterSection'
 import { HeaderList } from './components/HeaderList'
 import { MarketBorrowCard } from './components/MarketBorrowCard'
 
@@ -13,14 +19,30 @@ type InstantLoansContentProps = {
   goToRequestLoanTab: () => void
 }
 
+const useCollectionsStore = createGlobalState<string[]>([])
+
 export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestLoanTab }) => {
   const { marketsPreview, nftsByMarket, isLoading } = useBorrowNftsAndMarketsQuery()
 
   const [expandedMarketPublicKey, setExpandedMarketPublicKey] = useState('')
+  const [selectedCollections, setCollections] = useCollectionsStore()
 
   const handleCardToggle = (marketPubkey: string) => {
     setExpandedMarketPublicKey((prev) => (prev === marketPubkey ? '' : marketPubkey))
   }
+
+  const filteredMarketsByCollection = useMemo(() => {
+    if (!selectedCollections.length) return marketsPreview
+
+    return filter(marketsPreview, (preview) => selectedCollections.includes(preview.collectionName))
+  }, [marketsPreview, selectedCollections])
+
+  const searchSelectParams = createSearchSelectParams({
+    options: filteredMarketsByCollection,
+    selectedOptions: selectedCollections,
+    onChange: setCollections,
+    nftsByMarket,
+  })
 
   const showEmptyList = !isLoading && !marketsPreview.length
 
@@ -28,13 +50,15 @@ export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestL
 
   return (
     <div className={styles.content}>
+      <FilterSection searchSelectParams={searchSelectParams} />
+
       <HeaderList />
 
       {isLoading && <Loader />}
 
       {!showEmptyList && (
         <div className={styles.cardsList}>
-          {marketsPreview.map((preview) => (
+          {filteredMarketsByCollection.map((preview) => (
             <MarketBorrowCard
               key={preview.marketPubkey}
               marketPreview={preview}
@@ -48,4 +72,43 @@ export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestL
       )}
     </div>
   )
+}
+
+interface CreateSearchSelectProps {
+  options: MarketPreview[]
+  selectedOptions: string[]
+  onChange: (option: string[]) => void
+  nftsByMarket: Record<string, BorrowNft[]>
+}
+
+const createSearchSelectParams = ({
+  options,
+  selectedOptions,
+  onChange,
+
+  nftsByMarket,
+}: CreateSearchSelectProps) => {
+  const searchSelectOptions = map(options, (option) => {
+    const { collectionImage = '', collectionName = '', marketPubkey } = option || {}
+    const nftsAmount = nftsByMarket[marketPubkey]?.length || 0
+
+    return { collectionImage, collectionName, marketPubkey, nftsAmount }
+  })
+
+  const searchSelectParams = {
+    options: searchSelectOptions,
+    selectedOptions,
+    onChange,
+    labels: ['Collection', 'NFTs'],
+    optionKeys: {
+      labelKey: 'collectionName',
+      valueKey: 'collectionName',
+      imageKey: 'collectionImage',
+      secondLabel: {
+        key: 'nftsAmount',
+      },
+    },
+  }
+
+  return searchSelectParams
 }
