@@ -472,8 +472,6 @@ export const useTokenLenderLoansTransactions = () => {
               )
 
               updateOrAddLoan(optimisticLoan)
-
-              updateOrAddLoan(optimisticLoan)
               close()
             }
           })
