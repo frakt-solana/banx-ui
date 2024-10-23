@@ -43,7 +43,11 @@ export const useRequestLoansContent = () => {
     onChange: setSelectedCollections,
   })
 
-  const showEmptyList = connected && !isLoading && isEmpty(filteredMarkets)
+  const showEmptyList = (!isLoading && isEmpty(filteredMarkets)) || !connected
+
+  const emptyMessageText = connected
+    ? "You don't have any whitelisted collections"
+    : 'Connect wallet to list your nfts'
 
   return {
     markets: sortedMarkets,
@@ -53,6 +57,7 @@ export const useRequestLoansContent = () => {
     sortParams,
     isLoading,
     showEmptyList,
+    emptyMessageText,
   }
 }
 

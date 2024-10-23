@@ -19,17 +19,17 @@ export const RequestLoansContent = () => {
     onCardClick,
     markets,
     showEmptyList,
+    emptyMessageText,
   } = useRequestLoansContent()
 
   const { data, fetchMoreTrigger } = useFakeInfinityScroll({ rawData: markets })
 
+  if (showEmptyList) return <EmptyList message={emptyMessageText} />
+
   return (
     <div className={styles.content}>
       <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
-
       <HeaderList />
-
-      {showEmptyList && <EmptyList message="You don't have any whitelisted collections" />}
 
       {isLoading && <Loader />}
 
