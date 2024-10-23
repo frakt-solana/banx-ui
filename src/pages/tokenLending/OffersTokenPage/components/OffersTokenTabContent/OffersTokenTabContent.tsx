@@ -20,20 +20,27 @@ const OffersTokenTabContent = () => {
     emptyListParams,
     visibleOfferPubkey,
     onCardClick,
+    selectedCategory,
+    onChangeCategory,
   } = useOffersTokenContent()
 
   return (
     <div className={classNames(styles.content, { [styles.emptyContent]: showEmptyList })}>
+      <FilterSection
+        searchSelectParams={searchSelectParams}
+        sortParams={sortParams}
+        selectedCategory={selectedCategory}
+        onChangeCategory={onChangeCategory}
+      />
+
+      <TokensListHeader />
+
       {showEmptyList && <EmptyList {...emptyListParams} />}
 
-      {!showEmptyList && isLoading && <Loader size="small" />}
+      {isLoading && <Loader size="small" />}
 
-      {!showEmptyList && !isLoading && (
+      {!isLoading && (
         <>
-          <FilterSection searchSelectParams={searchSelectParams} sortParams={sortParams} />
-
-          <TokensListHeader />
-
           <div className={styles.offersList}>
             {offersToDisplay.map((offerPreview) => (
               <OfferTokenCard
