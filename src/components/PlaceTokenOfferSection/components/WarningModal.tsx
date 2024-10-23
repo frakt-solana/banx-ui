@@ -61,8 +61,7 @@ export const WarningModal: FC<WarningModalProps> = ({ onSubmit, escrowBalance, o
     <Modal className={styles.modal} open onCancel={closeModal} width={496}>
       <h3>Please pay attention!</h3>
       <p>
-        You only have {displayEscrowBalance} in escrow instead of {displayOfferSize} size you want.
-        Your offer may be updated to {displayOfferSize} later after repayments.
+        You only have {displayEscrowBalance} in escrow instead of {displayOfferSize} size you want
       </p>
 
       <div className={styles.actionsButtons}>
