@@ -34,16 +34,12 @@ import {
 import styles from '../PlaceTokenOfferSection.module.less'
 
 interface WarningModalProps {
-  onCreateOffer: () => void
+  onSubmit: () => void
   escrowBalance: number
   offerSize: number
 }
 
-export const WarningModal: FC<WarningModalProps> = ({
-  onCreateOffer,
-  escrowBalance,
-  offerSize,
-}) => {
+export const WarningModal: FC<WarningModalProps> = ({ onSubmit, escrowBalance, offerSize }) => {
   const { tokenType } = useTokenType()
   const { close: closeModal } = useModal()
 
@@ -78,7 +74,7 @@ export const WarningModal: FC<WarningModalProps> = ({
           <span>Deposit {displayAmountToUpdate} to escrow</span>
         </Button>
 
-        <Button onClick={onCreateOffer} className={styles.actionButton} variant="secondary">
+        <Button onClick={onSubmit} className={styles.actionButton} variant="secondary">
           Update offer
         </Button>
       </div>

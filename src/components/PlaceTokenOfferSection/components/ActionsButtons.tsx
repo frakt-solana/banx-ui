@@ -39,8 +39,13 @@ export const ActionsButtons: FC<ActionButtonsProps> = ({
 
   const escrowBalance = userVault?.offerLiquidityAmount.toNumber() || 0
 
+  const onSubmitModalAction = () => {
+    if (isEditMode) return onUpdateOffer()
+    return onCreateOffer()
+  }
+
   const openWarningModal = () => {
-    openModal(WarningModal, { escrowBalance, onCreateOffer, offerSize })
+    openModal(WarningModal, { escrowBalance, onSubmit: onSubmitModalAction, offerSize })
   }
 
   const showWarningModal = offerSize > escrowBalance
