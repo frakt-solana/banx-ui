@@ -20,7 +20,7 @@ export const useBorrowNftsQuery = (marketPubkey: string) => {
   }, [marketPubkey, nftsByMarket])
 
   const simpleOffers = useMemo(() => {
-    return convertOffersToSimple(rawOffers, userVaults, 'desc')
+    return convertOffersToSimple({ offers: rawOffers, userVaults: userVaults, sort: 'desc' })
   }, [userVaults, rawOffers])
 
   //? Set offers in cartState

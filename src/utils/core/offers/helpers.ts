@@ -8,7 +8,11 @@ import { UserVaultPrimitive } from '@banx/api/shared'
 
 import { SimpleOffer } from './types'
 
-const spreadToSimpleOffers = (offer: core.Offer, userVaultBalance: number): SimpleOffer[] => {
+const spreadToSimpleOffers = (
+  offer: core.Offer,
+  //? use null to ignore userVaultBalance adjustments
+  userVaultBalance: number | null,
+): SimpleOffer[] => {
   const { baseSpotPrice, mathCounter, buyOrdersQuantity, bondingCurve, bidSettlement, validation } =
     offer
 
@@ -112,6 +116,10 @@ const spreadToSimpleOffers = (offer: core.Offer, userVaultBalance: number): Simp
     ...(lastOfferValue > 0 ? [lastOffer] : []),
   ].sort((a, b) => b.loanValue - a.loanValue)
 
+  if (userVaultBalance === null) {
+    return simpleOffers
+  }
+
   const { offers } = reduce(
     simpleOffers,
     (acc: { vaultBalance: number; offers: SimpleOffer[] }, offer) => {
@@ -145,17 +153,24 @@ const spreadToSimpleOffers = (offer: core.Offer, userVaultBalance: number): Simp
   return offers
 }
 
-type ConvertOffersToSimple = (
-  offers: core.Offer[],
-  userVaults: UserVaultPrimitive[],
-  sort?: 'desc' | 'asc',
-) => SimpleOffer[]
+type ConvertOffersToSimple = (params: {
+  offers: core.Offer[]
+  userVaults: UserVaultPrimitive[] | null
+  sort?: 'desc' | 'asc'
+}) => SimpleOffer[]
 //TODO Add param to ignore userVaults filtering for not borrow nft cases
-export const convertOffersToSimple: ConvertOffersToSimple = (offers, userVaults, sort = 'desc') => {
+export const convertOffersToSimple: ConvertOffersToSimple = ({
+  offers,
+  userVaults,
+  sort = 'desc',
+}) => {
   const convertedOffers = chain(offers)
     .map((offer) => {
-      const userVault = userVaults.find(({ user }) => user === offer.assetReceiver)
+      if (userVaults === null) {
+        return spreadToSimpleOffers(offer, null)
+      }
 
+      const userVault = userVaults.find(({ user }) => user === offer.assetReceiver)
       if (!userVault) return []
 
       return spreadToSimpleOffers(offer, userVault.offerLiquidityAmount)
@@ -223,11 +238,10 @@ export const filterOutWalletLoans: FilterOutWalletLoans = ({ offers, walletPubke
 type FindSuitableOffer = (props: {
   loanValue: number
   offers: core.Offer[]
-  userVaults: UserVaultPrimitive[]
 }) => core.Offer | undefined
-export const findSuitableOffer: FindSuitableOffer = ({ loanValue, userVaults, offers }) => {
+export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers }) => {
   //? Create simple offers array sorted by loanValue (offerValue) asc
-  const simpleOffers = convertOffersToSimple(offers, userVaults, 'asc')
+  const simpleOffers = convertOffersToSimple({ offers, userVaults: null, sort: 'asc' })
 
   //? Find offer. OfferValue must be greater than or equal to loanValue
   const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue <= offerValue)
@@ -263,7 +277,11 @@ type MatchNftsAndOffers = (props: {
  */
 export const matchNftsAndOffers: MatchNftsAndOffers = ({ nfts, rawOffers, rawUserVaults }) => {
   //? Create simple offers array sorted by loanValue (offerValue) asc
-  const simpleOffers = convertOffersToSimple(rawOffers, rawUserVaults, 'asc')
+  const simpleOffers = convertOffersToSimple({
+    offers: rawOffers,
+    userVaults: rawUserVaults,
+    sort: 'asc',
+  })
 
   const { nftsWithOffers } = chain(nfts)
     .cloneDeep()

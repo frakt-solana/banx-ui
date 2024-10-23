@@ -136,11 +136,9 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
         }),
       )
       .thru((offers) =>
-        //TODO Fix
         findSuitableOffer({
           loanValue: currentSpotPrice,
           offers,
-          userVaults: [],
         }),
       )
       .value()

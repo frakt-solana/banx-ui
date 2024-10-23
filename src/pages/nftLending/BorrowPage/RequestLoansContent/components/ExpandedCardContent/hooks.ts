@@ -63,7 +63,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
     const simpleOffers = chain(offersByMarket)
       .toPairs()
       .map(([marketPubkey, offers]) => {
-        const simpleOffers = convertOffersToSimple(offers, userVaults, 'desc')
+        const simpleOffers = convertOffersToSimple({ offers, userVaults, sort: 'desc' })
         return [marketPubkey, simpleOffers]
       })
       .fromPairs()

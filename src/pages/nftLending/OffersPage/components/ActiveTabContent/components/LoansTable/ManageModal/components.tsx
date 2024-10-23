@@ -80,17 +80,12 @@ export const ClosureContent: FC<ClosureContentProps> = ({ loan }) => {
   })
 
   const bestOffer = useMemo(() => {
-    return (
-      chain(offers)
-        .thru((offers) =>
-          filterOutWalletLoans({ offers, walletPubkey: wallet?.publicKey?.toBase58() }),
-        )
-        //TODO: fix
-        .thru((offers) =>
-          findSuitableOffer({ loanValue: calculateLoanRepayValue(loan), userVaults: [], offers }),
-        )
-        .value()
-    )
+    return chain(offers)
+      .thru((offers) =>
+        filterOutWalletLoans({ offers, walletPubkey: wallet?.publicKey?.toBase58() }),
+      )
+      .thru((offers) => findSuitableOffer({ loanValue: calculateLoanRepayValue(loan), offers }))
+      .value()
   }, [offers, loan, wallet])
 
   const loanActiveOrRefinanced = isLoanActiveOrRefinanced(loan)
