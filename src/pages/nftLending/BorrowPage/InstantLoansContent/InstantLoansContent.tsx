@@ -46,7 +46,7 @@ export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestL
 
   const showEmptyList = !isLoading && !marketsPreview.length
 
-  if (showEmptyList) return <EmptyList message="No markets found" />
+  if (showEmptyList) return <EmptyList message="You don't have any whitelisted collections" />
 
   return (
     <div className={styles.content}>

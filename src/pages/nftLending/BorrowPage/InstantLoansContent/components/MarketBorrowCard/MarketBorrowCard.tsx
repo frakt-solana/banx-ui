@@ -1,8 +1,10 @@
 import { FC } from 'react'
 
 import classNames from 'classnames'
+import { BASE_POINTS } from 'fbonds-core/lib/fbond-protocol/constants'
 
 import { Button } from '@banx/components/Buttons'
+import { TensorLink } from '@banx/components/SolanaLinks'
 import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
@@ -30,7 +32,7 @@ export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
   goToRequestLoanTab,
   nftsAmount,
 }) => {
-  const { collectionName, collectionImage } = marketPreview
+  const { collectionName, collectionImage, tensorSlug } = marketPreview
 
   return (
     <div className={styles.card}>
@@ -41,6 +43,7 @@ export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
         <div className={styles.mainInfoContainer}>
           <img src={collectionImage} className={styles.collateralImage} />
           <h4 className={styles.collateralName}>{collectionName}</h4>
+          {tensorSlug && <TensorLink slug={tensorSlug} />}
         </div>
 
         <div className={styles.additionalContentWrapper}>
@@ -84,6 +87,9 @@ const MarketBorrowCardInfo: FC<MarketBorrowCardInfoProps> = ({
 
   const marketApr = (marketAprBasePoints + BONDS.REPAY_FEE_APR) / 100
 
+  const upfrontFee = (bestOffer * BONDS.PROTOCOL_FEE) / BASE_POINTS
+  const adjustedBestOffer = bestOffer - upfrontFee
+
   const classNamesProps = {
     container: styles.infoStat,
     labelWrapper: styles.infoStatLabelWrapper,
@@ -93,7 +99,7 @@ const MarketBorrowCardInfo: FC<MarketBorrowCardInfoProps> = ({
     <div className={classNames(styles.infoStats, { [styles.expanded]: isExpanded })}>
       <StatInfo
         label="Top offer"
-        value={<DisplayValue value={bestOffer} />}
+        value={<DisplayValue value={adjustedBestOffer} />}
         secondValue={`${bestLtv.toFixed(0)}% LTV`}
         classNamesProps={classNamesProps}
       />

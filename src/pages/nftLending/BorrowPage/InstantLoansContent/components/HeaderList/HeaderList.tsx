@@ -16,7 +16,7 @@ export const HeaderList = () => {
   return (
     <div className={styles.headerList}>
       <div className={styles.headerMainStat}>
-        <span className={styles.headerStatLabel}>Token</span>
+        <span className={styles.headerStatLabel}>Collection</span>
       </div>
 
       <div className={styles.headerStats}>
