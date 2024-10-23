@@ -213,7 +213,7 @@ export const RefinanceModal: FC<RefinanceModalProps> = ({ loan }) => {
     } catch (error) {
       destroySnackbar(loadingSnackbarId)
       defaultTxnErrorHandler(error, {
-        additionalData: loan,
+        additionalData: { loan, offer: suitableOffer },
         walletPubkey: wallet?.publicKey?.toBase58(),
         transactionName: 'RefinanceBorrow',
       })
