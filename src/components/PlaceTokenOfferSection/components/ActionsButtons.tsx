@@ -2,6 +2,7 @@ import { FC } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
 import classNames from 'classnames'
+import { BN } from 'fbonds-core'
 
 import { Button } from '@banx/components/Buttons'
 import { useUserVault, useWalletModal } from '@banx/components/WalletModal'
@@ -16,9 +17,9 @@ interface ActionButtonsProps {
   isEditMode: boolean
   disableUpdateOffer: boolean
   disablePlaceOffer: boolean
-  onCreateOffer: () => void
+  onCreateOffer: (amount?: BN) => void
+  onUpdateOffer: (amount?: BN) => void
   onRemoveOffer: () => void
-  onUpdateOffer: () => void
   offerSize: number
 }
 
@@ -39,9 +40,9 @@ export const ActionsButtons: FC<ActionButtonsProps> = ({
 
   const escrowBalance = userVault?.offerLiquidityAmount.toNumber() || 0
 
-  const onSubmitModalAction = () => {
-    if (isEditMode) return onUpdateOffer()
-    return onCreateOffer()
+  const onSubmitModalAction = (amount?: BN) => {
+    if (isEditMode) return onUpdateOffer(amount)
+    return onCreateOffer(amount)
   }
 
   const openWarningModal = () => {

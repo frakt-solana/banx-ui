@@ -56,7 +56,7 @@ export const useTokenOfferTransactions = ({
   const { userVault } = useUserVault()
   const { close: closeModal } = useModal()
 
-  const onCreateTokenOffer = async () => {
+  const onCreateTokenOffer = async (depositAmountToVault?: BN) => {
     const loadingSnackbarId = uniqueId()
 
     try {
@@ -72,6 +72,7 @@ export const useTokenOfferTransactions = ({
           tokenLendingApr: apr * 100,
           bondFeature: BondFeatures.AutoReceiveAndReceiveSpl,
           escrowBalance: userVault?.offerLiquidityAmount,
+          depositAmountToVault,
           tokenType,
         },
         walletAndConnection,
@@ -131,7 +132,7 @@ export const useTokenOfferTransactions = ({
     }
   }
 
-  const onUpdateTokenOffer = async () => {
+  const onUpdateTokenOffer = async (depositAmountToVault?: BN) => {
     if (!optimisticOffer) return
 
     const loadingSnackbarId = uniqueId()
@@ -149,6 +150,7 @@ export const useTokenOfferTransactions = ({
           collateralsPerToken,
           tokenLendingApr: apr * 100,
           escrowBalance: userVault?.offerLiquidityAmount,
+          depositAmountToVault,
         },
         walletAndConnection,
       )
