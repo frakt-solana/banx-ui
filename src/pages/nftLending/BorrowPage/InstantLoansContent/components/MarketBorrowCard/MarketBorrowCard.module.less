@@ -115,6 +115,9 @@
   }
 
   @media (max-width: 960px) {
+    align-items: flex-start;
+    justify-content: flex-start;
+
     .expanded &:nth-child(n + 3) {
       visibility: hidden;
       height: 0;
@@ -126,10 +129,6 @@
 
     &:nth-child(n + 3) {
       grid-row: 2;
-    }
-
-    &:not(:last-child) {
-      align-items: flex-start;
     }
   }
 }
