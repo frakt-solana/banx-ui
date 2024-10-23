@@ -7,9 +7,9 @@ import { StatInfo, VALUES_TYPES } from '@banx/components/StatInfo'
 import { DisplayValue } from '@banx/components/TableComponents'
 
 import { MarketPreview } from '@banx/api/nft'
+import { BONDS } from '@banx/constants'
 import { ChevronDown } from '@banx/icons'
-import { useTokenType } from '@banx/store/common'
-import { HealthColorIncreasing, getColorByPercent, getTokenDecimals } from '@banx/utils'
+import { HealthColorIncreasing, getColorByPercent } from '@banx/utils'
 
 import { MarketBorrowCardExpandedContent } from '../MarketBorrowCardExpandedContent'
 
@@ -20,6 +20,7 @@ type MarketBorrowCardProps = {
   onClick: () => void
   isExpanded: boolean
   goToRequestLoanTab: () => void
+  nftsAmount: number
 }
 
 export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
@@ -27,6 +28,7 @@ export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
   onClick,
   isExpanded,
   goToRequestLoanTab,
+  nftsAmount,
 }) => {
   const { collectionName, collectionImage } = marketPreview
 
@@ -42,7 +44,11 @@ export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
         </div>
 
         <div className={styles.additionalContentWrapper}>
-          <MarketBorrowCardInfo marketPreview={marketPreview} isExpanded={isExpanded} />
+          <MarketBorrowCardInfo
+            marketPreview={marketPreview}
+            nftsAmount={nftsAmount}
+            isExpanded={isExpanded}
+          />
 
           <Button
             type="circle"
@@ -65,16 +71,18 @@ export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
 
 type MarketBorrowCardInfoProps = {
   marketPreview: MarketPreview
+  nftsAmount: number
   isExpanded: boolean
 }
 
-const MarketBorrowCardInfo: FC<MarketBorrowCardInfoProps> = ({ marketPreview, isExpanded }) => {
-  const { marketApr: marketAprBasePoints, offerTvl } = marketPreview
+const MarketBorrowCardInfo: FC<MarketBorrowCardInfoProps> = ({
+  marketPreview,
+  nftsAmount,
+  isExpanded,
+}) => {
+  const { marketApr: marketAprBasePoints, offerTvl, bestOffer, bestLtv } = marketPreview
 
-  const marketApr = marketAprBasePoints / 100
-
-  const { tokenType } = useTokenType()
-  const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e9, 1e6
+  const marketApr = (marketAprBasePoints + BONDS.REPAY_FEE_APR) / 100
 
   const classNamesProps = {
     container: styles.infoStat,
@@ -84,10 +92,18 @@ const MarketBorrowCardInfo: FC<MarketBorrowCardInfoProps> = ({ marketPreview, is
   return (
     <div className={classNames(styles.infoStats, { [styles.expanded]: isExpanded })}>
       <StatInfo
-        label="Offer TVL"
-        value={<DisplayValue value={offerTvl / marketTokenDecimals} isSubscriptFormat />}
+        label="Top offer"
+        value={<DisplayValue value={bestOffer} />}
+        secondValue={`${bestLtv.toFixed(0)}% LTV`}
         classNamesProps={classNamesProps}
       />
+      <StatInfo
+        label="Size"
+        value={<DisplayValue value={offerTvl} />}
+        classNamesProps={classNamesProps}
+        tooltipText="Liquidity that is locked in active offers"
+      />
+      <StatInfo label="Nfts amount" value={nftsAmount} classNamesProps={classNamesProps} />
       <StatInfo
         label="APR"
         value={marketApr}

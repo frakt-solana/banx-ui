@@ -14,7 +14,7 @@ type InstantLoansContentProps = {
 }
 
 export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestLoanTab }) => {
-  const { marketsPreview, isLoading } = useBorrowNftsAndMarketsQuery()
+  const { marketsPreview, nftsByMarket, isLoading } = useBorrowNftsAndMarketsQuery()
 
   const [expandedMarketPublicKey, setExpandedMarketPublicKey] = useState('')
 
@@ -41,6 +41,7 @@ export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestL
               onClick={() => handleCardToggle(preview.marketPubkey)}
               isExpanded={expandedMarketPublicKey === preview.marketPubkey}
               goToRequestLoanTab={goToRequestLoanTab}
+              nftsAmount={nftsByMarket[preview.marketPubkey].length}
             />
           ))}
         </div>
