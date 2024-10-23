@@ -70,6 +70,7 @@ export const useTokenOfferTransactions = ({
           collateralsPerToken,
           tokenLendingApr: apr * 100,
           bondFeature: BondFeatures.AutoReceiveAndReceiveSpl,
+          escrowBalance: userVault?.offerLiquidityAmount,
           tokenType,
         },
         walletAndConnection,

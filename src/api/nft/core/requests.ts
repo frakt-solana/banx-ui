@@ -53,6 +53,7 @@ type FetchMarketOffers = (
   props: RequestWithPagination<{
     marketPubkey?: string
     tokenType: LendingTokenType
+    excludeWallet?: string
   }>,
 ) => Promise<Offer[] | undefined>
 export const fetchMarketOffers: FetchMarketOffers = async ({
@@ -62,6 +63,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
   skip = 0,
   limit = 10,
   getAll = true, //TODO Remove when normal pagination added
+  excludeWallet,
 }) => {
   const queryParams = new URLSearchParams({
     order,
@@ -69,6 +71,7 @@ export const fetchMarketOffers: FetchMarketOffers = async ({
     limit: String(limit),
     getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
+    excludeWallet: String(excludeWallet),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 

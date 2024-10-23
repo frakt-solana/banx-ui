@@ -114,7 +114,7 @@ export const WalletTokenLoansAndOffersShema = z.object({
   offers: z.record(OfferSchema.array()),
 })
 
-export const TokenLoansRequestsSchema = z.object({
+export const TokenLoanAuctionsAndListingsSchema = z.object({
   auctions: TokenLoanSchema.array(),
   listings: TokenLoanSchema.array(),
 })

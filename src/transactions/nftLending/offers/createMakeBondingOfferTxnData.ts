@@ -28,6 +28,7 @@ export type CreateMakeBondingOfferTxnDataParams = {
   deltaValue: number //? normal number
   collateralsPerToken?: BN
   tokenLendingApr?: number
+  escrowBalance: BN | undefined
 
   bondFeature: BondFeatures
   tokenType: LendingTokenType
@@ -49,6 +50,7 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
     tokenType,
     collateralsPerToken = ZERO_BN,
     tokenLendingApr = 0,
+    escrowBalance = ZERO_BN,
     bondFeature,
     deltaValue,
   } = params
@@ -93,14 +95,14 @@ export const createMakeBondingOfferTxnData: CreateMakeBondingOfferTxnData = asyn
       loansAmount,
       deltaValue,
     })
-    const diff = offerSize.sub(banxSolBalance)
+    const diff = offerSize.sub(banxSolBalance).sub(escrowBalance)
 
     if (diff.gt(ZERO_BN)) {
       return await banxSol.combineWithBuyBanxSolInstructions(
         {
           params,
           accounts,
-          inputAmount: diff.abs(),
+          inputAmount: diff,
 
           instructions,
           signers,

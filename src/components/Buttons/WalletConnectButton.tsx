@@ -63,15 +63,13 @@ const BalanceContent: FC<BalanceContentProps> = ({ walletPubkey, walletBalance, 
         </span>
       </div>
 
-      {!!vaultBalance && (
-        <span className={styles.balanceInfo}>
-          <Escrow />
-          <span className={styles.balanceInfoLabel}>Escrow:</span>
-          <span className={styles.balanceInfoValue}>
-            <DisplayValue value={vaultBalance} />
-          </span>
+      <span className={styles.balanceInfo}>
+        <Escrow />
+        <span className={styles.balanceInfoLabel}>Escrow:</span>
+        <span className={styles.balanceInfoValue}>
+          <DisplayValue value={vaultBalance} />
         </span>
-      )}
+      </span>
     </div>
   )
 }

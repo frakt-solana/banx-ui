@@ -14,18 +14,18 @@ import {
   BondOfferV3Schema,
   BorrowOfferSchema,
   CollateralTokenSchema,
+  TokenLoanAuctionsAndListingsSchema,
   TokenLoanSchema,
-  TokenLoansRequestsSchema,
   TokenMarketPreviewSchema,
   TokenOfferPreviewSchema,
   WalletTokenLoansAndOffersShema,
 } from './schemas'
 import {
-  AllTokenLoansRequestsResponse,
   BorrowOffer,
   CollateralToken,
   TokenLoan,
-  TokenLoansRequests,
+  TokenLoanAuctionsAndListings,
+  TokenLoanAuctionsAndListingsResponse,
   TokenMarketPreview,
   TokenMarketPreviewResponse,
   TokenOfferPreview,
@@ -53,15 +53,18 @@ type FetchTokenMarketOffers = (props: {
   marketPubkey?: string
   tokenType: LendingTokenType
   getAll?: boolean
+  excludeWallet?: string
 }) => Promise<BondOfferV3[] | undefined>
 export const fetchTokenMarketOffers: FetchTokenMarketOffers = async ({
   marketPubkey,
   tokenType,
   getAll = true,
+  excludeWallet,
 }) => {
   const queryParams = new URLSearchParams({
     getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
+    excludeWallet: String(excludeWallet),
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
@@ -169,12 +172,12 @@ export const fetchBorrowOffers: FetchBorrowOffers = async (props) => {
   return await parseResponseSafe<BorrowOffer[]>(data?.data, BorrowOfferSchema.array())
 }
 
-type FetchAllTokenLoansRequests = (props: {
+type fetchTokenLoanAuctionsAndListings = (props: {
   tokenType: LendingTokenType
   getAll?: boolean
-}) => Promise<TokenLoansRequests | undefined>
+}) => Promise<TokenLoanAuctionsAndListings | undefined>
 
-export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
+export const fetchTokenLoanAuctionsAndListings: fetchTokenLoanAuctionsAndListings = async ({
   tokenType,
   getAll = true,
 }) => {
@@ -184,11 +187,38 @@ export const fetchAllTokenLoansRequests: FetchAllTokenLoansRequests = async ({
     getAll: String(getAll),
   })
 
-  const { data } = await axios.get<AllTokenLoansRequestsResponse>(
+  const { data } = await axios.get<TokenLoanAuctionsAndListingsResponse>(
     `${BACKEND_BASE_URL}/spl-loans/requests?${queryParams.toString()}`,
   )
 
-  return await parseResponseSafe<TokenLoansRequests>(data.data, TokenLoansRequestsSchema)
+  return await parseResponseSafe<TokenLoanAuctionsAndListings>(
+    data.data,
+    TokenLoanAuctionsAndListingsSchema,
+  )
+}
+
+type FetchUserTokenLoanListings = (props: {
+  walletPubkey: string
+  tokenType: LendingTokenType
+  getAll?: boolean
+}) => Promise<TokenLoan[] | undefined>
+
+export const fetchUserTokenLoanListings: FetchUserTokenLoanListings = async ({
+  walletPubkey,
+  tokenType,
+  getAll = true,
+}) => {
+  const queryParams = new URLSearchParams({
+    marketType: String(convertToMarketType(tokenType)),
+    isPrivate: String(IS_PRIVATE_MARKETS),
+    getAll: String(getAll),
+  })
+
+  const { data } = await axios.get<{ data: TokenLoan[] }>(
+    `${BACKEND_BASE_URL}/spl-loans/borrower-requests/${walletPubkey}?${queryParams.toString()}`,
+  )
+
+  return await parseResponseSafe<TokenLoan[]>(data.data, TokenLoanSchema.array())
 }
 
 export const fetchCollateralsList = async (props: {

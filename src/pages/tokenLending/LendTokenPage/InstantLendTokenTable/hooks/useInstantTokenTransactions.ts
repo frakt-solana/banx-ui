@@ -3,6 +3,7 @@ import { chain, uniqueId } from 'lodash'
 import { TxnExecutor } from 'solana-transactions-executor'
 
 import { useBanxNotificationsSider } from '@banx/components/BanxNotifications'
+import { useUserVault } from '@banx/components/WalletModal'
 import {
   SubscribeNotificationsModal,
   createRefinanceSubscribeNotificationsContent,
@@ -32,7 +33,7 @@ import {
 } from '@banx/utils'
 
 import { useLoansTokenState } from '../loansState'
-import { useAllTokenLoansRequests } from './useAllTokenLoansRequests'
+import { useAllTokenLoanAuctionsAndListings } from './useAllTokenLoanAuctionsAndListings'
 
 export const useInstantTokenTransactions = () => {
   const wallet = useWallet()
@@ -40,8 +41,10 @@ export const useInstantTokenTransactions = () => {
   const { isLedger } = useIsLedger()
   const { tokenType } = useTokenType()
 
+  const { userVault } = useUserVault()
+
   const { setVisibility: setBanxNotificationsSiderVisibility } = useBanxNotificationsSider()
-  const { addLoansPubkeys } = useAllTokenLoansRequests()
+  const { addLoansPubkeys } = useAllTokenLoanAuctionsAndListings()
   const { open, close } = useModal()
 
   const { selection, clear: clearSelection, remove: removeSelection } = useLoansTokenState()
@@ -72,7 +75,7 @@ export const useInstantTokenTransactions = () => {
       const aprRate = loan.bondTradeTransaction.amountOfBonds
 
       const txnData = await createLendToBorrowTokenTxnData(
-        { loan, aprRate, tokenType },
+        { loan, aprRate, userVault, tokenType },
         walletAndConnection,
       )
 
@@ -139,7 +142,7 @@ export const useInstantTokenTransactions = () => {
       const txnsData = await Promise.all(
         selection.map((loan) =>
           createLendToBorrowTokenTxnData(
-            { loan, aprRate: loan.bondTradeTransaction.amountOfBonds, tokenType },
+            { loan, userVault, aprRate: loan.bondTradeTransaction.amountOfBonds, tokenType },
             walletAndConnection,
           ),
         ),

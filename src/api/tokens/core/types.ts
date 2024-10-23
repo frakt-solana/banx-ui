@@ -6,8 +6,8 @@ import {
   BorrowOfferSchema,
   CollateralTokenSchema,
   DBOfferSchema,
+  TokenLoanAuctionsAndListingsSchema,
   TokenLoanSchema,
-  TokenLoansRequestsSchema,
   TokenMarketPreviewSchema,
   TokenMetaSchema,
   TokenOfferPreviewSchema,
@@ -25,8 +25,9 @@ export type TokenOfferPreview = z.infer<typeof TokenOfferPreviewSchema>
 
 export type WalletTokenLoansAndOffers = z.infer<typeof WalletTokenLoansAndOffersShema>
 
-export type TokenLoansRequests = z.infer<typeof TokenLoansRequestsSchema>
-export type AllTokenLoansRequestsResponse = ResponseWithPagination<TokenLoansRequests>
+export type TokenLoanAuctionsAndListings = z.infer<typeof TokenLoanAuctionsAndListingsSchema>
+export type TokenLoanAuctionsAndListingsResponse =
+  ResponseWithPagination<TokenLoanAuctionsAndListings>
 
 export type CollateralToken = z.infer<typeof CollateralTokenSchema>
 

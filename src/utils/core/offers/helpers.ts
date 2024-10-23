@@ -240,13 +240,19 @@ type FindSuitableOffer = (props: {
   offers: core.Offer[]
 }) => core.Offer | undefined
 export const findSuitableOffer: FindSuitableOffer = ({ loanValue, offers }) => {
+  const notEmptyOffers = offers.filter(isOfferNotEmpty)
+
   //? Create simple offers array sorted by loanValue (offerValue) asc
-  const simpleOffers = convertOffersToSimple({ offers, userVaults: null, sort: 'asc' })
+  const simpleOffers = convertOffersToSimple({
+    offers: notEmptyOffers,
+    userVaults: null,
+    sort: 'asc',
+  })
 
   //? Find offer. OfferValue must be greater than or equal to loanValue
   const simpleOffer = simpleOffers.find(({ loanValue: offerValue }) => loanValue <= offerValue)
 
-  return offers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)
+  return notEmptyOffers.find(({ publicKey }) => publicKey === simpleOffer?.publicKey)
 }
 
 export const isOfferNotEmpty = (offer: core.Offer) => {

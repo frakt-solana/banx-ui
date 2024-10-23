@@ -96,7 +96,8 @@ export const ClaimSection = () => {
   const { userVault, updateUserVaultOptimistic, lenderVaultInfo, clusterStats } =
     useLenderVaultInfo()
 
-  const { totalClaimAmount, repaymentsAmount, interestRewardsAmount, rentRewards } = lenderVaultInfo
+  const { totalClaimAmount, repaymentsAmount, interestRewardsAmount, rentRewards, totalLstYield } =
+    lenderVaultInfo
 
   const claimVault = async () => {
     if (totalClaimAmount <= 0 || !userVault || !clusterStats) return
@@ -161,7 +162,9 @@ export const ClaimSection = () => {
       <TooltipRow label="Repayments" value={repaymentsAmount} />
       <TooltipRow label="Accrued interest" value={interestRewardsAmount} />
       <TooltipRow label="Rent rewards" value={rentRewards} />
-      {isBanxSolTokenType(tokenType) && <TooltipRow label="Total LST Yield" value={rentRewards} />}
+      {isBanxSolTokenType(tokenType) && (
+        <TooltipRow label="Total LST Yield" value={totalLstYield} />
+      )}
     </div>
   )
 
