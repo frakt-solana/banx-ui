@@ -104,7 +104,6 @@ export const useBorrowNftTransactions = (marketPubkey: string) => {
   }
 
   const borrowBulk = async (nfts: NftWithLoanValue[]) => {
-    // const selectedNfts = tableNftsData.filter(({ mint }) => !!offerByMint[mint])
     const createTxnsDataParams = getCreateBorrowTxnsDataParams(
       nfts,
       rawOffers,

@@ -8,7 +8,7 @@ export type CartState = {
   //? What in cart
   offerByMintInCart: Record<string, SimpleOffer>
   //? Available offers. When user adds nft, it goes to offerByMint and pop from availableOffers ( push/pop)
-  availableOffers: SimpleOffer[] //?
+  availableOffers: SimpleOffer[]
 
   addNft: (props: { mint: string }) => void
   addNfts: (props: { mints: string[] }) => void
