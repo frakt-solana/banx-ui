@@ -5,7 +5,7 @@ import Table from '@banx/components/Table'
 import { MarketPreview } from '@banx/api/nft'
 
 import { Summary } from './components'
-import { useBorrowTable } from './hooks'
+import { TableNftData, useBorrowTable } from './hooks'
 
 import styles from './MarketBorrowCardExpandedContent.module.less'
 
@@ -36,16 +36,21 @@ export const MarketBorrowCardExpandedContent: FC<MarketBorrowCardExpandedContent
     }
   }, [onNftSelect])
 
+  const tableHeight = calculateTableHeight(tableNftsData)
+
   return (
-    <div className={styles.tableRoot}>
-      <Table
-        data={tableNftsData}
-        columns={columns}
-        rowParams={rowParams}
-        className={styles.borrowTable}
-        loading={isLoading}
-        showCard
-      />
+    <>
+      <div style={{ height: tableHeight }}>
+        <Table
+          data={tableNftsData}
+          columns={columns}
+          rowParams={rowParams}
+          className={styles.borrowTable}
+          classNameTableWrapper={styles.tableWrapper}
+          loading={isLoading}
+        />
+      </div>
+
       <Summary
         nftsInCart={nftsInCart}
         loanValuePercent={loanValuePercent}
@@ -54,6 +59,15 @@ export const MarketBorrowCardExpandedContent: FC<MarketBorrowCardExpandedContent
         setLoanValuePercent={setLoanValuePercent}
         marketPubkey={preview.marketPubkey}
       />
-    </div>
+    </>
   )
+}
+
+const calculateTableHeight = (data: TableNftData[]) => {
+  const HEADER_ROW_HEIGHT = 30
+  const ROW_HEIGHT = 44
+  const MAX_TABLE_HEIGHT = 260
+
+  const tableHeight = HEADER_ROW_HEIGHT + data.length * ROW_HEIGHT
+  return Math.min(tableHeight, MAX_TABLE_HEIGHT)
 }

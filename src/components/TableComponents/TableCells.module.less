@@ -11,6 +11,8 @@
 .nftImage,
 .selectedCollectionOverlay,
 .nftPlaceholderIcon {
+  border-radius: 6px;
+
   height: 32px;
   width: 32px;
 
@@ -21,6 +23,8 @@
 }
 
 .nftPlaceholderIcon {
+  border-radius: 6px;
+
   rect {
     fill: var(--bg-tertiary);
     stroke: var(--bg-border);
@@ -141,13 +145,9 @@
   padding: 0 6px;
   position: absolute;
   left: -8px;
-  top: -8px;
+  top: -4px;
   white-space: nowrap;
   z-index: 1;
-
-  @media (max-width: 640px) {
-    top: -4px;
-  }
 }
 
 .rowCell {
