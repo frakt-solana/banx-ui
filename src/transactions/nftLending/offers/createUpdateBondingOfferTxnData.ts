@@ -2,6 +2,7 @@ import { BN, web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import {
   optimisticUpdateBondOfferBonding,
+  updateLiquidityToUserVault,
   updatePerpetualOfferBonding,
 } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
@@ -30,6 +31,7 @@ export type CreateUpdateBondingOfferTxnDataParams = {
   tokenLendingApr?: number
 
   escrowBalance: BN | undefined
+  depositAmountToVault?: BN
 }
 
 type CreateUpdateBondingOfferTxnData = (
@@ -50,13 +52,31 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     tokenLendingApr = 0,
     collateralsPerToken = ZERO_BN,
     escrowBalance = ZERO_BN,
+    depositAmountToVault = ZERO_BN,
   } = params
 
-  const {
-    instructions,
-    signers,
-    accounts: accountsCollection,
-  } = await updatePerpetualOfferBonding({
+  const instructions: web3.TransactionInstruction[] = []
+  const signers: web3.Signer[] = []
+
+  if (!depositAmountToVault.isZero()) {
+    const updateVaultIxns = await updateLiquidityToUserVault({
+      connection: walletAndConnection.connection,
+      args: {
+        amount: depositAmountToVault,
+        lendingTokenType: tokenType,
+        add: true,
+      },
+      accounts: {
+        userPubkey: walletAndConnection.wallet.publicKey,
+      },
+      sendTxn: sendTxnPlaceHolder,
+    })
+
+    instructions.push(...updateVaultIxns.instructions)
+    signers.push(...updateVaultIxns.signers)
+  }
+
+  const updateOfferIxns = await updatePerpetualOfferBonding({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     connection: walletAndConnection.connection,
     accounts: {
@@ -75,9 +95,11 @@ export const createUpdateBondingOfferTxnData: CreateUpdateBondingOfferTxnData = 
     sendTxn: sendTxnPlaceHolder,
   })
 
-  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
+  instructions.push(...updateOfferIxns.instructions)
+  signers.push(...updateOfferIxns.signers)
 
-  const accounts = [accountsCollection['bondOffer']]
+  const accounts = [updateOfferIxns.accounts['bondOffer']]
+  const lookupTables = [new web3.PublicKey(LOOKUP_TABLE)]
 
   if (isBanxSolTokenType(tokenType)) {
     const banxSolBalance = await fetchTokenBalance({

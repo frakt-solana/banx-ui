@@ -35,12 +35,15 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice = 0 }) => {
   const { publicKey: offerPubkey, collateralsPerToken, offerSize, isEdit, apr } = offer
   const { decimals: collateralDecimals = 0 } = collateral || {}
 
-  const { connected } = useWallet()
+  const { connected, publicKey } = useWallet()
   const { tokenType } = useTokenType()
 
   const marketTokenDecimals = Math.log10(getTokenDecimals(tokenType))
 
   const isNewOffer = connected && offerPubkey.toBase58() === PUBKEY_PLACEHOLDER
+  const isOwner = publicKey?.toBase58() === offer.assetReceiver
+
+  const showOwnerBadge = isOwner && !isNewOffer && !isEdit
 
   const commonHighlightClassNames = {
     [styles.creating]: isNewOffer,
@@ -71,7 +74,9 @@ const Offer: FC<OfferProps> = ({ offer, collateral, collateralPrice = 0 }) => {
 
       <div className={styles.offerDetailsContainer}>
         <div className={styles.offerDetails}>
-          <p className={styles.commonValue}>{createDisplayValueJSX(offerValue, tokenUnit)}</p>
+          <p className={classNames(styles.commonValue, { [styles.ownerBadge]: showOwnerBadge })}>
+            {createDisplayValueJSX(offerValue, tokenUnit)}
+          </p>
           <p className={styles.ltvValue}>{createPercentValueJSX(ltvPercent, '0%')} LTV</p>
         </div>
 

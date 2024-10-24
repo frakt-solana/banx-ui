@@ -13,8 +13,15 @@ import { BONDS } from '@banx/constants'
 import { parseAccountInfoByPubkey } from '../../functions'
 import { sendTxnPlaceHolder } from '../../helpers'
 
+/**
+ * @property {boolean} [startLiquidation] - Determines the liquidation behavior after termination.
+ * - @true The loan will be liquidated upon termination.
+ * - @false The termination will continue indefinitely without liquidation.
+ */
+
 export type CreateTerminateTxnDataParams = {
   loan: core.Loan
+  startLiquidation?: boolean
 }
 
 type CreateTerminateTxnData = (
@@ -26,7 +33,7 @@ export const createTerminateTxnData: CreateTerminateTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { loan } = params
+  const { loan, startLiquidation = true } = params
 
   const { bondTradeTransaction, fraktBond } = loan
 
@@ -38,7 +45,9 @@ export const createTerminateTxnData: CreateTerminateTxnData = async (
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
     },
-
+    args: {
+      startLiquidation,
+    },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,
   })

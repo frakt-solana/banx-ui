@@ -38,6 +38,13 @@ export const isTokenLoanTerminating = (loan: core.TokenLoan) => {
   )
 }
 
+export const isTokenLoanSelling = (loan: core.TokenLoan) => {
+  return (
+    loan.bondTradeTransaction.bondTradeTransactionState ===
+    BondTradeTransactionV2State.PerpetualSellingLoan
+  )
+}
+
 export const isTokenLoanLiquidated = (loan: core.TokenLoan) => {
   if (!loan.fraktBond.refinanceAuctionStartedAt) return false
 
