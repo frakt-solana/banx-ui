@@ -81,7 +81,6 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
 
   const canRefinance = !isEmpty(bestOffer) && !loanStatus.isTerminating
 
-  const canTerminate = !loanStatus.isTerminating
   const canList = !loanStatus.isTerminating && !loanStatus.isSelling
 
   const freezeExpiredAt = calculateFreezeExpiredAt(loan)
@@ -101,6 +100,14 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
     return await terminateTokenLoan(loan, false)
   }
 
+  const handleTerminateLoan = async () => {
+    if (loanStatus.isTerminating) {
+      return await revertTerminateTokenLoan(loan)
+    }
+
+    return await terminateTokenLoan(loan)
+  }
+
   return (
     <div className={styles.closureContent}>
       <ExitContentInfo
@@ -118,8 +125,9 @@ export const ClosureContent: FC<{ loan: core.TokenLoan }> = ({ loan }) => {
       />
 
       <TerminateContentInfo
-        onActionClick={() => terminateTokenLoan(loan)}
-        disabled={!canTerminate || !isFreezeExpired}
+        onActionClick={handleTerminateLoan}
+        isLoanTerminating={loanStatus.isTerminating}
+        disabled={!isFreezeExpired}
       />
 
       {!isFreezeExpired && <TimerContent expiredAt={freezeExpiredAt} />}
@@ -212,10 +220,15 @@ const ListLoanContentInfo: FC<ListLoanContentInfo> = ({
 
 interface TerminateContentInfo {
   onActionClick: () => Promise<void>
+  isLoanTerminating: boolean
   disabled: boolean
 }
 
-const TerminateContentInfo: FC<TerminateContentInfo> = ({ onActionClick, disabled }) => {
+const TerminateContentInfo: FC<TerminateContentInfo> = ({
+  onActionClick,
+  isLoanTerminating,
+  disabled,
+}) => {
   return (
     <div className={styles.closureContentInfo}>
       <div className={styles.closureContentTexts}>
@@ -233,7 +246,7 @@ const TerminateContentInfo: FC<TerminateContentInfo> = ({ onActionClick, disable
         disabled={disabled}
         variant="secondary"
       >
-        Terminate
+        {isLoanTerminating ? 'Cancel' : 'Terminate'}
       </Button>
     </div>
   )
