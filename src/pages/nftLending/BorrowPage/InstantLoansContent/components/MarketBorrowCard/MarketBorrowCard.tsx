@@ -19,6 +19,7 @@ import styles from './MarketBorrowCard.module.less'
 
 type MarketBorrowCardProps = {
   marketPreview: MarketPreview
+  maxLoanValue: number
   onClick: () => void
   isExpanded: boolean
   goToRequestLoanTab: () => void
@@ -27,6 +28,7 @@ type MarketBorrowCardProps = {
 
 export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
   marketPreview,
+  maxLoanValue,
   onClick,
   isExpanded,
   goToRequestLoanTab,
@@ -49,6 +51,7 @@ export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
         <div className={styles.additionalContentWrapper}>
           <MarketBorrowCardInfo
             marketPreview={marketPreview}
+            maxLoanValue={maxLoanValue}
             nftsAmount={nftsAmount}
             isExpanded={isExpanded}
           />
@@ -74,21 +77,25 @@ export const MarketBorrowCard: FC<MarketBorrowCardProps> = ({
 
 type MarketBorrowCardInfoProps = {
   marketPreview: MarketPreview
+  maxLoanValue: number
   nftsAmount: number
   isExpanded: boolean
 }
 
 const MarketBorrowCardInfo: FC<MarketBorrowCardInfoProps> = ({
   marketPreview,
+  maxLoanValue,
   nftsAmount,
   isExpanded,
 }) => {
-  const { marketApr: marketAprBasePoints, offerTvl, bestOffer, bestLtv } = marketPreview
+  const { marketApr: marketAprBasePoints, collectionFloor } = marketPreview
 
   const marketApr = (marketAprBasePoints + BONDS.REPAY_FEE_APR) / 100
 
-  const upfrontFee = (bestOffer * BONDS.PROTOCOL_FEE) / BASE_POINTS
-  const adjustedBestOffer = bestOffer - upfrontFee
+  const upfrontFee = (maxLoanValue * BONDS.PROTOCOL_FEE) / BASE_POINTS
+  const adjustedBestOffer = maxLoanValue - upfrontFee
+
+  const ltv = (maxLoanValue / collectionFloor) * 100
 
   const classNamesProps = {
     container: styles.infoStat,
@@ -100,14 +107,8 @@ const MarketBorrowCardInfo: FC<MarketBorrowCardInfoProps> = ({
       <StatInfo
         label="Top offer"
         value={<DisplayValue value={adjustedBestOffer} />}
-        secondValue={`${bestLtv.toFixed(0)}% LTV`}
+        secondValue={`${ltv.toFixed(0)}% LTV`}
         classNamesProps={classNamesProps}
-      />
-      <StatInfo
-        label="Size"
-        value={<DisplayValue value={offerTvl} />}
-        classNamesProps={classNamesProps}
-        tooltipText="Liquidity that is locked in active offers"
       />
       <StatInfo label="Nfts amount" value={nftsAmount} classNamesProps={classNamesProps} />
       <StatInfo

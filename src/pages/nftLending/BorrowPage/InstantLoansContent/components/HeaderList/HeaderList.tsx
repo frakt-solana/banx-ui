@@ -8,9 +8,8 @@ export const HeaderList = () => {
       label: 'Top offer',
       tooltipText: 'Highest offer among all lenders providing liquidity for this collection',
     },
-    { label: 'Size', tooltipText: 'Liquidity that is locked in active offers' },
     { label: 'Nfts amount' },
-    { label: 'APR' },
+    { label: 'Min APR' },
   ]
 
   return (

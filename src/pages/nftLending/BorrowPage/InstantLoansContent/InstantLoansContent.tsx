@@ -8,7 +8,7 @@ import { Loader } from '@banx/components/Loader'
 import { BorrowNft, MarketPreview } from '@banx/api/nft'
 import { createGlobalState } from '@banx/store'
 
-import { useBorrowNftsAndMarketsQuery } from '../hooks'
+import { useBorrowNftsAndMarketsQuery, useMaxLoanValueByMarket } from '../hooks'
 import { FilterSection } from './components/FilterSection'
 import { HeaderList } from './components/HeaderList'
 import { MarketBorrowCard } from './components/MarketBorrowCard'
@@ -22,7 +22,10 @@ type InstantLoansContentProps = {
 const useCollectionsStore = createGlobalState<string[]>([])
 
 export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestLoanTab }) => {
-  const { marketsPreview, nftsByMarket, isLoading } = useBorrowNftsAndMarketsQuery()
+  const { marketsPreview, nftsByMarket, userVaults, offersByMarket, isLoading } =
+    useBorrowNftsAndMarketsQuery()
+
+  const maxLoanValueByMarket = useMaxLoanValueByMarket({ offersByMarket, userVaults })
 
   const [expandedMarketPublicKey, setExpandedMarketPublicKey] = useState('')
   const [selectedCollections, setCollections] = useCollectionsStore()
@@ -61,6 +64,7 @@ export const InstantLoansContent: FC<InstantLoansContentProps> = ({ goToRequestL
           {filteredMarketsByCollection.map((preview) => (
             <MarketBorrowCard
               key={preview.marketPubkey}
+              maxLoanValue={maxLoanValueByMarket[preview.marketPubkey] || 0}
               marketPreview={preview}
               onClick={() => handleCardToggle(preview.marketPubkey)}
               isExpanded={expandedMarketPublicKey === preview.marketPubkey}

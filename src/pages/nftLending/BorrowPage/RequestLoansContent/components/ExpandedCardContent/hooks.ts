@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, isEmpty, uniqueId } from 'lodash'
+import { chain, uniqueId } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -15,7 +15,10 @@ import {
 
 import { core } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
-import { useBorrowNftsAndMarketsQuery } from '@banx/pages/nftLending/BorrowPage'
+import {
+  useBorrowNftsAndMarketsQuery,
+  useMaxLoanValueByMarket,
+} from '@banx/pages/nftLending/BorrowPage'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/nftLending/LoansPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -34,7 +37,6 @@ import {
 } from '@banx/transactions/nftLending'
 import {
   calculateBorrowValueWithProtocolFee,
-  convertOffersToSimple,
   convertToHumanNumber,
   destroySnackbar,
   enqueueConfirmationError,
@@ -57,27 +59,7 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
     isLoading: isLoadingNfts,
   } = useBorrowNftsAndMarketsQuery()
 
-  const maxLoanValueByMarket: Record<string, number> = useMemo(() => {
-    if (isEmpty(offersByMarket)) return {}
-
-    const simpleOffers = chain(offersByMarket)
-      .toPairs()
-      .map(([marketPubkey, offers]) => {
-        const simpleOffers = convertOffersToSimple({ offers, userVaults, sort: 'desc' })
-        return [marketPubkey, simpleOffers]
-      })
-      .fromPairs()
-      .value()
-
-    return chain(simpleOffers)
-      .keys()
-      .map((hadoMarket) => {
-        const price = simpleOffers[hadoMarket]?.[0]?.loanValue || 0
-        return [hadoMarket, price]
-      })
-      .fromPairs()
-      .value()
-  }, [offersByMarket, userVaults])
+  const maxLoanValueByMarket = useMaxLoanValueByMarket({ offersByMarket, userVaults })
 
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
