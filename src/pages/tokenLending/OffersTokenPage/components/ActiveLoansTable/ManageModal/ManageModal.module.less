@@ -1,4 +1,4 @@
-//? ### ManageModal
+// * ManageModal * //
 .modal :global {
   z-index: 2;
 
@@ -14,12 +14,33 @@
   }
 
   .ant-modal-content {
+    background-color: var(--bg-tertiary);
     padding: 0;
   }
 }
+
 .tabs {
   flex-wrap: nowrap;
 }
+// * ManageModal * //
+
+.freezeTimerWrapper {
+  background: var(--additional-blue-secondary);
+  border: 0.5px solid var(--additional-blue-primary);
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 16px;
+  height: 24px;
+
+  @media (max-width: 640px) {
+    font: var(--body-text-sm);
+  }
+}
+
+// * RepaymentCallContent * //
 .modalContent {
   padding: 24px;
   color: var(--content-primary);
@@ -29,25 +50,6 @@
   }
 }
 
-.freezeTimerWrapper {
-  background: var(--additional-blue-secondary);
-  border: 1px solid var(--additional-blue-primary);
-
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 16px;
-  margin: 24px;
-  font: var(--body-text-md);
-
-  @media (max-width: 640px) {
-    margin: 16px;
-    font: var(--body-text-sm);
-  }
-}
-//? ### ManageModal
-
-//? ### Repaiment content
 .repaymentCallInfo {
   display: flex;
   justify-content: flex-start;
@@ -62,37 +64,70 @@
 .repaymentCallButton {
   width: 100%;
 }
-//? ### Repaiment content
+// * RepaymentCallContent * //
 
-//? ### Closure content
+// * ClosureContent * //
 .closureContent {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  flex-grow: 1;
+  padding: 24px;
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    padding: 16px;
+  }
 }
-.twoColumnsContent {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+
+.closureContentInfo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 8px;
 }
-.closureTexts {
+
+.closureContentTexts {
   h3 {
     font: var(--title-lg);
-    margin-bottom: 0;
+    margin-bottom: 2px;
     text-transform: uppercase;
-  }
-  p {
-    font: var(--body-text-md);
+
     @media (max-width: 640px) {
-      font: var(--body-text-sm);
+      font: var(--title-md);
+    }
+  }
+
+  p {
+    font: var(--body-text-sm);
+
+    @media (max-width: 640px) {
+      font: var(--body-text-xs);
     }
   }
 }
+
+.actionButton {
+  min-width: 128px;
+
+  @media (max-width: 640px) {
+    min-width: 104px;
+  }
+}
+
+.skeletonButton {
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.1) !important;
+  min-width: 128px !important;
+
+  @media (max-width: 640px) {
+    min-width: 104px !important;
+  }
+}
+
 .exitValue {
   display: flex;
   align-items: center;
 }
+
 .terminateButton {
   &:not(&:disabled) {
     background-color: var(--additional-red-primary-sub) !important;
@@ -102,4 +137,4 @@
     }
   }
 }
-//? ### Closure content
+// * ClosureContent * //

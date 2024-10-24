@@ -1,47 +1,35 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
-import { terminatePerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
+import { revertTerminationPerpetualLoan } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
 import { CreateTxnData, WalletAndConnection } from 'solana-transactions-executor'
 
 import { core } from '@banx/api/tokens'
-import { BONDS } from '@banx/constants'
 
 import { sendTxnPlaceHolder } from '../helpers'
 
-/**
- * @property {boolean} [startLiquidation] - Determines the liquidation behavior after termination.
- * - @true The loan will be liquidated upon termination.
- * - @false The termination will continue indefinitely without liquidation.
- */
-
-export type CreateTerminateTokenTxnDataParams = {
+export type CreateRevertTerminateTokenTxnDataParams = {
   loan: core.TokenLoan
-  startLiquidation?: boolean
 }
 
-type CreateTerminateTokenTxnData = (
-  params: CreateTerminateTokenTxnDataParams,
+type CreateRevertTerminateTokenTxnData = (
+  params: CreateRevertTerminateTokenTxnDataParams,
   walletAndConnection: WalletAndConnection,
-) => Promise<CreateTxnData<CreateTerminateTokenTxnDataParams>>
+) => Promise<CreateTxnData<CreateRevertTerminateTokenTxnDataParams>>
 
-export const createTerminateTokenTxnData: CreateTerminateTokenTxnData = async (
+export const createRevertTerminationTokenTxnData: CreateRevertTerminateTokenTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { loan, startLiquidation = true } = params
+  const { loan } = params
 
   const { bondTradeTransaction, fraktBond } = loan
 
-  const { instructions, signers, accounts } = await terminatePerpetualLoan({
-    programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
+  const { instructions, signers, accounts } = await revertTerminationPerpetualLoan({
     accounts: {
       bondOffer: new web3.PublicKey(bondTradeTransaction.bondOffer),
       bondTradeTransaction: new web3.PublicKey(bondTradeTransaction.publicKey),
       fbond: new web3.PublicKey(fraktBond.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
-    },
-    args: {
-      startLiquidation,
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,

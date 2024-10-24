@@ -28,6 +28,7 @@ export enum LoanStatus {
   PartialRepaid = 'partial repaid',
   Liquidated = 'liquidated',
   Terminating = 'terminating',
+  Selling = 'Listed',
 }
 
 export const STATUS_LOANS_MAP: Record<string, LoanStatus> = {
@@ -38,6 +39,7 @@ export const STATUS_LOANS_MAP: Record<string, LoanStatus> = {
   [BondTradeTransactionV2State.PerpetualPartialRepaid]: LoanStatus.PartialRepaid,
   [BondTradeTransactionV2State.PerpetualLiquidatedByClaim]: LoanStatus.Liquidated,
   [BondTradeTransactionV2State.PerpetualManualTerminating]: LoanStatus.Terminating,
+  [BondTradeTransactionV2State.PerpetualSellingLoan]: LoanStatus.Selling,
 }
 
 export const STATUS_LOANS_MAP_WITH_REFINANCED_ACTIVE: Record<string, string> = {
@@ -50,10 +52,10 @@ export const STATUS_LOANS_COLOR_MAP: Record<LoanStatus, string> = {
   [LoanStatus.Refinanced]: 'var(--additional-green-primary-deep)',
   [LoanStatus.RefinancedActive]: 'var(--additional-green-primary-deep)',
   [LoanStatus.Repaid]: 'var(--additional-green-primary-deep)',
-  // [LoanStatus.RefinanceRepaid]: 'var(--additional-green-primary-deep)',
   [LoanStatus.PartialRepaid]: 'var(--additional-green-primary-deep)',
-  [LoanStatus.Terminating]: 'var(--additional-lava-primary-deep)',
+  [LoanStatus.Terminating]: 'var(--additional-red-primary-deep)',
   [LoanStatus.Liquidated]: 'var(--additional-red-primary-deep)',
+  [LoanStatus.Selling]: 'var(--additional-lava-primary-deep)',
 }
 
 export const isLoanLiquidated = (loan: core.Loan) => {

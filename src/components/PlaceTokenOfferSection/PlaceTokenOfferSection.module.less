@@ -22,10 +22,6 @@
   flex-direction: column;
 }
 
-.messageContainer {
-  height: 14px;
-}
-
 .borrowerMessage {
   display: flex;
   align-items: center;
@@ -126,3 +122,41 @@
   }
 }
 // * MaxOfferControls * //
+
+// * WarningModal * //
+.modal {
+  :global {
+    z-index: 2;
+
+    .ant-modal-body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0;
+    }
+  }
+
+  h3 {
+    font: var(--title-xl);
+    text-transform: uppercase;
+  }
+
+  p {
+    font: var(--body-text-lg);
+    margin-top: 12px;
+    text-align: center;
+  }
+
+  .actionsButtons {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+    width: 100%;
+  }
+
+  .actionButton {
+    width: 100%;
+  }
+}
+// * WarningModal * //
