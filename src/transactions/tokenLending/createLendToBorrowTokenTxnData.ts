@@ -201,7 +201,8 @@ const getIxnsAndSignersForAuctionLoan = async (
   signers.push(...refinanceIxns.signers)
 
   const remainingRepayAmount = repayValue.sub(amount)
-  if (!remainingRepayAmount.isZero()) {
+
+  if (isBanxSolTokenType(bondTradeTransaction.lendingToken) && !remainingRepayAmount.isZero()) {
     return await banxSol.combineWithBuyBanxSolInstructions(
       {
         params,
