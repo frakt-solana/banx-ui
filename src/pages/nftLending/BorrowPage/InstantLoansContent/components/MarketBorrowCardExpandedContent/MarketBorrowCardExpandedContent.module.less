@@ -1,9 +1,6 @@
-.tableRoot {
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  overflow: hidden;
+.tableWrapper {
+  background-color: var(--bg-tertiary);
+  height: 100%;
 }
 
 .borrowTable {
@@ -37,33 +34,10 @@
   }
 }
 
-.headerTitleRow {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.checkbox {
-  height: 18px;
-  padding-left: 18px;
-}
-
-.searchSelect {
-  max-width: 296px;
-}
-
 .borrowButton {
   width: 104px;
 }
 
-.ltvValue {
-  color: var(--additional-green-primary-deep);
-}
-.tooltipContent {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
 .tooltipRow {
   display: flex;
   align-items: center;
@@ -85,4 +59,15 @@
   @media (max-width: 640px) {
     font: var(--body-text-sm);
   }
+}
+
+.headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.checkbox {
+  height: 18px;
+  padding-left: 18px;
 }

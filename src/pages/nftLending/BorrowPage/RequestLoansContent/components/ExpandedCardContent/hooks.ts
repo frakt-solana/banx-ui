@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { chain, uniqueId } from 'lodash'
+import { chain, isEmpty, uniqueId } from 'lodash'
 import { useNavigate } from 'react-router-dom'
 import { TxnExecutor } from 'solana-transactions-executor'
 
@@ -15,7 +15,7 @@ import {
 
 import { core } from '@banx/api/nft'
 import { BONDS, DAYS_IN_YEAR, SECONDS_IN_DAY } from '@banx/constants'
-import { useBorrowNfts } from '@banx/pages/nftLending/BorrowPage/hooks'
+import { useBorrowNftsAndMarketsQuery } from '@banx/pages/nftLending/BorrowPage'
 import { LoansTabsNames, useLoansTabs } from '@banx/pages/nftLending/LoansPage'
 import { getDialectAccessToken } from '@banx/providers'
 import { PATHS } from '@banx/router'
@@ -34,6 +34,7 @@ import {
 } from '@banx/transactions/nftLending'
 import {
   calculateBorrowValueWithProtocolFee,
+  convertOffersToSimple,
   convertToHumanNumber,
   destroySnackbar,
   enqueueConfirmationError,
@@ -49,7 +50,35 @@ import { DEFAULT_FREEZE_VALUE } from './constants'
 import { calculateSummaryInfo, clampInputValue } from './helpers'
 
 export const useRequestLoansForm = (market: core.MarketPreview) => {
-  const { nfts, isLoading: isLoadingNfts, maxLoanValueByMarket } = useBorrowNfts()
+  const {
+    nftsByMarket,
+    userVaults,
+    offersByMarket,
+    isLoading: isLoadingNfts,
+  } = useBorrowNftsAndMarketsQuery()
+
+  const maxLoanValueByMarket: Record<string, number> = useMemo(() => {
+    if (isEmpty(offersByMarket)) return {}
+
+    const simpleOffers = chain(offersByMarket)
+      .toPairs()
+      .map(([marketPubkey, offers]) => {
+        const simpleOffers = convertOffersToSimple({ offers, userVaults, sort: 'desc' })
+        return [marketPubkey, simpleOffers]
+      })
+      .fromPairs()
+      .value()
+
+    return chain(simpleOffers)
+      .keys()
+      .map((hadoMarket) => {
+        const price = simpleOffers[hadoMarket]?.[0]?.loanValue || 0
+        return [hadoMarket, price]
+      })
+      .fromPairs()
+      .value()
+  }, [offersByMarket, userVaults])
+
   const { selection: selectedNfts, set: setSelection } = useSelectedNfts()
   const { tokenType } = useTokenType()
   const { connected } = useWallet()
@@ -62,8 +91,8 @@ export const useRequestLoansForm = (market: core.MarketPreview) => {
   const tokenDecimals = getTokenDecimals(tokenType)
 
   const filteredNftsByMarket = useMemo(() => {
-    return nfts.filter((nft) => nft.loan.marketPubkey === market.marketPubkey)
-  }, [nfts, market])
+    return nftsByMarket[market.marketPubkey] || []
+  }, [nftsByMarket, market.marketPubkey])
 
   const handleNftsSelection = useCallback(
     (value = 0) => setSelection(filteredNftsByMarket.slice(0, value)),

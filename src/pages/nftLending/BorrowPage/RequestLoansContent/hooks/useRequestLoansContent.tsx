@@ -1,24 +1,23 @@
 import { useMemo, useState } from 'react'
 
 import { useWallet } from '@solana/wallet-adapter-react'
-import { chain, first, isEmpty } from 'lodash'
+import { isEmpty } from 'lodash'
 
 import { MAX_BORROWER_APR_VALUE } from '@banx/components/PlaceOfferSection'
 import { createPercentValueJSX } from '@banx/components/TableComponents'
 
 import { core } from '@banx/api/nft'
 import { NFT_MARKETS_WITH_CUSTOM_APR } from '@banx/constants'
-import { useMarketsPreview } from '@banx/pages/nftLending/LendPage'
 import { createGlobalState } from '@banx/store'
 
-import { useBorrowNfts } from '../../hooks'
+import { useBorrowNftsAndMarketsQuery } from '../../hooks'
 import { useSortedMarkets } from './useSortedMarkets'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
 export const useRequestLoansContent = () => {
-  const { marketsPreview, isLoading: isLoadingMarkets } = useMarketsPreview()
-  const { nfts } = useBorrowNfts()
+  const { marketsPreview, isLoading } = useBorrowNftsAndMarketsQuery()
+
   const { connected } = useWallet()
 
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
@@ -30,34 +29,25 @@ export const useRequestLoansContent = () => {
     return setMarketPubkey(nextValue)
   }
 
-  const markets = useMemo(() => {
-    if (!connected) return marketsPreview
-
-    //? markets with user nfts
-    const marketsPubkeys = chain(nfts)
-      .groupBy((nft) => nft.loan.marketPubkey)
-      .map((groupedNfts) => first(groupedNfts)?.loan.marketPubkey)
-      .value()
-
-    return marketsPreview.filter(({ marketPubkey }) => marketsPubkeys.includes(marketPubkey))
-  }, [connected, marketsPreview, nfts])
-
   const filteredMarkets = useMemo(() => {
-    if (!selectedCollections.length) return markets
+    if (!selectedCollections.length) return marketsPreview
 
-    return markets.filter((market) => selectedCollections.includes(market.collectionName))
-  }, [selectedCollections, markets])
+    return marketsPreview.filter((market) => selectedCollections.includes(market.collectionName))
+  }, [selectedCollections, marketsPreview])
 
   const { sortedMarkets, sortParams } = useSortedMarkets(filteredMarkets)
 
   const searchSelectParams = createSearchSelectParams({
-    options: markets,
+    options: marketsPreview,
     selectedOptions: selectedCollections,
     onChange: setSelectedCollections,
   })
 
-  const isLoading = isLoadingMarkets && isEmpty(marketsPreview)
-  const showEmptyList = connected && !isLoadingMarkets && isEmpty(filteredMarkets)
+  const showEmptyList = (!isLoading && isEmpty(filteredMarkets)) || !connected
+
+  const emptyMessageText = connected
+    ? "You don't have any whitelisted collections"
+    : 'Connect wallet to list your nfts'
 
   return {
     markets: sortedMarkets,
@@ -67,6 +57,7 @@ export const useRequestLoansContent = () => {
     sortParams,
     isLoading,
     showEmptyList,
+    emptyMessageText,
   }
 }
 

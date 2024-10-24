@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react'
 
 import { get, set } from 'idb-keyval'
-import { map } from 'lodash'
+import { filter, map } from 'lodash'
 import { create } from 'zustand'
 
 import { core } from '@banx/api/nft'
@@ -13,6 +13,7 @@ import {
   convertLoanToOptimistic,
   filterOptimisticLoansByTokenType,
   findLoan,
+  isOptimisticLoanExpired,
   removeLoans,
   updateLoans,
 } from './helpers'
@@ -87,8 +88,13 @@ export const useLoansOptimistic = () => {
     const setInitialState = async () => {
       try {
         const optimisticLoans = await getOptimisticLoansIdb()
-        await setOptimisticLoansIdb(optimisticLoans)
-        setState(optimisticLoans)
+        //? Filter loans that expired by time
+        const filteredOptimisticLoans = filter(
+          optimisticLoans,
+          (loan) => !isOptimisticLoanExpired(loan),
+        )
+        await setOptimisticLoansIdb(filteredOptimisticLoans)
+        setState(filteredOptimisticLoans)
       } catch (error) {
         console.error(error)
         await setOptimisticLoansIdb([])

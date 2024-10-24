@@ -13,8 +13,7 @@ export interface LoanOptimistic {
   expiredAt: number
 }
 
-export const isOptimisticLoanExpired = (loan: LoanOptimistic, walletPublicKey: string) =>
-  loan.expiredAt < moment().unix() && loan.wallet === walletPublicKey
+export const isOptimisticLoanExpired = (loan: LoanOptimistic) => loan.expiredAt < moment().unix()
 
 export const addLoans = (loansState: LoanOptimistic[], loansToAdd: LoanOptimistic[]) => {
   const sameLoansRemoved = uniqBy([...loansState, ...loansToAdd], ({ loan }) => loan.publicKey)

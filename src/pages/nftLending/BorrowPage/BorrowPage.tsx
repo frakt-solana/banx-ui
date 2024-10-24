@@ -1,15 +1,19 @@
 import { useEffect } from 'react'
 
+import { useWallet } from '@solana/wallet-adapter-react'
+
 import { Tab, Tabs, useTabs } from '@banx/components/Tabs'
 
 import BorrowHeader from './BorrowHeader'
 import { InstantLoansContent } from './InstantLoansContent'
+import NotConnectedTable from './InstantLoansContent/components/NotConnectedTable'
 import { RequestLoansContent } from './RequestLoansContent'
 import { useBorrowTabs } from './hooks'
 
 import styles from './BorrowPage.module.less'
 
 export const BorrowPage = () => {
+  const { connected } = useWallet()
   //? Used to set default tab when user is redirected to BorrowPage.
   const { tab: storeTab, setTab } = useBorrowTabs()
 
@@ -37,9 +41,13 @@ export const BorrowPage = () => {
     <div className={styles.pageWrapper}>
       <BorrowHeader />
       <Tabs value={currentTabValue} tabs={tabs} setValue={setValue} />
-      {currentTabValue === BorrowTabName.INSTANT && (
-        <InstantLoansContent goToRequestLoanTab={goToRequestLoanTab} />
-      )}
+      {currentTabValue === BorrowTabName.INSTANT &&
+        (connected ? (
+          <InstantLoansContent goToRequestLoanTab={goToRequestLoanTab} />
+        ) : (
+          <NotConnectedTable />
+        ))}
+
       {currentTabValue === BorrowTabName.REQUEST && <RequestLoansContent />}
     </div>
   )

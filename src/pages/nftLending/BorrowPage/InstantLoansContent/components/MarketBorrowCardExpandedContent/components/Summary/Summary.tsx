@@ -13,53 +13,39 @@ import { core } from '@banx/api/nft'
 import { BONDS, ONE_WEEK_IN_SECONDS } from '@banx/constants'
 import { useTokenType } from '@banx/store/common'
 import {
+  NftWithLoanValue,
   adjustBorrowValueWithSolanaRentFee,
   calcWeightedAverage,
   calculateApr,
   calculateBorrowValueWithProtocolFee,
+  calculateInterestOnBorrow,
   getColorByPercent,
 } from '@banx/utils'
 
-import { calcInterest } from '../helpers'
-import { TableNftData } from '../types'
+import { useBorrowNftTransactions } from '../../hooks'
 
 import styles from './Summary.module.less'
 
-interface SummaryProps {
-  nftsInCart: TableNftData[]
-  borrowAll: () => Promise<void>
-  selectAmount: (value?: number) => void
-  maxBorrowAmount: number
-  maxBorrowPercent: number
-  setMaxBorrowPercent: (value: number) => void
-}
-
-const calcLoanValueWithFees = (nft: TableNftData, tokenType: LendingTokenType) => {
-  const loanValueWithProtocolFee = calculateBorrowValueWithProtocolFee(nft.loanValue)
-
-  return adjustBorrowValueWithSolanaRentFee({
-    value: new BN(loanValueWithProtocolFee),
-    marketPubkey: nft.nft.loan.marketPubkey,
-    tokenType,
-  }).toNumber()
-}
-
-const caclAprValue = (nft: core.BorrowNft, loanValue: number) => {
-  return calculateApr({
-    loanValue,
-    collectionFloor: nft.nft.collectionFloor,
-    marketPubkey: nft.loan.marketPubkey,
-  })
+//? Prop drilling is needed. Otherwise loanValuePercent won't work
+type SummaryProps = {
+  nftsInCart: NftWithLoanValue[]
+  loanValuePercent: number
+  maxNftsToBorrow: number
+  onSelectNftsAmount: (amount: number) => void
+  setLoanValuePercent: (value: number) => void
+  marketPubkey: string
 }
 
 export const Summary: FC<SummaryProps> = ({
-  maxBorrowAmount,
   nftsInCart,
-  borrowAll,
-  selectAmount,
-  maxBorrowPercent,
-  setMaxBorrowPercent,
+  loanValuePercent,
+  maxNftsToBorrow,
+  onSelectNftsAmount,
+  setLoanValuePercent,
+  marketPubkey,
 }) => {
+  const { borrowBulk } = useBorrowNftTransactions(marketPubkey)
+
   const { tokenType } = useTokenType()
 
   const totalBorrow = sumBy(nftsInCart, (nft) => calcLoanValueWithFees(nft, tokenType))
@@ -70,7 +56,7 @@ export const Summary: FC<SummaryProps> = ({
 
   const totalWeeklyFee = sumBy(nftsInCart, ({ nft, loanValue }) => {
     const apr = caclAprValue(nft, loanValue)
-    return calcInterest({ timeInterval: ONE_WEEK_IN_SECONDS, loanValue, apr })
+    return calculateInterestOnBorrow({ timeInterval: ONE_WEEK_IN_SECONDS, loanValue, apr })
   })
 
   const weightedApr = useMemo(() => {
@@ -86,7 +72,7 @@ export const Summary: FC<SummaryProps> = ({
   const [isBorrowing, setIsBorrowing] = useState(false)
   const onBorrow = async () => {
     setIsBorrowing(true)
-    await borrowAll()
+    await borrowBulk(nftsInCart)
     setIsBorrowing(false)
   }
 
@@ -120,8 +106,8 @@ export const Summary: FC<SummaryProps> = ({
         <div className={styles.slidersWrapper}>
           <MaxLtvSlider
             label="Loan value"
-            value={maxBorrowPercent}
-            onChange={setMaxBorrowPercent}
+            value={loanValuePercent}
+            onChange={setLoanValuePercent}
             tooltipText="Set the maximum amount to borrow against the # NFTs selected. Lower value loans have higher perpetuality"
           />
 
@@ -130,8 +116,8 @@ export const Summary: FC<SummaryProps> = ({
             rootClassName={styles.nftsSlider}
             className={styles.nftsSliderContainer}
             value={nftsInCart.length}
-            onChange={selectAmount}
-            max={maxBorrowAmount}
+            onChange={onSelectNftsAmount}
+            max={maxNftsToBorrow}
           />
         </div>
         <Button
@@ -147,10 +133,10 @@ export const Summary: FC<SummaryProps> = ({
   )
 }
 
-interface MaxLtvSliderProps extends SliderProps {
+type MaxLtvSliderProps = {
   value: number
   onChange: (value: number) => void
-}
+} & SliderProps
 
 const MaxLtvSlider: FC<MaxLtvSliderProps> = ({ value, onChange, ...props }) => {
   const colorClassNameByValue = {
@@ -172,4 +158,22 @@ const MaxLtvSlider: FC<MaxLtvSliderProps> = ({ value, onChange, ...props }) => {
       {...props}
     />
   )
+}
+
+const calcLoanValueWithFees = (nft: NftWithLoanValue, tokenType: LendingTokenType) => {
+  const loanValueWithProtocolFee = calculateBorrowValueWithProtocolFee(nft.loanValue)
+
+  return adjustBorrowValueWithSolanaRentFee({
+    value: new BN(loanValueWithProtocolFee),
+    marketPubkey: nft.nft.loan.marketPubkey,
+    tokenType,
+  }).toNumber()
+}
+
+const caclAprValue = (nft: core.BorrowNft, loanValue: number) => {
+  return calculateApr({
+    loanValue,
+    collectionFloor: nft.nft.collectionFloor,
+    marketPubkey: nft.loan.marketPubkey,
+  })
 }

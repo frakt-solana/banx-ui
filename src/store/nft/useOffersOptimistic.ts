@@ -72,8 +72,13 @@ export const useOffersOptimistic = () => {
     const setInitialState = async () => {
       try {
         const optimisticOffers = await getOptimisticOffersIdb()
-        await setOptimisticOffersIdb(optimisticOffers)
-        setState(optimisticOffers)
+        //? Filter offers that expired by time
+        const filteredOptimisticOffers = filter(
+          optimisticOffers,
+          (offer) => !isOptimisticOfferExpired(offer),
+        )
+        await setOptimisticOffersIdb(filteredOptimisticOffers)
+        setState(filteredOptimisticOffers)
       } catch (error) {
         console.error(error)
         await setOptimisticOffersIdb([])
@@ -95,7 +100,8 @@ export const useOffersOptimistic = () => {
   return { optimisticOffers: filteredOffersByTokenType, add, remove, find, update }
 }
 
-export const isOptimisticOfferExpired = (loan: OfferOptimistic) => loan.expiredAt < moment().unix()
+export const isOptimisticOfferExpired = (offer: OfferOptimistic) =>
+  offer.expiredAt < moment().unix()
 
 const setOptimisticOffersIdb = async (offers: OfferOptimistic[]) => {
   try {

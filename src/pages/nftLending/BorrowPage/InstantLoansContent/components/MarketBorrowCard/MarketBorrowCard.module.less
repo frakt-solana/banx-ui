@@ -1,21 +1,11 @@
-// * OfferCard * //
+// * MarketBorrowCard * //
 .card {
   background: var(--bg-primary);
-  cursor: pointer;
   width: 100%;
-}
-
-.placeOfferContent {
-  cursor: default;
-  padding: 0 24px 24px;
-  width: 100%;
-
-  @media (max-width: 640px) {
-    padding: 0 16px 8px;
-  }
 }
 
 .cardBody {
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,9 +21,7 @@
   }
 
   @media (max-width: 640px) {
-    padding: 8px 16px;
-
-    &.opened {
+    &.expanded {
       padding-bottom: 0;
     }
   }
@@ -46,13 +34,16 @@
   width: 100%;
 }
 
-.chevronButton {
+.expandButton {
   display: flex;
 
-  &.opened svg {
-    transform: rotate(180deg);
-  }
+  &.expanded {
+    background-color: var(--accent-secondary);
 
+    svg {
+      transform: rotate(180deg);
+    }
+  }
   @media (max-width: 960px) {
     position: absolute;
     top: 8px;
@@ -60,13 +51,11 @@
   }
 }
 
-// * OfferCard * //
-
-// * MarketMainInfo * //
 .mainInfoContainer {
   display: flex;
   align-items: center;
   gap: 12px;
+
   max-width: 290px;
   width: 100%;
 
@@ -84,24 +73,23 @@
   }
 }
 
-.collectionImage {
+.collateralImage {
   border-radius: 6px;
   height: 22px;
   width: 22px;
 }
 
-.collectionName {
+.collateralName {
   font: var(--title-md);
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
 }
-// * MarketMainInfo * //
+// * MarketBorrowCard * //
 
-// * MarketAdditionalInfo * //
-.additionalInfoStats {
+// * MarketBorrowCardInfo * //
+.infoStats {
   display: flex;
-  align-items: center;
   justify-content: flex-end;
   gap: 16px;
   white-space: nowrap;
@@ -115,8 +103,9 @@
   }
 }
 
-.additionalInfoStat {
+.infoStat {
   align-items: flex-end;
+  justify-content: center;
   gap: 2px;
   max-width: 180px;
   width: 100%;
@@ -126,7 +115,10 @@
   }
 
   @media (max-width: 960px) {
-    .opened &:nth-child(n + 3) {
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    .expanded &:nth-child(n + 3) {
       visibility: hidden;
       height: 0;
     }
@@ -138,51 +130,12 @@
     &:nth-child(n + 3) {
       grid-row: 2;
     }
-
-    &:not(:last-child) {
-      align-items: flex-start;
-    }
   }
 }
 
-.additionalInfoStatLabelWrapper {
+.infoStatLabelWrapper {
   @media (min-width: 961px) {
     display: none;
   }
 }
-// * MarketAdditionalInfo * //
-
-.actionsOfferButtons {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.actionButton {
-  &:disabled {
-    background: var(--bg-tertiary);
-
-    path,
-    rect {
-      fill: var(--content-secondary);
-    }
-  }
-
-  @media (max-width: 640px) {
-    min-height: 24px !important;
-    max-height: 24px !important;
-    min-width: 24px !important;
-    max-width: 24px !important;
-  }
-}
-
-.removeOfferButton {
-  svg {
-    height: 12px !important;
-    width: 12px !important;
-
-    rect {
-      fill: var(--content-primary);
-    }
-  }
-}
+// * MarketBorrowCardInfo * //

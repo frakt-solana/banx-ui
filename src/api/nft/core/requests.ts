@@ -182,11 +182,13 @@ export const fetchLenderLoans: FetchLenderLoans = async ({
 type FetchBorrowNftsAndOffers = (
   props: RequestWithPagination<{
     walletPubkey: string
+    marketPublicKey?: string
     tokenType: LendingTokenType
   }>,
 ) => Promise<BorrowNftsAndOffers | undefined>
 export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
   walletPubkey,
+  marketPublicKey,
   tokenType,
   getAll = true, //TODO Remove when normal pagination added
   order = 'desc',
@@ -199,14 +201,15 @@ export const fetchBorrowNftsAndOffers: FetchBorrowNftsAndOffers = async ({
     limit: String(limit),
     getAll: String(getAll),
     marketType: String(convertToMarketType(tokenType)),
+    marketPubKey: marketPublicKey || '',
     isPrivate: String(IS_PRIVATE_MARKETS),
   })
 
   const { data } = await axios.get<BorrowNftsAndOffersResponse>(
-    `${BACKEND_BASE_URL}/nfts/borrow-v2/${walletPubkey}?${queryParams.toString()}`,
+    `${BACKEND_BASE_URL}/nfts/borrow-v3/${walletPubkey}?${queryParams.toString()}`,
   )
 
-  return await parseResponseSafe<BorrowNftsAndOffers>(data.data, BorrowNftsAndOffersSchema)
+  return await BorrowNftsAndOffersSchema.parseAsync(data.data)
 }
 
 type FetchBorrowerLoansRequests = (

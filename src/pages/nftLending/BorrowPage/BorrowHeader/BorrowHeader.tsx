@@ -1,4 +1,3 @@
-import { useWallet } from '@solana/wallet-adapter-react'
 import { sumBy } from 'lodash'
 
 import { OnboardButton } from '@banx/components/Buttons'
@@ -13,21 +12,13 @@ import { DisplayValue } from '@banx/components/TableComponents'
 import { Snowflake } from '@banx/icons'
 import { useMarketsPreview } from '@banx/pages/nftLending/LendPage/hooks'
 
-import { useBorrowNfts } from '../hooks'
-
 const Header = () => {
-  const { connected } = useWallet()
-
-  const { nfts, maxBorrow } = useBorrowNfts()
   const { marketsPreview } = useMarketsPreview()
 
-  const nftsAmount = nfts.length
   const totalLiquidity = sumBy(marketsPreview, (offer) => offer.offerTvl)
 
   return (
     <PageHeaderBackdrop title="Borrow" titleBtn={<OnboardButton contentType="borrow" />}>
-      {connected && <AdditionalStat label="Your NFTs" value={nftsAmount} />}
-
       <AdditionalStat
         label="Duration"
         value="Perpetual, 72h"
@@ -37,11 +28,7 @@ const Header = () => {
 
       <SeparateStatsLine />
 
-      {connected ? (
-        <MainStat label="Max borrow" value={<DisplayValue value={maxBorrow} />} />
-      ) : (
-        <MainStat label="Total liquidity" value={<DisplayValue value={totalLiquidity} />} />
-      )}
+      <MainStat label="Total liquidity" value={<DisplayValue value={totalLiquidity} />} />
     </PageHeaderBackdrop>
   )
 }

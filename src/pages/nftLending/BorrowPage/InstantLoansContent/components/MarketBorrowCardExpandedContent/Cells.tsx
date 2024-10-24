@@ -18,9 +18,9 @@ import {
   calculateBorrowValueWithProtocolFee,
 } from '@banx/utils'
 
-import { TableNftData } from './types'
+import { TableNftData } from './hooks'
 
-import styles from './BorrowTable.module.less'
+import styles from './MarketBorrowCardExpandedContent.module.less'
 
 interface TooltipRowProps {
   label: string

@@ -305,6 +305,18 @@ export const calculateLendValue = (loan: core.Loan) => {
     : calculateLoanRepayValue(loan)
 }
 
+type CalculateInterest = (props: { loanValue: number; timeInterval: number; apr: number }) => number
+export const calculateInterestOnBorrow: CalculateInterest = ({ loanValue, timeInterval, apr }) => {
+  const currentTimeUnix = moment().unix()
+
+  return calculateCurrentInterestSolPure({
+    loanValue,
+    startTime: currentTimeUnix - timeInterval,
+    currentTime: currentTimeUnix,
+    rateBasePoints: apr + BONDS.REPAY_FEE_APR,
+  })
+}
+
 //TODO Refactor all helpers for Borrower/Lender. Now
 //TODO It's realy difficult to understand what to use atm
 //TODO Spit to common, lender, borrower utils
