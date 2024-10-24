@@ -1,17 +1,12 @@
-import { FC, useRef, useState } from 'react'
+import { useState } from 'react'
 
-import classNames from 'classnames'
-
-import { Button } from '@banx/components/Buttons'
+import CategoryDropdown from '@banx/components/CategoryDropdown'
 import { SearchSelect, SearchSelectProps } from '@banx/components/SearchSelect'
 import { SortDropdown, SortDropdownProps } from '@banx/components/SortDropdown'
 
 import { MarketCategory } from '@banx/api/tokens'
-import { useOnClickOutside } from '@banx/hooks'
-import { ChevronDown, Filter as FilterIcon } from '@banx/icons'
 
 import { SortField } from '../../hooks'
-import { MARKETS_CATEGORIES } from './constants'
 
 import styles from './FilterSection.module.less'
 
@@ -43,7 +38,6 @@ const FilterSection = <T extends object>({
         <CategoryDropdown
           selectedOption={selectedCategory}
           onChange={onChangeCategory}
-          options={MARKETS_CATEGORIES}
           className={!searchSelectCollapsed ? styles.dropdownHidden : ''}
         />
       </div>
@@ -56,64 +50,3 @@ const FilterSection = <T extends object>({
   )
 }
 export default FilterSection
-
-interface CategoryDropdownProps {
-  options: { key: MarketCategory; label: string }[]
-  selectedOption: MarketCategory
-  onChange: (category: MarketCategory) => void
-  className?: string
-}
-
-export const CategoryDropdown: FC<CategoryDropdownProps> = ({
-  selectedOption,
-  options,
-  onChange,
-  className,
-}) => {
-  const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false)
-
-  const dropdownRef = useRef(null)
-  useOnClickOutside(dropdownRef, () => setIsDropdownOpen(false))
-
-  const toggleDropdown = () => {
-    setIsDropdownOpen((prevOpen) => !prevOpen)
-  }
-
-  return (
-    <div className={classNames(styles.dropdownContainer, className)} ref={dropdownRef}>
-      <Button
-        type="circle"
-        variant="tertiary"
-        className={classNames(styles.dropdownButton, { [styles.isOpen]: isDropdownOpen })}
-        onClick={toggleDropdown}
-      >
-        <div className={styles.dropdownButtonTextContainer}>
-          <FilterIcon />
-          <span>{selectedOption}</span>
-        </div>
-
-        <ChevronDown
-          className={classNames(styles.chevronIcon, { [styles.rotate]: isDropdownOpen })}
-        />
-      </Button>
-
-      {isDropdownOpen && (
-        <div className={styles.dropdown}>
-          {options.map((tokenOption) => (
-            <Button
-              key={tokenOption.key}
-              type="circle"
-              variant="tertiary"
-              onClick={() => onChange(tokenOption.key)}
-              className={classNames(styles.dropdownItem, {
-                [styles.active]: selectedOption === tokenOption.key,
-              })}
-            >
-              {tokenOption.label}
-            </Button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
