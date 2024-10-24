@@ -50,7 +50,6 @@ export const ActionsCell: FC<ActionsCellProps> = ({ loan, isCardView = false }) 
             showModal()
             event.stopPropagation()
           }}
-          disabled={isLoanTerminating}
           variant="secondary"
           size={buttonSize}
         >
