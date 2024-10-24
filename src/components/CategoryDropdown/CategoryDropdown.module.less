@@ -1,0 +1,91 @@
+// * CategoryDropdown * //
+.dropdownContainer {
+  position: relative;
+}
+
+.dropdown {
+  background: var(--bg-primary);
+  border: var(--border-primary);
+  border-radius: 6px;
+
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  padding: 16px;
+  gap: 12px;
+
+  position: absolute;
+  top: 45px;
+  left: 0;
+  z-index: 4;
+
+  @media screen and (max-width: 960px) {
+    display: flex;
+    grid-template-columns: unset;
+    flex-wrap: wrap;
+    justify-content: center;
+
+    border: 0;
+    border-top: var(--border-primary);
+    padding: 24px;
+
+    position: fixed;
+    top: unset;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+  }
+
+  @media screen and (max-width: 640px) {
+    padding: 16px;
+    gap: 8px;
+  }
+}
+
+.dropdownButton {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 144px;
+  width: 100%;
+
+  position: relative;
+
+  &.isOpen {
+    border: 1px solid var(--bg-border-active);
+  }
+}
+
+.dropdownButtonTextContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chevronIcon {
+  path {
+    fill: var(--content-primary) !important;
+  }
+
+  &.rotate {
+    transform: rotate(180deg);
+  }
+}
+
+.dropdownItem {
+  background: var(--action-primary);
+  color: var(--content-secondary);
+  font: var(--body-text-md);
+  min-width: 98px;
+
+  @media (max-width: 960px) {
+    min-width: 46px;
+  }
+
+  &.active {
+    background: var(--bg-primary);
+    border-color: var(--bg-border-active);
+    color: var(--content-primary);
+    pointer-events: none;
+  }
+}
+// * CategoryDropdown * //

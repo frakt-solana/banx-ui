@@ -25,6 +25,7 @@ import {
   getColorByPercent,
   isTokenLoanActive,
   isTokenLoanLiquidated,
+  isTokenLoanSelling,
   isTokenLoanTerminating,
 } from '@banx/utils'
 
@@ -115,18 +116,23 @@ const getLoanStatus = (loan: core.TokenLoan) => {
 }
 
 const getTimeContent = (loan: core.TokenLoan) => {
-  if (isTokenLoanTerminating(loan) && !isTokenLoanLiquidated(loan)) {
-    const expiredAt = loan.fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+  const currentTimeInSeconds = moment().unix()
+  const { terminationStartedAt, soldAt } = loan.bondTradeTransaction
 
-    return <Timer expiredAt={expiredAt} />
+  if (isTokenLoanTerminating(loan) && !isTokenLoanLiquidated(loan)) {
+    const auctionEndTime = loan.fraktBond.refinanceAuctionStartedAt + SECONDS_IN_72_HOURS
+    return <Timer expiredAt={auctionEndTime} />
+  }
+
+  if (isTokenLoanSelling(loan)) {
+    const timeSinceActivation = currentTimeInSeconds - terminationStartedAt
+    return calculateTimeFromNow(timeSinceActivation)
   }
 
   if (isTokenLoanActive(loan) || isTokenLoanLiquidated(loan)) {
-    const currentTimeInSeconds = moment().unix()
-    const timeSinceActivationInSeconds = currentTimeInSeconds - loan.bondTradeTransaction.soldAt
-
-    return calculateTimeFromNow(timeSinceActivationInSeconds)
+    const timeSinceActivation = currentTimeInSeconds - soldAt
+    return calculateTimeFromNow(timeSinceActivation)
   }
 
-  return ''
+  return null
 }

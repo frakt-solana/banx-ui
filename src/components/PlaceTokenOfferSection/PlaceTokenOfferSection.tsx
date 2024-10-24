@@ -41,7 +41,6 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
     onLoanValueChange,
     onOfferSizeChange,
     aprErrorMessage,
-    offerErrorMessage,
     onCreateTokenOffer,
     onUpdateTokenOffer,
     onRemoveTokenOffer,
@@ -56,6 +55,8 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
   const marketTokenDecimals = getTokenDecimals(tokenType) //? 1e6, 1e9
 
   const inputStepByTokenType = isBanxSolTokenType(tokenType) ? 0.1 : 1
+
+  const offerSizeNumber = parseFloat(offerSizeString) * marketTokenDecimals
 
   return (
     <>
@@ -81,9 +82,6 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
               disabled={!connected}
               step={inputStepByTokenType}
             />
-            <div className={styles.messageContainer}>
-              {offerErrorMessage && <InputErrorMessage message={offerErrorMessage} />}
-            </div>
           </div>
 
           <div className={styles.fieldColumn}>
@@ -106,7 +104,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
       <AdditionalSummary
         market={market}
         collateralPerToken={collateralsPerTokenString}
-        offerSize={parseFloat(offerSizeString) * marketTokenDecimals}
+        offerSize={offerSizeNumber}
         apr={parseFloat(aprString)}
       />
 
@@ -116,6 +114,7 @@ const PlaceTokenOfferSection: FC<PlaceTokenOfferSectionProps> = ({
         onUpdateOffer={onUpdateTokenOffer}
         disablePlaceOffer={disablePlaceOffer}
         disableUpdateOffer={disableUpdateOffer}
+        offerSize={offerSizeNumber}
         isEditMode={isEditMode}
       />
     </>

@@ -1,7 +1,7 @@
 import { web3 } from 'fbonds-core'
 import { LOOKUP_TABLE } from 'fbonds-core/lib/fbond-protocol/constants'
 import { removePerpetualOffer } from 'fbonds-core/lib/fbond-protocol/functions/perpetual'
-import { BondOfferV3, LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
+import { BondOfferV3 } from 'fbonds-core/lib/fbond-protocol/types'
 import {
   CreateTxnData,
   SimulatedAccountInfoByPubkey,
@@ -16,7 +16,6 @@ import { sendTxnPlaceHolder } from '../../helpers'
 
 export type CreateRemoveOfferTxnDataParams = {
   offer: core.Offer
-  tokenType: LendingTokenType
 }
 
 type CreateRemoveOfferTxnData = (
@@ -28,16 +27,13 @@ export const createRemoveOfferTxnData: CreateRemoveOfferTxnData = async (
   params,
   walletAndConnection,
 ) => {
-  const { offer, tokenType } = params
+  const { offer } = params
 
   const { instructions, signers } = await removePerpetualOffer({
     programId: new web3.PublicKey(BONDS.PROGRAM_PUBKEY),
     accounts: {
       bondOfferV2: new web3.PublicKey(offer.publicKey),
       userPubkey: walletAndConnection.wallet.publicKey,
-    },
-    args: {
-      lendingTokenType: tokenType,
     },
     connection: walletAndConnection.connection,
     sendTxn: sendTxnPlaceHolder,

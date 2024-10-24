@@ -2,13 +2,20 @@ import { useMemo, useState } from 'react'
 
 import { filter, size } from 'lodash'
 
-import { core } from '@banx/api/tokens'
+import { TokenLoan } from '@banx/api/tokens'
 import { createGlobalState } from '@banx/store'
-import { isTokenLoanFrozen, isTokenLoanListed } from '@banx/utils'
+import {
+  isTokenLoanFrozen,
+  isTokenLoanListed,
+  isTokenLoanSelling,
+  isTokenLoanTerminating,
+} from '@banx/utils'
 
 const useCollectionsStore = createGlobalState<string[]>([])
 
-export const useFilterLoans = (loans: core.TokenLoan[]) => {
+type LoanPredicate = (loan: TokenLoan) => boolean
+
+export const useFilterLoans = (loans: TokenLoan[]) => {
   const [isAuctionFilterEnabled, setAuctionFilterState] = useState(true)
   const [isFreezeFilterEnabled, setFreezeFilterState] = useState(true)
 
@@ -29,16 +36,16 @@ export const useFilterLoans = (loans: core.TokenLoan[]) => {
   }, [loans, selectedCollections])
 
   const { filteredLoansBySelectedCollection, filteredAllLoans } = useMemo(() => {
-    const applyFilter = (loans: core.TokenLoan[]) => {
-      const auctionLoans = filter(loans, (loan) => !isTokenLoanListed(loan))
-      const listedLoans = filter(loans, (loan) => isTokenLoanListed(loan))
-      const listedLoansWithoutFreeze = filter(listedLoans, (loan) => !isTokenLoanFrozen(loan))
+    const applyFilter = (sourceLoans: TokenLoan[]) => {
+      const baseLoans = getBaseLoans(sourceLoans)
+      const auctionLoans = filter(sourceLoans, isTokenLoanTerminating)
+      const frozenLoans = filter(sourceLoans, isTokenLoanFrozen)
 
-      if (!isFreezeFilterEnabled && !isAuctionFilterEnabled) return listedLoansWithoutFreeze
-      if (!isAuctionFilterEnabled) return listedLoans
-      if (!isFreezeFilterEnabled) return [...listedLoansWithoutFreeze, ...auctionLoans]
+      const auctionFilterResult = isAuctionFilterEnabled ? auctionLoans : []
+      const freezeFilterResult = isFreezeFilterEnabled ? frozenLoans : []
 
-      return loans
+      //? Always include baseLoans, with conditional auction/freeze results
+      return [...baseLoans, ...auctionFilterResult, ...freezeFilterResult]
     }
 
     return {
@@ -47,17 +54,11 @@ export const useFilterLoans = (loans: core.TokenLoan[]) => {
     }
   }, [filteredLoansBySelectedCollections, loans, isAuctionFilterEnabled, isFreezeFilterEnabled])
 
-  const auctionLoansAmount = useMemo(
-    () =>
-      size(filter(filteredLoansBySelectedCollections, (loan) => !isTokenLoanListed(loan))) || null,
-    [filteredLoansBySelectedCollections],
-  )
+  const getLoanAmount = (predicate: LoanPredicate) =>
+    size(filter(filteredLoansBySelectedCollections, predicate)) || null
 
-  const freezeLoansAmount = useMemo(
-    () =>
-      size(filter(filteredLoansBySelectedCollections, (loan) => isTokenLoanFrozen(loan))) || null,
-    [filteredLoansBySelectedCollections],
-  )
+  const auctionLoansAmount = getLoanAmount(isTokenLoanTerminating)
+  const freezeLoansAmount = getLoanAmount(isTokenLoanFrozen)
 
   return {
     filteredLoansBySelectedCollection,
@@ -75,4 +76,12 @@ export const useFilterLoans = (loans: core.TokenLoan[]) => {
     selectedCollections,
     setSelectedCollections,
   }
+}
+
+//? Selects active loans: listed or selling, and not frozen.
+const getBaseLoans = (loans: TokenLoan[]) => {
+  const isListedOrSelling = (loan: TokenLoan) => isTokenLoanListed(loan) || isTokenLoanSelling(loan)
+  const isNotFrozen = (loan: TokenLoan) => !isTokenLoanFrozen(loan)
+
+  return loans.filter((loan) => isListedOrSelling(loan) && isNotFrozen(loan))
 }

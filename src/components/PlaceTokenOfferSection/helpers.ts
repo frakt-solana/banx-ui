@@ -1,41 +1,7 @@
 import { BN } from 'fbonds-core'
 import { MIN_APR_SPL } from 'fbonds-core/lib/fbond-protocol/constants'
-import { LendingTokenType } from 'fbonds-core/lib/fbond-protocol/types'
-import { chain } from 'lodash'
 
-import { SyntheticTokenOffer } from '@banx/store/token'
-import { getTokenTicker, stringToBN } from '@banx/utils'
-
-type GetErrorMessage = (props: {
-  walletBalance: number
-  escrowBalance: number
-  syntheticOffer: SyntheticTokenOffer
-  offerSize: number
-  tokenType: LendingTokenType
-}) => string
-
-export const getErrorMessage: GetErrorMessage = ({
-  walletBalance,
-  escrowBalance,
-  syntheticOffer,
-  offerSize,
-  tokenType,
-}) => {
-  const totalFundsAvailable = syntheticOffer.offerSize + walletBalance + escrowBalance
-
-  const isBalanceInsufficient = offerSize > totalFundsAvailable
-
-  const errorConditions: Array<[boolean, string]> = [
-    [isBalanceInsufficient, createInsufficientBalanceErrorMessage(tokenType)],
-  ]
-
-  const errorMessage = chain(errorConditions)
-    .find(([condition]) => condition)
-    .thru((error) => (error ? error[1] : ''))
-    .value() as string
-
-  return errorMessage
-}
+import { stringToBN } from '@banx/utils'
 
 export const getAprErrorMessage = (apr: number) => {
   const aprRate = apr * 100
@@ -44,10 +10,6 @@ export const getAprErrorMessage = (apr: number) => {
   if (!isAprRateTooLow || !apr) return ''
 
   return createTooLowAprErrorMessage(MIN_APR_SPL)
-}
-
-const createInsufficientBalanceErrorMessage = (tokenType: LendingTokenType) => {
-  return `Not enough ${getTokenTicker(tokenType)}`
 }
 
 const createTooLowAprErrorMessage = (aprRate: number) => {

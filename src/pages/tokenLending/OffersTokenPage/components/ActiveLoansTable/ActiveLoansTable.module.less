@@ -49,7 +49,6 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  gap: 4px;
 }
 
 .statusInfoTitle {
@@ -123,19 +122,27 @@
   }
 }
 
-//? Active row styles
-.terminated,
-.liquidated {
+// * ActiveRowStyles * //
+.loanTerminating {
   background: var(--additional-red-secondary) !important;
 }
 
-.underwater {
-  background: var(--additional-lava-secondary) !important;
+.loanLiquidated {
+  background: var(--additional-red-secondary) !important;
 }
 
-.activeRepaymentCall {
+.loanUnderwater {
+  background: var(--additional-orange-secondary) !important;
+}
+
+.loanRepaymentCallActive {
   background: var(--additional-yellow-secondary) !important;
 }
+
+.loanSelling {
+  background: var(--additional-lava-secondary) !important;
+}
+// * ActiveRowStyles * //
 
 .tooltipContainer {
   display: flex;
