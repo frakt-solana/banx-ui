@@ -5,8 +5,10 @@ import { useQuery } from '@tanstack/react-query'
 import { chain, isEmpty } from 'lodash'
 import { create } from 'zustand'
 
+import { UserVaultPrimitive } from '@banx/api'
 import { BorrowNft, Offer, core } from '@banx/api/nft'
 import { useTokenType } from '@banx/store/common'
+import { convertOffersToSimple } from '@banx/utils'
 
 import { useMarketsPreview } from '../LendPage'
 import { BorrowTabName } from './BorrowPage'
@@ -51,7 +53,7 @@ export const useBorrowNftsAndMarketsQuery = () => {
       .value()
   }, [data])
 
-  const userVaults = useMemo(() => {
+  const userVaults: UserVaultPrimitive[] = useMemo(() => {
     return data?.userVaults || []
   }, [data])
 
@@ -72,4 +74,37 @@ export const useBorrowNftsAndMarketsQuery = () => {
     userVaults,
     marketsPreview,
   }
+}
+
+type useMaxLoanValueByMarketParams = {
+  offersByMarket: Record<string, Offer[]>
+  userVaults: UserVaultPrimitive[]
+}
+export const useMaxLoanValueByMarket = ({
+  offersByMarket,
+  userVaults,
+}: useMaxLoanValueByMarketParams) => {
+  const maxLoanValueByMarket: Record<string, number> = useMemo(() => {
+    if (isEmpty(offersByMarket)) return {}
+
+    const simpleOffers = chain(offersByMarket)
+      .toPairs()
+      .map(([marketPubkey, offers]) => {
+        const simpleOffers = convertOffersToSimple({ offers, userVaults, sort: 'desc' })
+        return [marketPubkey, simpleOffers]
+      })
+      .fromPairs()
+      .value()
+
+    return chain(simpleOffers)
+      .keys()
+      .map((hadoMarket) => {
+        const price = simpleOffers[hadoMarket]?.[0]?.loanValue || 0
+        return [hadoMarket, price]
+      })
+      .fromPairs()
+      .value()
+  }, [offersByMarket, userVaults])
+
+  return maxLoanValueByMarket
 }
