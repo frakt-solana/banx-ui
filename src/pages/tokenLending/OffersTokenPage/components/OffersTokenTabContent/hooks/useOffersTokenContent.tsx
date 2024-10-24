@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 
 import { DisplayValue } from '@banx/components/TableComponents'
 
-import { core } from '@banx/api/tokens'
+import { MarketCategory, core } from '@banx/api/tokens'
 import { PATHS } from '@banx/router'
 import { buildUrlWithModeAndToken } from '@banx/store'
 import { AssetMode, useTokenType } from '@banx/store/common'
@@ -26,8 +26,13 @@ export const useOffersTokenContent = () => {
 
   const { offersPreview, updateOrAddOffer, isLoading } = useTokenOffersPreview()
 
+  const [selectedCategory, setSelectedCategory] = useState<MarketCategory>(MarketCategory.All)
   const [selectedCollections, setSelectedCollections] = useCollectionsStore()
   const [visibleOfferPubkey, setOfferPubkey] = useState('')
+
+  const onChangeCategory = (category: MarketCategory) => {
+    setSelectedCategory(category)
+  }
 
   const onCardClick = (offerPubkey: string) => {
     const isSameOfferPubkey = visibleOfferPubkey === offerPubkey
@@ -44,14 +49,21 @@ export const useOffersTokenContent = () => {
     return map(offersPreview, ({ bondOffer }) => bondOffer)
   }, [offersPreview])
 
+  const filteredByCategory = useMemo(() => {
+    if (selectedCategory === MarketCategory.All) return filteredClosedOffers
+
+    return filteredClosedOffers.filter((preview) =>
+      preview.tokenMarketPreview.marketCategory.includes(selectedCategory),
+    )
+  }, [filteredClosedOffers, selectedCategory])
+
   const filteredOffers = useMemo(() => {
-    if (selectedCollections.length) {
-      return filter(filteredClosedOffers, ({ tokenMarketPreview }) =>
-        includes(selectedCollections, tokenMarketPreview.collateral.ticker),
-      )
-    }
-    return filteredClosedOffers
-  }, [filteredClosedOffers, selectedCollections])
+    if (!selectedCollections.length) return filteredByCategory
+
+    return filter(filteredByCategory, ({ tokenMarketPreview }) =>
+      includes(selectedCollections, tokenMarketPreview.collateral.ticker),
+    )
+  }, [filteredByCategory, selectedCollections])
 
   const { sortParams, sortedOffers } = useSortedOffers(filteredOffers)
 
@@ -72,7 +84,7 @@ export const useOffersTokenContent = () => {
     buttonProps: connected ? { text: 'Lend', onClick: goToLendPage } : undefined,
   }
 
-  const showEmptyList = (!filteredClosedOffers.length && !isLoading) || !connected
+  const showEmptyList = (!filteredOffers.length && !isLoading) || !connected
 
   return {
     offersToDisplay: sortedOffers,
@@ -85,6 +97,9 @@ export const useOffersTokenContent = () => {
     emptyListParams,
     visibleOfferPubkey,
     onCardClick,
+
+    selectedCategory,
+    onChangeCategory,
   }
 }
 
